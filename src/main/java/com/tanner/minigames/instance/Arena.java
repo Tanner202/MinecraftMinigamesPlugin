@@ -39,17 +39,8 @@ public class Arena {
         this.state = GameState.RECRUITING;
         this.players = new ArrayList<>();
         this.countdown = new Countdown(minigames, this);
-        switch (gameName) {
-            case "BLOCK":
-                this.game = new BlockBreakGame(minigames, this);
-                break;
-            case "PVP":
-                this.game = new PVPGame(minigames, this);
-                break;
-            case "COLORSWAP":
-                this.game = new ColorSwapGame(minigames, this);
-                break;
-        }
+
+        setGameType();
     }
 
     public void start() {
@@ -69,6 +60,10 @@ public class Arena {
         countdown.cancel();
         countdown = new Countdown(minigames, this);
         game.unregisterEvents();
+        setGameType();
+    }
+
+    private void setGameType() {
         switch (gameName) {
             case "BLOCK":
                 this.game = new BlockBreakGame(minigames, this);
