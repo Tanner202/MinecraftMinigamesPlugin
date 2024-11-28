@@ -24,7 +24,7 @@ public class ArenaManager {
 
     private void addArenasFromConfig(Minigames minigames) {
         for (String arenaID : config.getConfigurationSection("arenas").getKeys(false)) {
-            arenas.add(new Arena(minigames, Integer.parseInt(arenaID), getArenaLocation(arenaID)));
+            arenas.add(new Arena(minigames, Integer.parseInt(arenaID), getArenaLocation(arenaID), config.getString("arenas." + arenaID + ".game")));
         }
     }
 

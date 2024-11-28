@@ -2,6 +2,9 @@ package com.tanner.minigames.instance;
 
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.instance.game.BlockBreakGame;
+import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.manager.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,22 +21,31 @@ public class Arena {
 
     private int id;
     private Location spawn;
+    private String gameName;
 
     private GameState state;
     private List<UUID> players;
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn) {
+    public Arena(Minigames minigames, int id, Location spawn, String game) {
         this.minigames = minigames;
 
         this.id = id;
         this.spawn = spawn;
+        this.gameName = game;
 
         this.state = GameState.RECRUITING;
         this.players = new ArrayList<>();
         this.countdown = new Countdown(minigames, this);
-        this.game = new Game(this);
+        switch (gameName) {
+            case "BLOCK":
+                this.game = new BlockBreakGame(minigames, this);
+                break;
+            case "PVP":
+                this.game = new PVPGame(minigames, this);
+                break;
+        }
     }
 
     public void start() {
@@ -52,7 +64,15 @@ public class Arena {
         state = GameState.RECRUITING;
         countdown.cancel();
         countdown = new Countdown(minigames, this);
-        game = new Game(this);
+        game.unregisterEvents();
+        switch (gameName) {
+            case "BLOCK":
+                this.game = new BlockBreakGame(minigames, this);
+                break;
+            case "PVP":
+                this.game = new PVPGame(minigames, this);
+                break;
+        }
     }
 
     public void sendMessage(String message) {

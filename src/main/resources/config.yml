@@ -9,6 +9,7 @@ lobby-spawn:
   pitch: 0
 arenas:
   0:
+    game: 'BLOCK'
     world: 'world'
     x: 100
     y: 100
@@ -16,6 +17,7 @@ arenas:
     yaw: -180
     pitch: 0
   1:
+    game: 'PVP'
     world: 'world'
     x: 100
     y: 100
