@@ -1,0 +1,12 @@
+name: Minigames
+version: '${project.version}'
+main: com.tanner.minigames.Minigames
+load: POSTWORLD
+api-version: '1.21'
+authors: [Tanner]
+softdepend:
+  - Multiverse-Core
+description: This is a minigames plugin
+commands:
+  arena:
+    description: "This is the arena command"

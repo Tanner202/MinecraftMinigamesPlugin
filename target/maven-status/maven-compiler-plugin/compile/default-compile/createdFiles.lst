@@ -1,0 +1,10 @@
+com/tanner/minigames/instance/Game.class
+com/tanner/minigames/command/ArenaCommand.class
+com/tanner/minigames/Minigames.class
+com/tanner/minigames/listener/ConnectListener.class
+com/tanner/minigames/GameState.class
+com/tanner/minigames/instance/Countdown.class
+com/tanner/minigames/instance/Arena.class
+com/tanner/minigames/manager/ConfigManager.class
+com/tanner/minigames/listener/GameListener.class
+com/tanner/minigames/manager/ArenaManager.class
