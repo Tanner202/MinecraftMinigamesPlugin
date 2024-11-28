@@ -14,6 +14,7 @@ public abstract class Game implements Listener {
 
     public Game(Minigames minigames, Arena arena) {
         this.arena = arena;
+        this.minigames = minigames;
         Bukkit.getPluginManager().registerEvents(this, minigames);
     }
 

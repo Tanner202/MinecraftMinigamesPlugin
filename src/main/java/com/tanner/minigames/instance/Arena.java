@@ -5,6 +5,7 @@ import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
+import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
 import com.tanner.minigames.manager.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,6 +46,9 @@ public class Arena {
             case "PVP":
                 this.game = new PVPGame(minigames, this);
                 break;
+            case "COLORSWAP":
+                this.game = new ColorSwapGame(minigames, this);
+                break;
         }
     }
 
@@ -71,6 +75,9 @@ public class Arena {
                 break;
             case "PVP":
                 this.game = new PVPGame(minigames, this);
+                break;
+            case "COLORSWAP":
+                this.game = new ColorSwapGame(minigames, this);
                 break;
         }
     }
@@ -117,7 +124,7 @@ public class Arena {
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
-    public Game getGame() { return game; }
+    public Location getSpawn() { return spawn; }
 
     public List<UUID> getPlayers() { return players;}
 }

@@ -1,0 +1,114 @@
+package com.tanner.minigames.instance.game.colorswap;
+
+import com.tanner.minigames.Minigames;
+import com.tanner.minigames.instance.Arena;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class Grid {
+
+    private Minigames minigames;
+
+    private List<Material> materials;
+    private Location startingLocation;
+    private Arena arena;
+    private int gridSize;
+    private int cellSize;
+
+    private Material chosenMaterial;
+
+    private List<Material> remainingColors = new ArrayList<>();
+
+    private long timeBetweenColorSwaps = 5;
+    private long timeBetweenRemovingWool = 5;
+
+    public Grid(Minigames minigames, Arena arena, Location startingLocation, int gridSize, int cellSize, List<Material> materials) {
+        this.arena = arena;
+        this.startingLocation = startingLocation;
+        this.materials = materials;
+        this.minigames = minigames;
+        this.cellSize = cellSize;
+        this.gridSize = gridSize;
+
+        if (gridSize % cellSize != 0) {
+            matchGridSizeToCellSize();
+        }
+
+        setGrid();
+    }
+
+    private void matchGridSizeToCellSize() {
+        gridSize = (int) Math.sqrt(getCellAmount()) * cellSize;
+    }
+
+    private void setGrid() {
+        addRemainingColors();
+
+        for (double x = startingLocation.getX(); x + cellSize <= startingLocation.getX() + gridSize; x += cellSize) {
+            for (double z = startingLocation.getZ(); z + cellSize <= startingLocation.getZ() + gridSize; z += cellSize) {
+                generateCell(x, z);
+            }
+        }
+
+        chooseRandomWool();
+
+        Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, timeBetweenRemovingWool * 20);
+    }
+
+    private void chooseRandomWool() {
+        Random random = new Random();
+        int randomIndex = random.nextInt(0, materials.size());
+        chosenMaterial = materials.get(randomIndex);
+
+        String woolColor = chosenMaterial.name().replace("_WOOL", "").toLowerCase();
+        arena.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Go to " + woolColor);
+    }
+
+    private void removeUnchosenWool() {
+        for (double x = startingLocation.getX(); x <= startingLocation.getX() + gridSize; x++) {
+            for (double z = startingLocation.getZ(); z <= startingLocation.getZ() + gridSize; z++) {
+                Location location = new Location(startingLocation.getWorld(), x, startingLocation.getY(), z);
+                if (!location.getBlock().getType().equals(chosenMaterial)) {
+                    location.getBlock().setType(Material.AIR);
+                }
+            }
+        }
+
+        Bukkit.getScheduler().runTaskLater(minigames, this::setGrid, timeBetweenColorSwaps * 20);
+    }
+
+    private int getCellAmount() {
+        int count = 0;
+        for (int i = 0; i + cellSize <= gridSize; i += cellSize) {
+            count++;
+        }
+        return (int) Math.pow(count, 2);
+    }
+
+    private void addRemainingColors() {
+        remainingColors.clear();
+        for (int i = 0; i < getCellAmount(); i++) {
+            Material materialToAdd = materials.get(i % materials.size());
+            remainingColors.add(materialToAdd);
+        }
+    }
+
+    private void generateCell(double startingX, double startingZ) {
+        Random random = new Random();
+        int randomIndex = random.nextInt(0, remainingColors.size());
+        Material randomWool = remainingColors.get(randomIndex);
+        remainingColors.remove(randomIndex);
+        for (double x = startingX; x < startingX + cellSize; x++) {
+            for (double z = startingZ; z < startingZ + cellSize; z++) {
+                Location location = new Location(startingLocation.getWorld(), x, startingLocation.getY(), z);
+                location.getBlock().setType(randomWool);
+            }
+        }
+    }
+}

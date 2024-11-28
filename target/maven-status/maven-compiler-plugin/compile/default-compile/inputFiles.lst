@@ -1,10 +1,11 @@
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/Minigames.java
+/Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/instance/game/PVPGame.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/listener/ConnectListener.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/command/ArenaCommand.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/instance/Countdown.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/manager/ArenaManager.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/GameState.java
-/Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/listener/GameListener.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/manager/ConfigManager.java
+/Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/instance/game/BlockBreakGame.java
 /Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/instance/Arena.java
-/Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/instance/Game.java
+/Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames/instance/game/Game.java
