@@ -1,5 +1,6 @@
 package com.tanner.minigames.instance;
 
+import com.google.common.collect.TreeMultimap;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.game.BlockBreakGame;
@@ -7,14 +8,14 @@ import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
 import com.tanner.minigames.manager.ConfigManager;
+import com.tanner.minigames.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Arena {
 
@@ -23,21 +24,29 @@ public class Arena {
     private int id;
     private Location spawn;
     private String gameName;
+    private int playersPerTeam;
+    private int maxPlayers;
+    private int numberOfTeams;
 
     private GameState state;
     private List<UUID> players;
+    private HashMap<UUID, Team> teams;
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, String game) {
+    public Arena(Minigames minigames, int id, Location spawn, String game, int playersPerTeam, int maxPlayers) {
         this.minigames = minigames;
 
         this.id = id;
         this.spawn = spawn;
         this.gameName = game;
+        this.playersPerTeam = playersPerTeam;
+        this.maxPlayers = maxPlayers;
+        this.numberOfTeams = maxPlayers/playersPerTeam;
 
         this.state = GameState.RECRUITING;
         this.players = new ArrayList<>();
+        this.teams = new HashMap<>();
         this.countdown = new Countdown(minigames, this);
 
         setGameType();
@@ -54,6 +63,7 @@ public class Arena {
                 Bukkit.getPlayer(uuid).teleport(loc);
             }
             players.clear();
+            teams.clear();
         }
         sendTitle("", "");
         state = GameState.RECRUITING;
@@ -93,6 +103,18 @@ public class Arena {
         players.add(player.getUniqueId());
         player.teleport(spawn);
 
+        TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
+        Team[] teamValues = Team.values();
+        for (int i = 0; i < numberOfTeams; i++) {
+            Team team = teamValues[i];
+            teamCount.put(getTeamCount(team), team);
+        }
+
+        Team lowestPlayerTeam = (Team) teamCount.values().toArray()[0];
+        setTeam(player, lowestPlayerTeam);
+
+        player.sendMessage(ChatColor.AQUA + "You have been automatically placed on " + lowestPlayerTeam.getDisplay() + ChatColor.AQUA + " team.");
+
         if (state.equals(GameState.RECRUITING) && players.size() >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
         }
@@ -113,6 +135,35 @@ public class Arena {
             sendMessage(ChatColor.RED + "The game has ended because too many players have left.");
             reset(false);
         }
+    }
+
+    public void setTeam(Player player, Team team) {
+        removeTeam(player);
+        teams.put(player.getUniqueId(), team);
+    }
+
+    public void removeTeam(Player player) {
+        if (teams.containsKey(player.getUniqueId())) {
+            teams.remove(player.getUniqueId());
+        }
+    }
+
+    public Collection<Team> getTeams() {
+        return teams.values();
+    }
+
+    public int getTeamCount(Team team) {
+        int amount = 0;
+        for (Team t : teams.values()) {
+            if (t == team) {
+                amount++;
+            }
+        }
+        return amount;
+    }
+
+    public Team getTeam(Player player) {
+        return teams.get(player.getUniqueId());
     }
 
     public int getId() { return id; }

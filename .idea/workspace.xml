@@ -4,8 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7ea56392-d0bb-425f-88d4-ce20b0af1231" name="Changes" comment="add game classes">
+    <list default="true" id="7ea56392-d0bb-425f-88d4-ce20b0af1231" name="Changes" comment="add set game type method">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/team/Team.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/team/TeamUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/instance/Arena.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/instance/Arena.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/manager/ArenaManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/manager/ArenaManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/tanner/minigames/instance/Arena.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tanner/minigames/instance/Arena.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/tanner/minigames/manager/ArenaManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tanner/minigames/manager/ArenaManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/original-Minigame-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-Minigame-1.0-SNAPSHOT.jar" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +27,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -37,20 +49,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Maven.Minigame [install].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/tanner/Github-Projects/MinecraftMinigamesPlugin&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.Minigame [install].executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/tanner/Github-Projects/MinecraftMinigamesPlugin/src/main/java/com/tanner/minigames",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/com/tanner/minigames" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.tanner.minigames.kit" />
       <recent name="com.tanner.minigames.instance.game.colorswap" />
     </key>
   </component>
@@ -102,7 +118,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732812256713</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="add set game type method">
+      <option name="closed" value="true" />
+      <created>1732821251238</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1732821251238</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -121,6 +145,7 @@
     <MESSAGE value="add git files" />
     <MESSAGE value="add extendability to minigame creation" />
     <MESSAGE value="add game classes" />
-    <option name="LAST_COMMIT_MESSAGE" value="add game classes" />
+    <MESSAGE value="add set game type method" />
+    <option name="LAST_COMMIT_MESSAGE" value="add set game type method" />
   </component>
 </project>

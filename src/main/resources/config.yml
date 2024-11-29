@@ -10,6 +10,8 @@ lobby-spawn:
 arenas:
   0:
     game: 'BLOCK'
+    players-per-team: 1
+    max-players: 8
     world: 'world'
     x: 100
     y: 100
@@ -18,6 +20,8 @@ arenas:
     pitch: 0
   1:
     game: 'PVP'
+    players-per-team: 1
+    max-players: 8
     world: 'world'
     x: 100
     y: 100
@@ -26,6 +30,8 @@ arenas:
     pitch: 0
   2:
     game: 'COLORSWAP'
+    players-per-team: 1
+    max-players: 8
     world: 'world'
     x: 100
     y: 100
