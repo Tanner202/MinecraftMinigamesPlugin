@@ -4,17 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7ea56392-d0bb-425f-88d4-ce20b0af1231" name="Changes" comment="add set game type method">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/team/Team.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/team/TeamUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="7ea56392-d0bb-425f-88d4-ce20b0af1231" name="Changes" comment="add teams to minigames">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/Kit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/KitType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/KitUI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/TNTWarsKitType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/type/BlinderKit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/type/BuilderKit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/type/DeflectorKit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/type/FreezerKit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/type/LastChanceKit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/kit/type/SneakyKit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/listener/GameLobbyListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/instance/Arena.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/instance/Arena.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/manager/ArenaManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tanner/minigames/manager/ArenaManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tanner/minigames/instance/Arena.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tanner/minigames/instance/Arena.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/tanner/minigames/manager/ArenaManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tanner/minigames/manager/ArenaManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/original-Minigame-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-Minigame-1.0-SNAPSHOT.jar" afterDir="false" />
     </list>
@@ -66,6 +70,7 @@
       <recent name="$PROJECT_DIR$/src/main/java/com/tanner/minigames" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.tanner.minigames.listener" />
       <recent name="com.tanner.minigames.kit" />
       <recent name="com.tanner.minigames.instance.game.colorswap" />
     </key>
@@ -126,7 +131,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732821251238</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="add teams to minigames">
+      <option name="closed" value="true" />
+      <created>1732892253954</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1732892253954</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -146,6 +159,7 @@
     <MESSAGE value="add extendability to minigame creation" />
     <MESSAGE value="add game classes" />
     <MESSAGE value="add set game type method" />
-    <option name="LAST_COMMIT_MESSAGE" value="add set game type method" />
+    <MESSAGE value="add teams to minigames" />
+    <option name="LAST_COMMIT_MESSAGE" value="add teams to minigames" />
   </component>
 </project>

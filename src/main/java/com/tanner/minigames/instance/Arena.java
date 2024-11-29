@@ -7,6 +7,9 @@ import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
+import com.tanner.minigames.kit.Kit;
+import com.tanner.minigames.kit.KitType;
+import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.Bukkit;
@@ -14,7 +17,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Arena {
@@ -31,6 +33,8 @@ public class Arena {
     private GameState state;
     private List<UUID> players;
     private HashMap<UUID, Team> teams;
+    private HashMap<UUID, Kit> kits;
+    private KitType[] availableKitTypes;
     private Countdown countdown;
     private Game game;
 
@@ -47,6 +51,7 @@ public class Arena {
         this.state = GameState.RECRUITING;
         this.players = new ArrayList<>();
         this.teams = new HashMap<>();
+        this.kits = new HashMap<>();
         this.countdown = new Countdown(minigames, this);
 
         setGameType();
@@ -61,6 +66,7 @@ public class Arena {
             Location loc = ConfigManager.getLobbySpawn();
             for (UUID uuid : players) {
                 Bukkit.getPlayer(uuid).teleport(loc);
+                removeKit(uuid);
             }
             players.clear();
             teams.clear();
@@ -84,8 +90,30 @@ public class Arena {
             case "COLORSWAP":
                 this.game = new ColorSwapGame(minigames, this);
                 break;
+            case "TNTWARS":
+                availableKitTypes = TNTWarsKitType.values();
+                break;
         }
     }
+
+    public void setKit(UUID uuid, KitType type) {
+        removeKit(uuid);
+
+        kits.put(uuid, type.createKit(minigames, uuid));
+    }
+
+    public void removeKit(UUID uuid) {
+        if (kits.containsKey(uuid)) {
+            kits.get(uuid).remove();
+            kits.remove(uuid);
+        }
+    }
+
+    public KitType getKit(Player player) {
+        return kits.containsKey(player.getUniqueId()) ? kits.get(player.getUniqueId()).getType() : null;
+    }
+
+    public KitType[] getKitTypes() { return availableKitTypes; }
 
     public void sendMessage(String message) {
         for (UUID uuid : players) {
@@ -122,6 +150,7 @@ public class Arena {
 
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
+        removeKit(player.getUniqueId());
         player.teleport(ConfigManager.getLobbySpawn());
         player.sendTitle("", "");
 
