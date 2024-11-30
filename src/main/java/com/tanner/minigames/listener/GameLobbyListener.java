@@ -93,11 +93,11 @@ public class GameLobbyListener implements Listener {
             ItemMeta itemMeta = e.getPlayer().getInventory().getItemInMainHand().getItemMeta();
             if (itemMeta == null) return;
 
-            if (itemMeta.getLocalizedName().equals("Team Selection")) {
+            if (itemMeta.getPersistentDataContainer().has(Constants.TEAM_SELECTION)) {
                 e.setCancelled(true);
                 player.updateInventory();
                 new TeamUI(arena, player);
-            } else if (itemMeta.getLocalizedName().equals("Kit Selection")) {
+            } else if (itemMeta.getPersistentDataContainer().has(Constants.KIT_SELECTION)) {
                 e.setCancelled(true);
                 new KitUI(player, arena.getKitTypes());
             }

@@ -1,6 +1,7 @@
 package com.tanner.minigames.instance;
 
 import com.google.common.collect.TreeMultimap;
+import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.game.BlockBreakGame;
@@ -17,6 +18,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
@@ -241,13 +243,13 @@ public class Arena {
         ItemStack teamSelection = new ItemStack(Material.LEATHER_CHESTPLATE);
         ItemMeta teamSelectionMeta = teamSelection.getItemMeta();
         teamSelectionMeta.setDisplayName(ChatColor.GOLD + "Team Selection");
-        teamSelectionMeta.setLocalizedName("Team Selection");
+        teamSelectionMeta.getPersistentDataContainer().set(Constants.TEAM_SELECTION, PersistentDataType.STRING, "TeamSelection");
         teamSelection.setItemMeta(teamSelectionMeta);
 
         ItemStack kitSelection = new ItemStack(Material.DIAMOND);
         ItemMeta kitSelectionMeta = kitSelection.getItemMeta();
         kitSelectionMeta.setDisplayName(ChatColor.BLUE + "Kit Selection");
-        kitSelectionMeta.setLocalizedName("Kit Selection");
+        kitSelectionMeta.getPersistentDataContainer().set(Constants.KIT_SELECTION, PersistentDataType.STRING, "KitSelection");
         kitSelection.setItemMeta(kitSelectionMeta);
 
         player.getInventory().setItem(0, teamSelection);

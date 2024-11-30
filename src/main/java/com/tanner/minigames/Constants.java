@@ -5,9 +5,13 @@ import org.bukkit.NamespacedKey;
 public class Constants {
     public static NamespacedKey TEAM_NAME;
     public static NamespacedKey KIT_NAME;
+    public static NamespacedKey TEAM_SELECTION;
+    public static NamespacedKey KIT_SELECTION;
 
     public static void initializeConstants(Minigames minigames) {
         TEAM_NAME = new NamespacedKey(minigames, "TeamName");
         KIT_NAME = new NamespacedKey(minigames, "KitName");
+        TEAM_SELECTION = new NamespacedKey(minigames, "TeamSelection");
+        KIT_SELECTION = new NamespacedKey(minigames, "KitSelection");
     }
 }
