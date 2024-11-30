@@ -75,7 +75,6 @@ public class Arena {
     public void reset(boolean kickPlayers) {
         if (kickPlayers) {
             Location loc = ConfigManager.getLobbySpawn();
-            canJoin = false;
             for (UUID uuid : players) {
                 Bukkit.getPlayer(uuid).teleport(loc);
                 removeKit(uuid);
@@ -98,6 +97,7 @@ public class Arena {
     }
 
     private void reloadWorld() {
+        canJoin = false;
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
             String worldName = world.getName();
             Bukkit.unloadWorld(worldName, false);
