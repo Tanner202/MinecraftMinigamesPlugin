@@ -1,5 +1,6 @@
 package com.tanner.minigames.listener;
 
+import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
@@ -16,6 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 public class GameLobbyListener implements Listener {
 
@@ -39,7 +41,7 @@ public class GameLobbyListener implements Listener {
 
             Team team = null;
             for (Team t : Team.values()) {
-                if (t.name().equals(itemMeta.getLocalizedName())) {
+                if (t.name().equals(itemMeta.getPersistentDataContainer().get(Constants.TEAM_NAME, PersistentDataType.STRING))) {
                     team = t;
                 }
             }

@@ -15,6 +15,7 @@ public final class Minigames extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Constants.initializeConstants(this);
         ConfigManager.setupConfig(this);
         arenaManager = new ArenaManager(this);
 
