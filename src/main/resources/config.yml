@@ -41,3 +41,29 @@ arenas:
     z: 100
     yaw: -180
     pitch: 0
+  3:
+    game: 'TNTWARS'
+    players-per-team: 4
+    max-players: 8
+    world-reload-enabled: false
+    world: 'world'
+    x: 100
+    y: 100
+    z: 100
+    yaw: -180
+    pitch: 0
+    team-spawns:
+      blue:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      red:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0

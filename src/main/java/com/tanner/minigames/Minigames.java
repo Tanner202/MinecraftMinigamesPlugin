@@ -2,6 +2,7 @@ package com.tanner.minigames;
 
 import com.tanner.minigames.command.ArenaCommand;
 import com.tanner.minigames.listener.ConnectListener;
+import com.tanner.minigames.listener.GameLobbyListener;
 import com.tanner.minigames.manager.ArenaManager;
 import com.tanner.minigames.manager.ConfigManager;
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ public final class Minigames extends JavaPlugin {
         arenaManager = new ArenaManager(this);
 
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new GameLobbyListener(this), this);
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
     }

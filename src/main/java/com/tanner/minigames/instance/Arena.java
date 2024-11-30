@@ -7,6 +7,7 @@ import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
+import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.kit.TNTWarsKitType;
@@ -14,6 +15,8 @@ import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -87,7 +90,7 @@ public class Arena {
         state = GameState.RECRUITING;
         countdown.cancel();
         countdown = new Countdown(minigames, this);
-        game.unregisterEvents();
+        game.end();
         setGameType();
     }
 
@@ -114,6 +117,7 @@ public class Arena {
                 break;
             case "TNTWARS":
                 availableKitTypes = TNTWarsKitType.values();
+                this.game = new TNTWarsGame(minigames, this);
                 break;
         }
     }
@@ -136,6 +140,7 @@ public class Arena {
     }
 
     public KitType[] getKitTypes() { return availableKitTypes; }
+    public HashMap<UUID, Kit> getKits() { return kits; }
 
     public void sendMessage(String message) {
         for (UUID uuid : players) {
@@ -151,6 +156,8 @@ public class Arena {
 
     public void addPlayer(Player player) {
         players.add(player.getUniqueId());
+        giveLobbyItems(player);
+
         player.teleport(spawn);
 
         TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
@@ -229,11 +236,29 @@ public class Arena {
         worldCopy.setAutoSave(false);
     }
 
+    private void giveLobbyItems(Player player) {
+        ItemStack teamSelection = new ItemStack(Material.LEATHER_CHESTPLATE);
+        ItemMeta teamSelectionMeta = teamSelection.getItemMeta();
+        teamSelectionMeta.setDisplayName(ChatColor.GOLD + "Team Selection");
+        teamSelectionMeta.setLocalizedName("Team Selection");
+        teamSelection.setItemMeta(teamSelectionMeta);
+
+        ItemStack kitSelection = new ItemStack(Material.DIAMOND);
+        ItemMeta kitSelectionMeta = kitSelection.getItemMeta();
+        kitSelectionMeta.setDisplayName(ChatColor.BLUE + "Kit Selection");
+        kitSelectionMeta.setLocalizedName("Kit Selection");
+        kitSelection.setItemMeta(kitSelectionMeta);
+
+        player.getInventory().setItem(0, teamSelection);
+        player.getInventory().setItem(1, kitSelection);
+    }
+
     public int getId() { return id; }
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
     public Location getSpawn() { return spawn; }
+    public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return worldReloadEnabled; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }

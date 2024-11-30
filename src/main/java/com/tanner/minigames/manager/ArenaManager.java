@@ -4,6 +4,7 @@ import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.Minigames;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -56,6 +57,15 @@ public class ArenaManager {
     public Arena getArena(int id) {
         for (Arena arena : arenas) {
             if (arena.getId() == id) {
+                return arena;
+            }
+        }
+        return null;
+    }
+
+    public Arena getArena(World world) {
+        for (Arena arena : arenas) {
+            if (arena.getWorld() == world) {
                 return arena;
             }
         }

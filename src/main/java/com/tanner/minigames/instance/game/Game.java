@@ -24,7 +24,13 @@ public abstract class Game implements Listener {
         arena.sendMessage(ChatColor.GREEN + "Game Has Started! Your objective is to break 20 blocks in the fastest time. Good Luck");
     }
 
+    public void end() {
+        unregisterEvents();
+        onEnd();
+    }
+
     public abstract void onStart();
+    public abstract void onEnd();
 
     public void unregisterEvents() {
         HandlerList.unregisterAll(this);

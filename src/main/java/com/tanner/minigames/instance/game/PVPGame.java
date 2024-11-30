@@ -31,6 +31,9 @@ public class PVPGame extends Game {
         }
     }
 
+    @Override
+    public void onEnd() {}
+
     @EventHandler
     public void onBlockBreak(PlayerDeathEvent e) {
         if (arena.getPlayers().contains(e.getEntity()) && arena.getPlayers().contains(e.getEntity().getKiller()) && arena.getState() == GameState.LIVE) {

@@ -40,6 +40,9 @@ public class ColorSwapGame extends Game {
         grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize, materials);
     }
 
+    @Override
+    public void onEnd() {}
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         if (arena.getPlayers().size() == 1) {

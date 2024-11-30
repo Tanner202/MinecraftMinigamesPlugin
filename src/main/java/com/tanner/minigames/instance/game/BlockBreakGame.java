@@ -40,6 +40,9 @@ public class BlockBreakGame extends Game {
         }
     }
 
+    @Override
+    public void onEnd() {}
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         if (arena.getPlayers().contains(e.getPlayer().getUniqueId()) && arena.getState().equals(GameState.LIVE)) {
