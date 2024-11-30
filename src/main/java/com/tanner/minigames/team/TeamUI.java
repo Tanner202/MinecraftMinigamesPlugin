@@ -14,7 +14,7 @@ public class TeamUI {
     public TeamUI(Arena arena, Player player) {
         Inventory gui = Bukkit.createInventory(null, 9, ChatColor.BLUE + "Team Selection");
 
-        for (Team team : Team.values()) {
+        for (Team team : arena.getAvailableTeams()) {
             ItemStack itemStack = new ItemStack(team.getMaterial());
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(team.getDisplay() + " " + ChatColor.GRAY + "(" + arena.getTeamCount(team) + " players)");

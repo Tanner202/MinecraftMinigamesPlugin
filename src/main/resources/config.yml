@@ -10,8 +10,8 @@ lobby-spawn:
 arenas:
   0:
     game: 'BLOCK'
-    players-per-team: 1
     max-players: 8
+    amount-of-teams: 8
     world-reload-enabled: false
     world: 'world'
     x: 100
@@ -21,8 +21,8 @@ arenas:
     pitch: 0
   1:
     game: 'PVP'
-    players-per-team: 1
     max-players: 8
+    amount-of-teams: 8
     world-reload-enabled: false
     world: 'world'
     x: 100
@@ -32,8 +32,8 @@ arenas:
     pitch: 0
   2:
     game: 'COLORSWAP'
-    players-per-team: 1
     max-players: 8
+    amount-of-teams: 8
     world-reload-enabled: false
     world: 'world'
     x: 100
@@ -43,8 +43,8 @@ arenas:
     pitch: 0
   3:
     game: 'TNTWARS'
-    players-per-team: 4
-    max-players: 8
+    max-players: 16
+    amount-of-teams: 2
     world-reload-enabled: false
     world: 'world'
     x: 100

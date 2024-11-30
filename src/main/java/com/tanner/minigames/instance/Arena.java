@@ -30,9 +30,7 @@ public class Arena {
     private Location spawn;
     private World world;
     private String gameName;
-    private int playersPerTeam;
     private int maxPlayers;
-    private int numberOfTeams;
     private int worldResetWaitTime = 60;
     private boolean canJoin;
     private boolean worldReloadEnabled;
@@ -42,18 +40,17 @@ public class Arena {
     private HashMap<UUID, Team> teams;
     private HashMap<UUID, Kit> kits;
     private KitType[] availableKitTypes;
+    private Team[] availableTeams;
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, String game, int playersPerTeam, int maxPlayers, boolean worldReloadEnabled) {
+    public Arena(Minigames minigames, int id, Location spawn, String game, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
         this.minigames = minigames;
 
         this.id = id;
         this.spawn = spawn;
         this.gameName = game;
-        this.playersPerTeam = playersPerTeam;
         this.maxPlayers = maxPlayers;
-        this.numberOfTeams = maxPlayers/playersPerTeam;
         world = spawn.getWorld();
         this.worldReloadEnabled = worldReloadEnabled;
 
@@ -62,6 +59,7 @@ public class Arena {
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
+        this.availableTeams = Arrays.copyOf(Team.values(), numberOfTeams);
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
 
@@ -164,9 +162,7 @@ public class Arena {
         player.teleport(spawn);
 
         TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
-        Team[] teamValues = Team.values();
-        for (int i = 0; i < numberOfTeams; i++) {
-            Team team = teamValues[i];
+        for (Team team : availableTeams) {
             teamCount.put(getTeamCount(team), team);
         }
 
@@ -227,6 +223,8 @@ public class Arena {
         return teams.get(player.getUniqueId());
     }
 
+    public Team[] getAvailableTeams() { return availableTeams; }
+
     public void save() {
         canJoin = false;
         for (Player p : world.getPlayers()) {
@@ -263,6 +261,7 @@ public class Arena {
     public Location getSpawn() { return spawn; }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return worldReloadEnabled; }
+    public int getMaxPlayers() { return maxPlayers; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
 

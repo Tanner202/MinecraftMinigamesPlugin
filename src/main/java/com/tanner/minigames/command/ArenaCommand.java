@@ -74,8 +74,13 @@ public class ArenaCommand implements CommandExecutor {
                     return false;
                 }
 
+                Arena arena = minigames.getArenaManager().getArena(id);
+                if (arena.getPlayers().size() >= arena.getMaxPlayers()) {
+                    player.sendMessage(ChatColor.RED + "This arena is currently full.");
+                    return false;
+                }
+
                 if (id >= 0 && id < minigames.getArenaManager().getArenas().size()) {
-                    Arena arena = minigames.getArenaManager().getArena(id);
                     if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
                         if (arena.canJoin()) {
                             player.sendMessage(ChatColor.GREEN + "You are now playing in arena " + id + ".");
