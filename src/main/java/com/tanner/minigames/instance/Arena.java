@@ -157,6 +157,7 @@ public class Arena {
 
     public void addPlayer(Player player) {
         players.add(player.getUniqueId());
+        player.getInventory().clear();
         giveLobbyItems(player);
 
         player.teleport(spawn);
@@ -178,6 +179,7 @@ public class Arena {
 
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
+        player.getInventory().clear();
         removeKit(player.getUniqueId());
         player.teleport(ConfigManager.getLobbySpawn());
         player.sendTitle("", "");

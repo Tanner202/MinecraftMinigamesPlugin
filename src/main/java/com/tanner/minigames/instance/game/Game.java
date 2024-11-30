@@ -4,8 +4,11 @@ import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+
+import java.util.UUID;
 
 public abstract class Game implements Listener {
 
@@ -20,8 +23,11 @@ public abstract class Game implements Listener {
 
     public void start() {
         arena.setState(GameState.LIVE);
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.getInventory().clear();
+        }
         onStart();
-        arena.sendMessage(ChatColor.GREEN + "Game Has Started! Your objective is to break 20 blocks in the fastest time. Good Luck");
     }
 
     public void end() {
