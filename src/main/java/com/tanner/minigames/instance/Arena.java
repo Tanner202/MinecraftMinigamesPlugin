@@ -52,6 +52,7 @@ public class Arena {
         this.players = new ArrayList<>();
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
+        this.availableKitTypes = new KitType[0];
         this.countdown = new Countdown(minigames, this);
 
         setGameType();

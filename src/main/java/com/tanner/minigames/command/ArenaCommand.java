@@ -3,6 +3,8 @@ package com.tanner.minigames.command;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.kit.KitUI;
+import com.tanner.minigames.team.TeamUI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,6 +29,28 @@ public class ArenaCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.GREEN + "These are the available arenas:");
                 for (Arena arena : minigames.getArenaManager().getArenas()) {
                     player.sendMessage(ChatColor.GREEN + "- " + arena.getId() + " (" + arena.getState().name() + ")");
+                }
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("kit")) {
+                Arena arena = minigames.getArenaManager().getArena(player);
+                if (arena != null) {
+                    if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
+                        new KitUI(player, arena.getKitTypes());
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot use this right now.");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are not in an arena.");
+                }
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("team")) {
+                Arena arena = minigames.getArenaManager().getArena(player);
+                if (arena != null) {
+                    if (arena.getState() != GameState.LIVE) {
+                        new TeamUI(arena, player);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot use this right now.");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are not in an arena.");
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("leave")) {
                 Arena arena = minigames.getArenaManager().getArena(player);
@@ -66,6 +90,8 @@ public class ArenaCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "- /arena list");
                 player.sendMessage(ChatColor.RED + "- /arena leave");
                 player.sendMessage(ChatColor.RED + "- /arena join <id>");
+                player.sendMessage(ChatColor.RED + "- /arena team");
+                player.sendMessage(ChatColor.RED + "- /arena kit");
             }
         }
 
