@@ -61,7 +61,7 @@ public class GameLobbyListener implements Listener {
 
             KitType kitType = null;
             for (KitType type : arena.getKitTypes()) {
-                if (type.getName().equals(itemMeta.getLocalizedName())) {
+                if (type.getName().equals(itemMeta.getPersistentDataContainer().get(Constants.KIT_NAME, PersistentDataType.STRING))) {
                     kitType = type;
                 }
             }
