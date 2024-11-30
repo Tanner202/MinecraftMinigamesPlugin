@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,9 @@ public class Grid {
     private long timeBetweenColorSwaps = 5;
     private long timeBetweenRemovingWool = 5;
 
+    BukkitTask generateGridTask;
+    BukkitTask removeGridTask;
+
     public Grid(Minigames minigames, Arena arena, Location startingLocation, int gridSize, int cellSize, List<Material> materials) {
         this.arena = arena;
         this.startingLocation = startingLocation;
@@ -41,6 +45,16 @@ public class Grid {
         }
 
         setGrid();
+    }
+
+    public void Stop() {
+        if (generateGridTask != null) {
+            generateGridTask.cancel();
+        }
+
+        if (removeGridTask != null) {
+            removeGridTask.cancel();
+        }
     }
 
     private void matchGridSizeToCellSize() {
@@ -58,7 +72,7 @@ public class Grid {
 
         chooseRandomWool();
 
-        Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, timeBetweenRemovingWool * 20);
+        removeGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, timeBetweenRemovingWool * 20);
     }
 
     private void chooseRandomWool() {
@@ -80,7 +94,7 @@ public class Grid {
             }
         }
 
-        Bukkit.getScheduler().runTaskLater(minigames, this::setGrid, timeBetweenColorSwaps * 20);
+        generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGrid, timeBetweenColorSwaps * 20);
     }
 
     private int getCellAmount() {

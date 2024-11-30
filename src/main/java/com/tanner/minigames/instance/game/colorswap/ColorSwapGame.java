@@ -41,7 +41,9 @@ public class ColorSwapGame extends Game {
     }
 
     @Override
-    public void onEnd() {}
+    public void onEnd() {
+        grid.Stop();
+    }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
