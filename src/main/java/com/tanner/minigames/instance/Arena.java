@@ -12,9 +12,7 @@ import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -25,10 +23,14 @@ public class Arena {
 
     private int id;
     private Location spawn;
+    private World world;
     private String gameName;
     private int playersPerTeam;
     private int maxPlayers;
     private int numberOfTeams;
+    private int worldResetWaitTime = 30;
+    private boolean canJoin;
+    private boolean worldReloadEnabled;
 
     private GameState state;
     private List<UUID> players;
@@ -38,7 +40,7 @@ public class Arena {
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, String game, int playersPerTeam, int maxPlayers) {
+    public Arena(Minigames minigames, int id, Location spawn, String game, int playersPerTeam, int maxPlayers, boolean worldReloadEnabled) {
         this.minigames = minigames;
 
         this.id = id;
@@ -47,6 +49,8 @@ public class Arena {
         this.playersPerTeam = playersPerTeam;
         this.maxPlayers = maxPlayers;
         this.numberOfTeams = maxPlayers/playersPerTeam;
+        world = spawn.getWorld();
+        this.worldReloadEnabled = worldReloadEnabled;
 
         this.state = GameState.RECRUITING;
         this.players = new ArrayList<>();
@@ -54,6 +58,7 @@ public class Arena {
         this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
         this.countdown = new Countdown(minigames, this);
+        this.canJoin = true;
 
         setGameType();
     }
@@ -65,10 +70,16 @@ public class Arena {
     public void reset(boolean kickPlayers) {
         if (kickPlayers) {
             Location loc = ConfigManager.getLobbySpawn();
+            canJoin = false;
             for (UUID uuid : players) {
                 Bukkit.getPlayer(uuid).teleport(loc);
                 removeKit(uuid);
             }
+
+            if (worldReloadEnabled) {
+                reloadWorld();
+            }
+
             players.clear();
             teams.clear();
         }
@@ -78,6 +89,16 @@ public class Arena {
         countdown = new Countdown(minigames, this);
         game.unregisterEvents();
         setGameType();
+    }
+
+    private void reloadWorld() {
+        Bukkit.getScheduler().runTaskLater(minigames, () -> {
+            String worldName = world.getName();
+            Bukkit.unloadWorld(worldName, false);
+
+            World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
+            worldCopy.setAutoSave(false);
+        }, worldResetWaitTime);
     }
 
     private void setGameType() {
@@ -196,11 +217,26 @@ public class Arena {
         return teams.get(player.getUniqueId());
     }
 
+    public void save() {
+        canJoin = false;
+        for (Player p : world.getPlayers()) {
+            p.teleport(ConfigManager.getLobbySpawn());
+        }
+
+        String worldName = world.getName();
+        Bukkit.unloadWorld(worldName, true);
+        World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
+        worldCopy.setAutoSave(false);
+    }
+
     public int getId() { return id; }
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
     public Location getSpawn() { return spawn; }
+    public boolean worldReloadEnabled() { return worldReloadEnabled; }
+    public boolean canJoin() { return canJoin; }
+    public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
 
     public List<UUID> getPlayers() { return players;}
 }

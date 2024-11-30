@@ -27,7 +27,8 @@ public class ArenaManager {
             arenas.add(new Arena(minigames, Integer.parseInt(arenaID), getArenaLocation(arenaID),
                     config.getString("arenas." + arenaID + ".game"),
                     config.getInt("arenas." + arenaID + ".players-per-team"),
-                    config.getInt("arenas." + arenaID + ".max-players")));
+                    config.getInt("arenas." + arenaID + ".max-players"),
+                    config.getBoolean("arenas." + arenaID + ".world-reload-enabled")));
         }
     }
 

@@ -77,10 +77,36 @@ public class ArenaCommand implements CommandExecutor {
                 if (id >= 0 && id < minigames.getArenaManager().getArenas().size()) {
                     Arena arena = minigames.getArenaManager().getArena(id);
                     if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
-                        player.sendMessage(ChatColor.GREEN + "You are now playing in arena " + id + ".");
-                        arena.addPlayer(player);
+                        if (arena.canJoin()) {
+                            player.sendMessage(ChatColor.GREEN + "You are now playing in arena " + id + ".");
+                            arena.addPlayer(player);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot join this arena right now. Map is still loading.");
+                        }
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot join this arena right now.");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You specified an invalid arena ID.");
+                }
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("save")) {
+                int id;
+                try {
+                    id = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + "You specified an invalid arena ID.");
+                    return false;
+                }
+
+                if (id >= 0 && id < minigames.getArenaManager().getArenas().size()) {
+                    Arena arena = minigames.getArenaManager().getArena(id);
+
+                    if (!arena.worldReloadEnabled()) { return false; }
+
+                    if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
+                        arena.save();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot save this arena right now.");
                     }
                 } else {
                     player.sendMessage(ChatColor.RED + "You specified an invalid arena ID.");

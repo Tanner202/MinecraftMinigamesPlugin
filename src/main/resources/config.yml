@@ -12,6 +12,7 @@ arenas:
     game: 'BLOCK'
     players-per-team: 1
     max-players: 8
+    world-reload-enabled: false
     world: 'world'
     x: 100
     y: 100
@@ -22,6 +23,7 @@ arenas:
     game: 'PVP'
     players-per-team: 1
     max-players: 8
+    world-reload-enabled: false
     world: 'world'
     x: 100
     y: 100
@@ -32,6 +34,7 @@ arenas:
     game: 'COLORSWAP'
     players-per-team: 1
     max-players: 8
+    world-reload-enabled: false
     world: 'world'
     x: 100
     y: 100
