@@ -16,7 +16,6 @@ public class Grid {
 
     private Minigames minigames;
 
-    private List<Material> materials;
     private Location startingLocation;
     private Arena arena;
     private int gridSize;
@@ -32,10 +31,9 @@ public class Grid {
     BukkitTask generateGridTask;
     BukkitTask removeGridTask;
 
-    public Grid(Minigames minigames, Arena arena, Location startingLocation, int gridSize, int cellSize, List<Material> materials) {
+    public Grid(Minigames minigames, Arena arena, Location startingLocation, int gridSize, int cellSize) {
         this.arena = arena;
         this.startingLocation = startingLocation;
-        this.materials = materials;
         this.minigames = minigames;
         this.cellSize = cellSize;
         this.gridSize = gridSize;
@@ -77,11 +75,11 @@ public class Grid {
 
     private void chooseRandomWool() {
         Random random = new Random();
-        int randomIndex = random.nextInt(0, materials.size());
-        chosenMaterial = materials.get(randomIndex);
+        int randomIndex = random.nextInt(0, GridColor.values().length);
+        GridColor gridColor = GridColor.values()[randomIndex];
+        chosenMaterial = gridColor.getMaterial();
 
-        String woolColor = chosenMaterial.name().replace("_WOOL", "").toLowerCase();
-        arena.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Go to " + woolColor);
+        arena.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Go to " + gridColor.getDisplay());
     }
 
     private void removeUnchosenWool() {
@@ -108,7 +106,7 @@ public class Grid {
     private void addRemainingColors() {
         remainingColors.clear();
         for (int i = 0; i < getCellAmount(); i++) {
-            Material materialToAdd = materials.get(i % materials.size());
+            Material materialToAdd = GridColor.values()[i%GridColor.values().length].getMaterial();
             remainingColors.add(materialToAdd);
         }
     }
