@@ -280,15 +280,6 @@ public class TNTWarsGame extends Game {
     }
 
     @EventHandler
-    public void onWorldLoadEvent(WorldLoadEvent e) {
-
-        Arena arena = minigames.getArenaManager().getArena(e.getWorld());
-        if (arena != null) {
-            arena.setCanJoin(true);
-        }
-    }
-
-    @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
 

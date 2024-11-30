@@ -31,7 +31,7 @@ public class Arena {
     private int playersPerTeam;
     private int maxPlayers;
     private int numberOfTeams;
-    private int worldResetWaitTime = 30;
+    private int worldResetWaitTime = 60;
     private boolean canJoin;
     private boolean worldReloadEnabled;
 
@@ -86,6 +86,7 @@ public class Arena {
             players.clear();
             teams.clear();
         }
+        kits.clear();
         sendTitle("", "");
         state = GameState.RECRUITING;
         countdown.cancel();
@@ -191,7 +192,7 @@ public class Arena {
 
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "The game has ended because too many players have left.");
-            reset(false);
+            reset(true);
         }
     }
 

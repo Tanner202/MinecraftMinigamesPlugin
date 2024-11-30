@@ -25,7 +25,9 @@ public class ArenaManager {
 
     private void addArenasFromConfig(Minigames minigames) {
         for (String arenaID : config.getConfigurationSection("arenas").getKeys(false)) {
-            arenas.add(new Arena(minigames, Integer.parseInt(arenaID), getArenaLocation(arenaID),
+            arenas.add(new Arena(minigames,
+                    Integer.parseInt(arenaID),
+                    getArenaLocation(arenaID),
                     config.getString("arenas." + arenaID + ".game"),
                     config.getInt("arenas." + arenaID + ".players-per-team"),
                     config.getInt("arenas." + arenaID + ".max-players"),
@@ -65,7 +67,7 @@ public class ArenaManager {
 
     public Arena getArena(World world) {
         for (Arena arena : arenas) {
-            if (arena.getWorld() == world) {
+            if (arena.getWorld().getName().equals(world.getName())) {
                 return arena;
             }
         }
