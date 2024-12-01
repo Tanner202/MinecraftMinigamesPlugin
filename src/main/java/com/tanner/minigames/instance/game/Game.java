@@ -2,6 +2,8 @@ package com.tanner.minigames.instance.game;
 
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.event.GameEndEvent;
+import com.tanner.minigames.event.GameStartEvent;
 import com.tanner.minigames.instance.Arena;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -26,11 +28,15 @@ public abstract class Game implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.getInventory().clear();
         }
+        GameStartEvent gameStartEvent = new GameStartEvent();
+        Bukkit.getPluginManager().callEvent(gameStartEvent);
         onStart();
     }
 
     public void end() {
         unregisterEvents();
+        GameEndEvent gameEndEvent = new GameEndEvent();
+        Bukkit.getPluginManager().callEvent(gameEndEvent);
         onEnd();
     }
 
