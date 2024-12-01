@@ -6,15 +6,13 @@ import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
-import com.tanner.minigames.instance.game.PVPGame;
-import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
-import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -26,7 +24,6 @@ public class Arena {
 
     private Minigames minigames;
 
-    private int id;
     private Location spawn;
     private World world;
     private String gameName;
@@ -36,7 +33,6 @@ public class Arena {
     private boolean worldReloadEnabled;
 
     private GameState state;
-    private List<UUID> players;
     private HashMap<UUID, Team> teams;
     private HashMap<UUID, Kit> kits;
     private KitType[] availableKitTypes;
@@ -44,18 +40,28 @@ public class Arena {
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, String game, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
+    public Arena(Minigames minigames) {
+
+        FileConfiguration config = minigames.getConfig();
+
+        spawn = new Location(
+                Bukkit.getWorld(config.getString("arena.world")),
+                config.getDouble("arena.x"),
+                config.getDouble("arena.y"),
+                config.getDouble("arena.z"),
+                (float) config.getDouble("arena.yaw"),
+                (float) config.getDouble("arena.pitch"));
+
+        gameName = config.getString("arena.game");
+        int numberOfTeams = config.getInt("arena.amount-of-teams");
+        this.maxPlayers = config.getInt("arena.max-players");
+        this.worldReloadEnabled = config.getBoolean("arena.world-reload-enabled");
+
         this.minigames = minigames;
 
-        this.id = id;
-        this.spawn = spawn;
-        this.gameName = game;
-        this.maxPlayers = maxPlayers;
         world = spawn.getWorld();
-        this.worldReloadEnabled = worldReloadEnabled;
 
         this.state = GameState.RECRUITING;
-        this.players = new ArrayList<>();
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
@@ -70,21 +76,7 @@ public class Arena {
         game.start();
     }
 
-    public void reset(boolean kickPlayers) {
-        if (kickPlayers) {
-            Location loc = ConfigManager.getLobbySpawn();
-            for (UUID uuid : players) {
-                Bukkit.getPlayer(uuid).teleport(loc);
-                removeKit(uuid);
-            }
-
-            if (worldReloadEnabled) {
-                reloadWorld();
-            }
-
-            players.clear();
-            teams.clear();
-        }
+    public void reset() {
         kits.clear();
         sendTitle("", "");
         state = GameState.RECRUITING;
@@ -92,6 +84,10 @@ public class Arena {
         countdown = new Countdown(minigames, this);
         game.end();
         setGameType();
+
+        if (Bukkit.getOnlinePlayers().size() >= ConfigManager.getRequiredPlayers()) {
+            countdown.start();
+        }
     }
 
     private void reloadWorld() {
@@ -109,16 +105,6 @@ public class Arena {
         switch (gameName) {
             case "BLOCK":
                 this.game = new BlockBreakGame(minigames, this);
-                break;
-            case "PVP":
-                this.game = new PVPGame(minigames, this);
-                break;
-            case "COLORSWAP":
-                this.game = new ColorSwapGame(minigames, this);
-                break;
-            case "TNTWARS":
-                availableKitTypes = TNTWarsKitType.values();
-                this.game = new TNTWarsGame(minigames, this);
                 break;
         }
     }
@@ -144,19 +130,18 @@ public class Arena {
     public HashMap<UUID, Kit> getKits() { return kits; }
 
     public void sendMessage(String message) {
-        for (UUID uuid : players) {
-            Bukkit.getPlayer(uuid).sendMessage(message);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(message);
         }
     }
 
     public void sendTitle(String title, String subtitle) {
-        for (UUID uuid : players) {
-            Bukkit.getPlayer(uuid).sendTitle(title, subtitle);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendTitle(title, subtitle);
         }
     }
 
     public void addPlayer(Player player) {
-        players.add(player.getUniqueId());
         player.getInventory().clear();
         giveLobbyItems(player);
 
@@ -172,27 +157,24 @@ public class Arena {
 
         player.sendMessage(ChatColor.AQUA + "You have been automatically placed on " + lowestPlayerTeam.getDisplay() + ChatColor.AQUA + " team.");
 
-        if (state.equals(GameState.RECRUITING) && players.size() >= ConfigManager.getRequiredPlayers()) {
+        if (state.equals(GameState.RECRUITING) && Bukkit.getOnlinePlayers().size() >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
         }
     }
 
     public void removePlayer(Player player) {
-        players.remove(player.getUniqueId());
         player.getInventory().clear();
         removeKit(player.getUniqueId());
-        player.teleport(ConfigManager.getLobbySpawn());
-        player.sendTitle("", "");
 
-        if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
+        if (state == GameState.COUNTDOWN && Bukkit.getOnlinePlayers().size() - 1 < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "There are not enough players. Countdown stopped.");
-            reset(false);
+            reset();
             return;
         }
 
-        if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
+        if (state == GameState.LIVE && Bukkit.getOnlinePlayers().size() - 1 < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "The game has ended because too many players have left.");
-            reset(true);
+            reset();
         }
     }
 
@@ -229,9 +211,6 @@ public class Arena {
 
     public void save() {
         canJoin = false;
-        for (Player p : world.getPlayers()) {
-            p.teleport(ConfigManager.getLobbySpawn());
-        }
 
         String worldName = world.getName();
         Bukkit.unloadWorld(worldName, true);
@@ -256,7 +235,6 @@ public class Arena {
         player.getInventory().setItem(1, kitSelection);
     }
 
-    public int getId() { return id; }
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
@@ -266,6 +244,4 @@ public class Arena {
     public int getMaxPlayers() { return maxPlayers; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
-
-    public List<UUID> getPlayers() { return players;}
 }

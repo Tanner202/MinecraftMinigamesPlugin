@@ -23,8 +23,7 @@ public abstract class Game implements Listener {
 
     public void start() {
         arena.setState(GameState.LIVE);
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.getInventory().clear();
         }
         onStart();

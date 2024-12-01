@@ -1,69 +1,13 @@
 required-players: 1
 countdown-seconds: 15
-lobby-spawn:
+arena:
+  game: 'BLOCK'
+  max-players: 8
+  amount-of-teams: 8
+  world-reload-enabled: false
   world: 'world'
   x: 100
   y: 100
   z: 100
   yaw: -180
   pitch: 0
-arenas:
-  0:
-    game: 'BLOCK'
-    max-players: 8
-    amount-of-teams: 8
-    world-reload-enabled: false
-    world: 'world'
-    x: 100
-    y: 100
-    z: 100
-    yaw: -180
-    pitch: 0
-  1:
-    game: 'PVP'
-    max-players: 8
-    amount-of-teams: 8
-    world-reload-enabled: false
-    world: 'world'
-    x: 100
-    y: 100
-    z: 100
-    yaw: -180
-    pitch: 0
-  2:
-    game: 'COLORSWAP'
-    max-players: 8
-    amount-of-teams: 8
-    world-reload-enabled: false
-    world: 'world'
-    x: 100
-    y: 100
-    z: 100
-    yaw: -180
-    pitch: 0
-  3:
-    game: 'TNTWARS'
-    max-players: 16
-    amount-of-teams: 2
-    world-reload-enabled: false
-    world: 'world'
-    x: 100
-    y: 100
-    z: 100
-    yaw: -180
-    pitch: 0
-    team-spawns:
-      blue:
-        world: 'world'
-        x: 100
-        y: 100
-        z: 100
-        yaw: -180
-        pitch: 0
-      red:
-        world: 'world'
-        x: 100
-        y: 100
-        z: 100
-        yaw: -180
-        pitch: 0

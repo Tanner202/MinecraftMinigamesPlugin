@@ -30,7 +30,7 @@ public class GameLobbyListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        Arena arena = minigames.getArenaManager().getArena(player);
+        Arena arena = minigames.getArena();
         if (arena == null) return;
         if (!arena.getState().equals(GameState.RECRUITING) && !arena.getState().equals(GameState.COUNTDOWN)) return;
         e.setCancelled(true);
@@ -84,7 +84,7 @@ public class GameLobbyListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        Arena arena = minigames.getArenaManager().getArena(player);
+        Arena arena = minigames.getArena();
 
         if (arena == null) return;
         if (!arena.getState().equals(GameState.RECRUITING) && !arena.getState().equals(GameState.COUNTDOWN)) return;
@@ -106,7 +106,7 @@ public class GameLobbyListener implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent e) {
-        Arena arena = minigames.getArenaManager().getArena(e.getPlayer());
+        Arena arena = minigames.getArena();
         if (arena == null) return;
         if (!arena.getState().equals(GameState.RECRUITING) && !arena.getState().equals(GameState.COUNTDOWN)) return;
 

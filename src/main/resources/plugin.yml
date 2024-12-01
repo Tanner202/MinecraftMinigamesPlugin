@@ -7,6 +7,3 @@ authors: [Tanner]
 softdepend:
   - Multiverse-Core
 description: This is a minigames plugin
-commands:
-  arena:
-    description: "This is the arena command"

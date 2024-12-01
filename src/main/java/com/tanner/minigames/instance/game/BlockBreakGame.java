@@ -4,6 +4,7 @@ import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +26,7 @@ public class BlockBreakGame extends Game {
         int playerPoints = points.get(player.getUniqueId()) + 1;
         if (playerPoints == 20) {
             arena.sendMessage(ChatColor.GOLD + player.getName() + " has Won! Thanks for Playing!");
-            arena.reset(true);
+            arena.reset();
             return;
         }
 
@@ -35,8 +36,8 @@ public class BlockBreakGame extends Game {
 
     @Override
     public void onStart() {
-        for (UUID uuid : arena.getPlayers()) {
-            points.put(uuid, 0);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            points.put(player.getUniqueId(), 0);
         }
     }
 
@@ -45,7 +46,8 @@ public class BlockBreakGame extends Game {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
-        if (arena.getPlayers().contains(e.getPlayer().getUniqueId()) && arena.getState().equals(GameState.LIVE)) {
+
+        if (minigames.getArena().getState() == GameState.LIVE) {
             addPoint(e.getPlayer());
         }
     }
