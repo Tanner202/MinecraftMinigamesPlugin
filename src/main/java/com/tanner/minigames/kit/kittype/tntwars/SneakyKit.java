@@ -1,4 +1,4 @@
-package com.tanner.minigames.kit.type;
+package com.tanner.minigames.kit.kittype.tntwars;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

@@ -1,4 +1,4 @@
-package com.tanner.minigames.kit.type;
+package com.tanner.minigames.kit.kittype.tntwars;
 
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.kit.Kit;

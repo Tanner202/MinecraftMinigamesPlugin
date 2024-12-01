@@ -9,12 +9,15 @@ import org.bukkit.event.Listener;
 import java.util.UUID;
 
 public abstract class Kit implements Listener {
+
+    protected Minigames minigames;
     private KitType type;
     private UUID kitOwnerUUID;
 
     public Kit(Minigames minigames, KitType type, UUID uuid) {
         this.type = type;
         this.kitOwnerUUID = uuid;
+        this.minigames = minigames;
 
         Bukkit.getPluginManager().registerEvents(this, minigames);
     }

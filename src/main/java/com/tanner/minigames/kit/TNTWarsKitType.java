@@ -1,7 +1,7 @@
 package com.tanner.minigames.kit;
 
 import com.tanner.minigames.Minigames;
-import com.tanner.minigames.kit.type.*;
+import com.tanner.minigames.kit.kittype.tntwars.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -35,6 +35,4 @@ public enum TNTWarsKitType implements KitType {
     public Kit createKit(Minigames minigames, UUID uuid) {
         return kitFactory.apply(minigames, uuid);
     }
-
-    public TNTWarsKitType[] getKits() { return values(); }
 }
