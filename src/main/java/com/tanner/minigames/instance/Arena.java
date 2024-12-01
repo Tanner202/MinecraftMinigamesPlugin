@@ -8,7 +8,6 @@ import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.KitType;
-import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
@@ -127,6 +126,9 @@ public class Arena {
     }
 
     public KitType[] getKitTypes() { return availableKitTypes; }
+    public void setKitTypes(KitType[] availableKitTypes) {
+        this.availableKitTypes = availableKitTypes.clone();
+    }
     public HashMap<UUID, Kit> getKits() { return kits; }
 
     public void sendMessage(String message) {

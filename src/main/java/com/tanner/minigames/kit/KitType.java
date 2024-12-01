@@ -11,5 +11,4 @@ public interface KitType {
     String getDescription();
     String getName();
     Kit createKit(Minigames minigames, UUID uuid);
-    TNTWarsKitType[] getKits();
 }
