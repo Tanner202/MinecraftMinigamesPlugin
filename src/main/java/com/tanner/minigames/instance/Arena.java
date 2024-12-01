@@ -4,8 +4,6 @@ import com.google.common.collect.TreeMultimap;
 import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
-import com.tanner.minigames.instance.game.BlockBreakGame;
-import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.manager.ConfigManager;
@@ -25,7 +23,6 @@ public class Arena {
 
     private Location spawn;
     private World world;
-    private String gameName;
     private int maxPlayers;
     private int worldResetWaitTime = 60;
     private boolean canJoin;
@@ -51,7 +48,6 @@ public class Arena {
                 (float) config.getDouble("arena.yaw"),
                 (float) config.getDouble("arena.pitch"));
 
-        gameName = config.getString("arena.game");
         int numberOfTeams = config.getInt("arena.amount-of-teams");
         this.maxPlayers = config.getInt("arena.max-players");
         this.worldReloadEnabled = config.getBoolean("arena.world-reload-enabled");
@@ -67,8 +63,7 @@ public class Arena {
         this.availableTeams = Arrays.copyOf(Team.values(), numberOfTeams);
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
-
-        setGameType();
+        this.game = new Game(minigames, this);
     }
 
     public void start() {
@@ -82,7 +77,7 @@ public class Arena {
         countdown.cancel();
         countdown = new Countdown(minigames, this);
         game.end();
-        setGameType();
+        game = new Game(minigames, this);
 
         if (Bukkit.getOnlinePlayers().size() >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
@@ -98,14 +93,6 @@ public class Arena {
             World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
             worldCopy.setAutoSave(false);
         }, worldResetWaitTime);
-    }
-
-    private void setGameType() {
-        switch (gameName) {
-            case "BLOCK":
-                this.game = new BlockBreakGame(minigames, this);
-                break;
-        }
     }
 
     public void setKit(UUID uuid, KitType type) {
