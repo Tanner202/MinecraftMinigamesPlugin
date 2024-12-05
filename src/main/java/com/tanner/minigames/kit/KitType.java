@@ -10,5 +10,4 @@ public interface KitType {
     Material getMaterial();
     String getDescription();
     String getName();
-    Kit createKit(Minigames minigames, UUID uuid);
 }

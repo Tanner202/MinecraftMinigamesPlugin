@@ -4,7 +4,6 @@ import com.google.common.collect.TreeMultimap;
 import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
-import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
@@ -30,7 +29,7 @@ public class Arena {
 
     private GameState state;
     private HashMap<UUID, Team> teams;
-    private HashMap<UUID, Kit> kits;
+    private HashMap<UUID, KitType> kits;
     private KitType[] availableKitTypes;
     private Team[] availableTeams;
     private Countdown countdown;
@@ -59,7 +58,6 @@ public class Arena {
         this.state = GameState.RECRUITING;
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
-        this.availableKitTypes = new KitType[0];
         this.availableTeams = Arrays.copyOf(Team.values(), numberOfTeams);
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
@@ -98,25 +96,30 @@ public class Arena {
     public void setKit(UUID uuid, KitType type) {
         removeKit(uuid);
 
-        kits.put(uuid, type.createKit(minigames, uuid));
+        kits.put(uuid, type);
     }
 
     public void removeKit(UUID uuid) {
-        if (kits.containsKey(uuid)) {
-            kits.get(uuid).remove();
-            kits.remove(uuid);
-        }
+        kits.remove(uuid);
     }
 
     public KitType getKit(Player player) {
-        return kits.containsKey(player.getUniqueId()) ? kits.get(player.getUniqueId()).getType() : null;
+        return kits.containsKey(player.getUniqueId()) ? kits.get(player.getUniqueId()) : null;
     }
 
     public KitType[] getKitTypes() { return availableKitTypes; }
     public void setKitTypes(KitType[] availableKitTypes) {
+        System.out.println("SET KIT TYPES <----------------------------");
         this.availableKitTypes = availableKitTypes.clone();
+        for (KitType kitType : availableKitTypes) {
+            System.out.println("KIT NAME: " + kitType.getName());
+        }
+        for (KitType kitType : this.availableKitTypes) {
+            System.out.println("KIT NAME2: " + kitType.getName());
+        }
+        Bukkit.broadcastMessage("Available kit types: " + this.availableKitTypes.toString());
     }
-    public HashMap<UUID, Kit> getKits() { return kits; }
+    public HashMap<UUID, KitType> getKits() { return kits; }
 
     public void sendMessage(String message) {
         for (Player player : Bukkit.getOnlinePlayers()) {
