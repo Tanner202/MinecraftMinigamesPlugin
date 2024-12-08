@@ -74,10 +74,12 @@ public class Arena {
         state = GameState.RECRUITING;
         countdown.cancel();
         countdown = new Countdown(minigames, this);
-        game.end();
-        game = new Game(minigames, this);
+        if (state == GameState.LIVE) {
+            game.end();
+            game = new Game(minigames, this);
+        }
 
-        if (Bukkit.getOnlinePlayers().size() >= ConfigManager.getRequiredPlayers()) {
+        if (Bukkit.getOnlinePlayers().size() - 1 >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
         }
     }
