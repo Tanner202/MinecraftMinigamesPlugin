@@ -40,7 +40,7 @@ public class Arena {
         FileConfiguration config = minigames.getConfig();
 
         spawn = new Location(
-                Bukkit.getWorld(config.getString("arena.world")),
+                Bukkit.createWorld(new WorldCreator(config.getString("arena.world"))),
                 config.getDouble("arena.x"),
                 config.getDouble("arena.y"),
                 config.getDouble("arena.z"),
@@ -54,6 +54,10 @@ public class Arena {
         this.minigames = minigames;
 
         world = spawn.getWorld();
+
+        if (worldReloadEnabled) {
+            world.setAutoSave(false);
+        }
 
         this.state = GameState.RECRUITING;
         this.teams = new HashMap<>();
@@ -69,15 +73,23 @@ public class Arena {
     }
 
     public void reset() {
-        kits.clear();
-        sendTitle("", "");
-        state = GameState.RECRUITING;
-        countdown.cancel();
-        countdown = new Countdown(minigames, this);
         if (state == GameState.LIVE) {
             game.end();
-            game = new Game(minigames, this);
+            if (worldReloadEnabled) {
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.kickPlayer("");
+                }
+
+                reloadWorld();
+            }
         }
+        game = new Game(minigames, this);
+        kits.clear();
+        sendTitle("", "");
+        countdown.cancel();
+        countdown = new Countdown(minigames, this);
+        state = GameState.RECRUITING;
 
         if (Bukkit.getOnlinePlayers().size() - 1 >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
@@ -92,6 +104,7 @@ public class Arena {
 
             World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
             worldCopy.setAutoSave(false);
+            world = worldCopy;
         }, worldResetWaitTime);
     }
 
@@ -139,7 +152,7 @@ public class Arena {
         player.getInventory().clear();
         giveLobbyItems(player);
 
-        player.teleport(spawn);
+        player.teleport(world.getSpawnLocation());
 
         TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
         for (Team team : availableTeams) {

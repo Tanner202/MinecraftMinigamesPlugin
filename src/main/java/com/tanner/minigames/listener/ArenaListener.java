@@ -20,9 +20,6 @@ public class ArenaListener implements Listener {
 
         Bukkit.broadcastMessage("World Loaded!");
         Arena arena = minigames.getArena();
-        if (arena != null) {
-            Bukkit.broadcastMessage("Found arena with world: " + e.getWorld().getName());
-            arena.setCanJoin(true);
-        }
+        arena.setCanJoin(true);
     }
 }

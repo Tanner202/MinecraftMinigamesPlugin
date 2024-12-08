@@ -1,7 +1,6 @@
 required-players: 1
 countdown-seconds: 15
 arena:
-  game: 'BLOCK'
   max-players: 8
   amount-of-teams: 8
   world-reload-enabled: false
