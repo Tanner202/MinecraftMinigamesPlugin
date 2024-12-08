@@ -105,6 +105,14 @@ public class Arena {
             World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
             worldCopy.setAutoSave(false);
             world = worldCopy;
+            FileConfiguration config = minigames.getConfig();
+            spawn = new Location(
+                    Bukkit.getWorld(config.getString("arena.world")),
+                    config.getDouble("arena.x"),
+                    config.getDouble("arena.y"),
+                    config.getDouble("arena.z"),
+                    (float) config.getDouble("arena.yaw"),
+                    (float) config.getDouble("arena.pitch"));
         }, worldResetWaitTime);
     }
 
@@ -152,7 +160,7 @@ public class Arena {
         player.getInventory().clear();
         giveLobbyItems(player);
 
-        player.teleport(world.getSpawnLocation());
+        player.teleport(spawn);
 
         TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
         for (Team team : availableTeams) {
