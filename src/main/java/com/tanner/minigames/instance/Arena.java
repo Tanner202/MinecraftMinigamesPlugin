@@ -22,7 +22,6 @@ public class Arena {
 
     private Location spawn;
     private World world;
-    private int maxPlayers;
     private int worldResetWaitTime = 60;
     private boolean canJoin;
     private boolean worldReloadEnabled;
@@ -48,7 +47,6 @@ public class Arena {
                 (float) config.getDouble("arena.pitch"));
 
         int numberOfTeams = config.getInt("arena.amount-of-teams");
-        this.maxPlayers = config.getInt("arena.max-players");
         this.worldReloadEnabled = config.getBoolean("arena.world-reload-enabled");
 
         this.minigames = minigames;
@@ -76,11 +74,9 @@ public class Arena {
         if (state == GameState.LIVE) {
             game.end();
             if (worldReloadEnabled) {
-
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.kickPlayer("");
                 }
-
                 reloadWorld();
             }
         }
@@ -132,15 +128,7 @@ public class Arena {
 
     public KitType[] getKitTypes() { return availableKitTypes; }
     public void setKitTypes(KitType[] availableKitTypes) {
-        System.out.println("SET KIT TYPES <----------------------------");
         this.availableKitTypes = availableKitTypes.clone();
-        for (KitType kitType : availableKitTypes) {
-            System.out.println("KIT NAME: " + kitType.getName());
-        }
-        for (KitType kitType : this.availableKitTypes) {
-            System.out.println("KIT NAME2: " + kitType.getName());
-        }
-        Bukkit.broadcastMessage("Available kit types: " + this.availableKitTypes.toString());
     }
     public HashMap<UUID, KitType> getKits() { return kits; }
 
@@ -253,10 +241,6 @@ public class Arena {
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
-    public Location getSpawn() { return spawn; }
-    public World getWorld() { return world; }
-    public boolean worldReloadEnabled() { return worldReloadEnabled; }
-    public int getMaxPlayers() { return maxPlayers; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
 }
