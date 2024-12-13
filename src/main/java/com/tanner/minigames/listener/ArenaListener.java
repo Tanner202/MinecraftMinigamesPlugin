@@ -18,7 +18,6 @@ public class ArenaListener implements Listener {
     @EventHandler
     public void onWorldLoadEvent(WorldLoadEvent e) {
 
-        Bukkit.broadcastMessage("World Loaded!");
         Arena arena = minigames.getArena();
         arena.setCanJoin(true);
     }
