@@ -118,6 +118,10 @@ public class Arena {
         }, worldResetWaitTime);
     }
 
+    public Location getSpawn() {
+        return spawn;
+    }
+
     public void setKit(UUID uuid, KitType type) {
         removeKit(uuid);
 
