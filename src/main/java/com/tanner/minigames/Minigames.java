@@ -18,6 +18,8 @@ public final class Minigames extends JavaPlugin {
         ConfigManager.setupConfig(this);
         arena = new Arena(this);
 
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ArenaListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameLobbyListener(this), this);

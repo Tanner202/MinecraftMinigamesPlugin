@@ -1,6 +1,8 @@
 package com.tanner.minigames.instance;
 
 import com.google.common.collect.TreeMultimap;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
@@ -75,7 +77,11 @@ public class Arena {
             game.end();
             if (worldReloadEnabled) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.kickPlayer("");
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("Connect");
+                    out.writeUTF("Lobby");
+
+                    player.sendPluginMessage(minigames, "BungeeCord", out.toByteArray());
                 }
                 reloadWorld();
             }
