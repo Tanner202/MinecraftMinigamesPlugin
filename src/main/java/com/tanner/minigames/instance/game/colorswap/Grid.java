@@ -31,9 +31,15 @@ public class Grid {
     BukkitTask generateGridTask;
     BukkitTask removeGridTask;
 
-    public Grid(Minigames minigames, Arena arena, Location startingLocation, int gridSize, int cellSize) {
+    public Grid(Minigames minigames, Arena arena, Location arenaSpawn, int gridSize, int cellSize) {
         this.arena = arena;
-        this.startingLocation = startingLocation;
+
+        // Setting starting location away from arena spawn so arena spawn is in center of grid
+        startingLocation = new Location(arenaSpawn.getWorld(),
+                arenaSpawn.getX() - (double) gridSize /2,
+                arenaSpawn.getY() - 1,
+                arenaSpawn.getZ() - (double) gridSize/2,
+                0, 0);
         this.minigames = minigames;
         this.cellSize = cellSize;
         this.gridSize = gridSize;

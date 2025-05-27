@@ -26,7 +26,6 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onStart() {
-        Bukkit.broadcastMessage("Color Swap Initial Info: " + minigames);
         grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);
     }
 
