@@ -51,7 +51,7 @@ public class ColorSwapGame extends Game {
                 }
                 remainingPlayers.remove(player.getUniqueId());
                 if (remainingPlayers.size() == 1) {
-                    Player winningPlayer = Bukkit.getPlayer(remainingPlayers.getFirst());
+                    Player winningPlayer = Bukkit.getPlayer(remainingPlayers.get(0));
                     arena.sendMessage(ChatColor.GOLD + winningPlayer.getDisplayName() + " has Won! Thanks for Playing!");
                     arena.reset(true);
                 }

@@ -104,8 +104,9 @@ public class Arena {
         }, worldUnloadWaitTime);
 
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
-            World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
-            worldCopy.setAutoSave(false);
+            world = Bukkit.createWorld(new WorldCreator(worldName));
+            world.setAutoSave(false);
+            spawn.setWorld(world);
         }, worldLoadWaitTime);
     }
 
