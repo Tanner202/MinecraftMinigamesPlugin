@@ -18,11 +18,11 @@ public abstract class Game implements Listener {
     public Game(Minigames minigames, Arena arena) {
         this.arena = arena;
         this.minigames = minigames;
-        Bukkit.getPluginManager().registerEvents(this, minigames);
     }
 
     public void start() {
         arena.setState(GameState.LIVE);
+        Bukkit.getPluginManager().registerEvents(this, minigames);
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             player.getInventory().clear();

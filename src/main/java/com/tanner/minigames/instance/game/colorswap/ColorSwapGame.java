@@ -5,17 +5,19 @@ import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ColorSwapGame extends Game {
 
     private Grid grid;
+    private List<UUID> remainingPlayers;
 
     private int gridSize = 25;
     private int cellSize = 5;
@@ -26,20 +28,34 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onStart() {
-        grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);
-    }
+        remainingPlayers = new ArrayList<>();
+        remainingPlayers.addAll(arena.getPlayers());
+        grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);}
 
     @Override
     public void onEnd() {
         grid.Stop();
+        remainingPlayers.clear();
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        if (arena.getPlayers().size() == 1) {
-            Player winningPlayer = Bukkit.getPlayer(arena.getPlayers().getFirst());
-            arena.sendMessage(ChatColor.GOLD + winningPlayer.getName() + " has Won! Thanks for Playing!");
-            arena.reset(true);
+        Player player = e.getEntity();
+
+        if (arena.getPlayers().contains(player.getUniqueId())) {
+            minigames.getServer().getScheduler().scheduleSyncDelayedTask(minigames, () -> {
+                if (player.isDead()) {
+                    player.spigot().respawn();
+                    player.teleport(arena.getSpawn());
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
+                remainingPlayers.remove(player.getUniqueId());
+                if (remainingPlayers.size() == 1) {
+                    Player winningPlayer = Bukkit.getPlayer(remainingPlayers.getFirst());
+                    arena.sendMessage(ChatColor.GOLD + winningPlayer.getDisplayName() + " has Won! Thanks for Playing!");
+                    arena.reset(true);
+                }
+            });
         }
     }
 }

@@ -31,7 +31,9 @@ public class Arena {
     private World world;
     private String gameName;
     private int maxPlayers;
-    private int worldResetWaitTime = 60;
+    private int worldUnloadWaitTime = 60;
+    // The world load wait time must be longer than the unload wait time
+    private int worldLoadWaitTime = 120;
     private boolean canJoin;
     private boolean worldReloadEnabled;
 
@@ -96,13 +98,15 @@ public class Arena {
 
     private void reloadWorld() {
         canJoin = false;
+        String worldName = world.getName();
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
-            String worldName = world.getName();
             Bukkit.unloadWorld(worldName, false);
+        }, worldUnloadWaitTime);
 
+        Bukkit.getScheduler().runTaskLater(minigames, () -> {
             World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
             worldCopy.setAutoSave(false);
-        }, worldResetWaitTime);
+        }, worldLoadWaitTime);
     }
 
     private void setGameType() {
