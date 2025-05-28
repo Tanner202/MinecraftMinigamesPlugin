@@ -30,7 +30,12 @@ public class ColorSwapGame extends Game {
     public void onStart() {
         remainingPlayers = new ArrayList<>();
         remainingPlayers.addAll(arena.getPlayers());
-        grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);}
+        grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);
+
+        for (UUID uuid : arena.getKits().keySet()) {
+            arena.getKits().get(uuid).onStart(Bukkit.getPlayer(uuid));
+        }
+    }
 
     @Override
     public void onEnd() {

@@ -9,6 +9,7 @@ import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
 import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
+import com.tanner.minigames.kit.ColorSwapKitType;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.kit.TNTWarsKitType;
@@ -118,6 +119,7 @@ public class Arena {
                 this.game = new PVPGame(minigames, this);
                 break;
             case "COLORSWAP":
+                availableKitTypes = ColorSwapKitType.values();
                 this.game = new ColorSwapGame(minigames, this);
                 break;
             case "TNTWARS":
