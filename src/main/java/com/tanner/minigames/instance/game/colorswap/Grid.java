@@ -51,6 +51,10 @@ public class Grid {
         setGrid();
     }
 
+    public void start() {
+        setGridTask();
+    }
+
     public void Stop() {
         if (generateGridTask != null) {
             generateGridTask.cancel();
@@ -73,9 +77,12 @@ public class Grid {
                 generateCell(x, z);
             }
         }
+    }
 
+    // This function generates a grid temporarily for the game
+    private void setGridTask() {
+        setGrid();
         chooseRandomWool();
-
         removeGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, timeBetweenRemovingWool * 20);
     }
 
@@ -98,7 +105,7 @@ public class Grid {
             }
         }
 
-        generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGrid, timeBetweenColorSwaps * 20);
+        generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGridTask, timeBetweenColorSwaps * 20);
     }
 
     private int getCellAmount() {

@@ -24,13 +24,15 @@ public class ColorSwapGame extends Game {
 
     public ColorSwapGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
+        grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);
+        remainingPlayers = new ArrayList<>();
     }
 
     @Override
     public void onStart() {
-        remainingPlayers = new ArrayList<>();
         remainingPlayers.addAll(arena.getPlayers());
-        grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);}
+        grid.start();
+    }
 
     @Override
     public void onEnd() {
