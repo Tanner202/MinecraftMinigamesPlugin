@@ -70,6 +70,9 @@ public class Arena {
     }
 
     public void start() {
+        for (UUID uuid : players) {
+            Bukkit.getPlayer(uuid).setInvulnerable(false);
+        }
         game.start();
     }
 
@@ -164,6 +167,7 @@ public class Arena {
     public void addPlayer(Player player) {
         players.add(player.getUniqueId());
         player.getInventory().clear();
+        player.setInvulnerable(true);
         giveLobbyItems(player);
 
         player.teleport(spawn);
@@ -186,6 +190,7 @@ public class Arena {
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
         player.getInventory().clear();
+        player.setInvulnerable(false);
         removeKit(player.getUniqueId());
         player.teleport(ConfigManager.getLobbySpawn());
         player.sendTitle("", "");

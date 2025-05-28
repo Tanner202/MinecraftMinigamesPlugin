@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -110,6 +112,30 @@ public class GameLobbyListener implements Listener {
         if (arena == null) return;
         if (!arena.getState().equals(GameState.RECRUITING) && !arena.getState().equals(GameState.COUNTDOWN)) return;
 
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        Player player = e.getPlayer();
+
+        Arena arena = minigames.getArenaManager().getArena(player);
+        if (arena == null) return;
+        if (!arena.getState().equals(GameState.RECRUITING) && !arena.getState().equals(GameState.COUNTDOWN)) return;
+
+        player.sendMessage(ChatColor.RED + "You cannot break blocks at this time.");
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        Player player = e.getPlayer();
+
+        Arena arena = minigames.getArenaManager().getArena(player);
+        if (arena == null) return;
+        if (!arena.getState().equals(GameState.RECRUITING) && !arena.getState().equals(GameState.COUNTDOWN)) return;
+
+        player.sendMessage(ChatColor.RED + "You cannot place blocks at this time.");
         e.setCancelled(true);
     }
 }
