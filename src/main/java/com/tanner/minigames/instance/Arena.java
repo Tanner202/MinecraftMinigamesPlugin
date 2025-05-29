@@ -73,7 +73,9 @@ public class Arena {
 
     public void start() {
         for (UUID uuid : players) {
-            Bukkit.getPlayer(uuid).setInvulnerable(false);
+            Player player = Bukkit.getPlayer(uuid);
+            player.setInvulnerable(false);
+            player.closeInventory();
         }
         game.start();
     }
