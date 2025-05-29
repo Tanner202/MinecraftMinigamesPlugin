@@ -38,7 +38,6 @@ public class TNTWarsGame extends Game {
 
     private Arena arena;
 
-    private long winWaitTime = 100;
     private int tntInterval = 200;
     private int snowballInterval = 25;
 
@@ -138,7 +137,10 @@ public class TNTWarsGame extends Game {
         Team team = getWinningTeam();
         if (team != null) {
             arena.sendMessage(team.getDisplay() + ChatColor.GREEN + " Team has Won! Thanks for Playing!");
-            Bukkit.getScheduler().runTaskLater(minigames, () -> arena.reset(true), winWaitTime);
+            for (UUID uuid : remainingPlayers) {
+                winningPlayers.add(Bukkit.getPlayer(uuid));
+            }
+            end();
         }
     }
     private Team getWinningTeam() {
