@@ -6,6 +6,7 @@ import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -321,6 +323,24 @@ public class TNTWarsGame extends Game {
                 player.sendMessage(ChatColor.RED + "You cannot place this block.");
                 e.setCancelled(true);
             }
+
+            if (!arena.getKit(player).equals(TNTWarsKitType.BUILDER)) {
+                player.sendMessage(ChatColor.RED + "You cannot place blocks unless using the builder kit.");
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        Player player = e.getPlayer();
+
+        Arena arena = minigames.getArenaManager().getArena(player);
+        if (arena == null || !isPlayerPlaying(arena, player)) return;
+
+        if (!arena.getKit(player).equals(TNTWarsKitType.BUILDER)) {
+            player.sendMessage(ChatColor.RED + "You cannot break blocks unless using the builder kit.");
+            e.setCancelled(true);
         }
     }
 
