@@ -35,6 +35,8 @@ public class Arena {
     private int worldUnloadWaitTime = 60;
     // The world load wait time must be longer than the unload wait time
     private int worldLoadWaitTime = 120;
+    // This is the delay to set up the arena after the world has started loading
+    private int setupDelay = 60;
     private boolean canJoin;
     private boolean worldReloadEnabled;
 
@@ -93,11 +95,14 @@ public class Arena {
         }
         kits.clear();
         sendTitle("", "");
-        state = GameState.RECRUITING;
         countdown.cancel();
-        countdown = new Countdown(minigames, this);
         game.end();
-        setGameType();
+
+        Bukkit.getScheduler().runTaskLater(minigames, () -> {
+            countdown = new Countdown(minigames, this);
+            setGameType();
+            state = GameState.RECRUITING;
+        }, worldLoadWaitTime + setupDelay);
     }
 
     private void reloadWorld() {
@@ -108,8 +113,9 @@ public class Arena {
         }, worldUnloadWaitTime);
 
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
-            World worldCopy = Bukkit.createWorld(new WorldCreator(worldName));
-            worldCopy.setAutoSave(false);
+            world = Bukkit.createWorld(new WorldCreator(worldName));
+            world.setAutoSave(false);
+            spawn.setWorld(world);
         }, worldLoadWaitTime);
     }
 
