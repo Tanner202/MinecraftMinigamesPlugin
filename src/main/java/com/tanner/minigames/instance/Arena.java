@@ -82,7 +82,9 @@ public class Arena {
         if (kickPlayers) {
             Location loc = ConfigManager.getLobbySpawn();
             for (UUID uuid : players) {
-                Bukkit.getPlayer(uuid).teleport(loc);
+                Player player = Bukkit.getPlayer(uuid);
+                player.getInventory().clear();
+                player.teleport(loc);
                 removeKit(uuid);
             }
 
@@ -96,7 +98,6 @@ public class Arena {
         kits.clear();
         sendTitle("", "");
         countdown.cancel();
-        game.end();
 
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
             countdown = new Countdown(minigames, this);
