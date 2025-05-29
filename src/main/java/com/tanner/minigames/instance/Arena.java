@@ -212,7 +212,7 @@ public class Arena {
 
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "The game has ended because too many players have left.");
-            reset(true);
+            game.end(false);
         }
     }
 

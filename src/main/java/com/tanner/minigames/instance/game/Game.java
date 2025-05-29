@@ -41,14 +41,18 @@ public abstract class Game implements Listener {
         onStart();
     }
 
-    public void end() {
-        victoryCelebration();
+    public void end(boolean gameComplete) {
         unregisterEvents();
         onEnd();
-        Bukkit.getScheduler().runTaskLater(minigames, () -> {
-            celebrationTask.cancel();
+        if (gameComplete) {
+            victoryCelebration();
+            Bukkit.getScheduler().runTaskLater(minigames, () -> {
+                celebrationTask.cancel();
+                arena.reset(true);
+            }, arenaResetWaitTime);
+        } else {
             arena.reset(true);
-        }, arenaResetWaitTime);
+        }
     }
 
     protected void victoryCelebration() {

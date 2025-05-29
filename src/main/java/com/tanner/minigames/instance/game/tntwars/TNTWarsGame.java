@@ -142,7 +142,7 @@ public class TNTWarsGame extends Game {
             for (UUID uuid : remainingPlayers) {
                 winningPlayers.add(Bukkit.getPlayer(uuid));
             }
-            end();
+            end(true);
         }
     }
     private Team getWinningTeam() {
