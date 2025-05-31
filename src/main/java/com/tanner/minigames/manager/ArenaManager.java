@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ArenaManager {
 
@@ -29,6 +30,7 @@ public class ArenaManager {
                     Integer.parseInt(arenaID),
                     getArenaLocation(arenaID),
                     config.getString("arenas." + arenaID + ".game"),
+                    getNPCSpawn(arenaID),
                     config.getInt("arenas." + arenaID + ".amount-of-teams"),
                     config.getInt("arenas." + arenaID + ".max-players"),
                     config.getBoolean("arenas." + arenaID + ".world-reload-enabled")));
@@ -43,6 +45,17 @@ public class ArenaManager {
                 config.getDouble("arenas." + arenaID + ".z"),
                 (float) config.getDouble("arenas." + arenaID + ".yaw"),
                 (float) config.getDouble("arenas." + arenaID + ".pitch"));
+    }
+
+    private Location getNPCSpawn(String arenaID) {
+        String npcSpawnPrefix = "arenas." + arenaID + ".npc-spawn";
+        return new Location(
+                Bukkit.getWorld(config.getString(npcSpawnPrefix + ".world")),
+                config.getDouble(npcSpawnPrefix + ".x"),
+                config.getDouble(npcSpawnPrefix + ".y"),
+                config.getDouble(npcSpawnPrefix + ".z"),
+                (float) config.getDouble(npcSpawnPrefix + ".yaw"),
+                (float) config.getDouble(npcSpawnPrefix + ".pitch"));
     }
 
     public List<Arena> getArenas() { return arenas; }
@@ -72,5 +85,14 @@ public class ArenaManager {
             }
         }
         return null;
+    }
+
+    public int getArena(UUID npcUUID) {
+        for (Arena arena : arenas) {
+            if (arena.getNPC().getUniqueId().equals(npcUUID)) {
+                return arena.getId();
+            }
+        }
+        return -1;
     }
 }

@@ -1,6 +1,7 @@
 package com.tanner.minigames;
 
 import com.tanner.minigames.command.ArenaCommand;
+import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.listener.ArenaListener;
 import com.tanner.minigames.listener.ConnectListener;
 import com.tanner.minigames.listener.GameLobbyListener;
@@ -24,6 +25,13 @@ public final class Minigames extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GameLobbyListener(this), this);
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
+    }
+
+    @Override
+    public void onDisable() {
+        for (Arena arena : arenaManager.getArenas()) {
+            arena.getNPC().remove();
+        }
     }
 
     public ArenaManager getArenaManager() { return arenaManager; }

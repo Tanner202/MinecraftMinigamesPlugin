@@ -16,7 +16,9 @@ import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -30,6 +32,8 @@ public class Arena {
     private int id;
     private Location spawn;
     private World world;
+    private Villager npc;
+    private Location npcSpawn;
     private String gameName;
     private int maxPlayers;
     private int worldUnloadWaitTime = 60;
@@ -49,12 +53,13 @@ public class Arena {
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, String game, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
+    public Arena(Minigames minigames, int id, Location spawn, String game, Location npcSpawn, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
         this.minigames = minigames;
 
         this.id = id;
         this.spawn = spawn;
         this.gameName = game;
+        this.npcSpawn = npcSpawn;
         this.maxPlayers = maxPlayers;
         world = spawn.getWorld();
         this.worldReloadEnabled = worldReloadEnabled;
@@ -67,6 +72,13 @@ public class Arena {
         this.availableTeams = Arrays.copyOf(Team.values(), numberOfTeams);
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
+
+        npc = (Villager) npcSpawn.getWorld().spawnEntity(npcSpawn, EntityType.VILLAGER);
+        npc.setAI(false);
+        npc.setCollidable(false);
+        npc.setInvulnerable(true);
+        npc.setCustomNameVisible(true);
+        npc.setCustomName(ChatColor.GREEN + "Arena " + id + ChatColor.GRAY + " (Click to Join)");
 
         setGameType();
     }
@@ -284,6 +296,7 @@ public class Arena {
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return worldReloadEnabled; }
     public int getMaxPlayers() { return maxPlayers; }
+    public Villager getNPC() { return npc; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
 
