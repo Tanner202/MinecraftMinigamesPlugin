@@ -65,10 +65,6 @@ public class TNTWarsGame extends Game {
 
         arena.sendMessage(ChatColor.GREEN + "Game Has Started! Knock the other player off by launching TNT. Last team standing wins!");
 
-        for (UUID uuid : arena.getKits().keySet()) {
-            arena.getKits().get(uuid).onStart(Bukkit.getPlayer(uuid));
-        }
-
         for (UUID uuid : arena.getPlayers()) {
             remainingPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);

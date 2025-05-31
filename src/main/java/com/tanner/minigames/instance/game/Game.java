@@ -37,6 +37,7 @@ public abstract class Game implements Listener {
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             player.getInventory().clear();
+            arena.getKits().get(uuid).onStart(Bukkit.getPlayer(uuid));
         }
         onStart();
     }
