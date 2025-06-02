@@ -6,9 +6,11 @@ import com.tanner.minigames.instance.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,19 @@ public class ColorSwapGame extends Game {
                     end(true);
                 }
             });
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
+
+        Arena arena = minigames.getArenaManager().getArena(player);
+        if (arena != null && remainingPlayers.contains(player.getUniqueId())) {
+            Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
+            if (blockAtPlayerLocation == Material.WATER) {
+                player.setHealth(0);
+            }
         }
     }
 }
