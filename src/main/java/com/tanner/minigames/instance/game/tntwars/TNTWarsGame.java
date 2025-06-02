@@ -302,6 +302,7 @@ public class TNTWarsGame extends Game {
                 if (player.isDead()) {
                     removeRemainingPlayer(player.getUniqueId());
                     player.spigot().respawn();
+                    player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.teleport(arena.getSpawn());
                 }
             });

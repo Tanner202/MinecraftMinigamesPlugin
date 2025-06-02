@@ -51,6 +51,7 @@ public class ColorSwapGame extends Game {
                 if (player.isDead()) {
                     player.spigot().respawn();
                     player.teleport(arena.getSpawn());
+                    player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.setGameMode(GameMode.SPECTATOR);
                 }
                 remainingPlayers.remove(player.getUniqueId());
