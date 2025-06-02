@@ -49,6 +49,8 @@ public class ArenaManager {
 
     private Location getNPCSpawn(String arenaID) {
         String npcSpawnPrefix = "arenas." + arenaID + ".npc-spawn";
+        if (config.getString(npcSpawnPrefix + ".world") == null) return null;
+
         return new Location(
                 Bukkit.getWorld(config.getString(npcSpawnPrefix + ".world")),
                 config.getDouble(npcSpawnPrefix + ".x"),
