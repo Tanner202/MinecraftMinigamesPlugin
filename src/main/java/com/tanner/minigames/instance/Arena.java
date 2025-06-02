@@ -8,6 +8,7 @@ import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
+import com.tanner.minigames.instance.game.spleef.SpleefGame;
 import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
 import com.tanner.minigames.kit.ColorSwapKitType;
 import com.tanner.minigames.kit.Kit;
@@ -149,6 +150,9 @@ public class Arena {
             case "TNTWARS":
                 availableKitTypes = TNTWarsKitType.values();
                 this.game = new TNTWarsGame(minigames, this);
+                break;
+            case "SPLEEF":
+                this.game = new SpleefGame(minigames, this);
                 break;
         }
     }
