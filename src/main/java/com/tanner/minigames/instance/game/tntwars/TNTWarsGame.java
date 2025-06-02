@@ -105,10 +105,15 @@ public class TNTWarsGame extends Game {
 
     private void givePlayersSnowball() {
         ItemStack explosiveSnowball = new ItemStack(Material.SNOWBALL, 1);
-        String message = ChatColor.AQUA + "+1 Explosive Snowball";
-        Sound sound = Sound.ENTITY_ITEM_PICKUP;
 
-        givePlayersItem(explosiveSnowball, message, sound);
+        givePlayersItem(explosiveSnowball);
+    }
+
+    private void givePlayersItem(ItemStack item) {
+        for (UUID uuid : remainingPlayers) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.getInventory().addItem(item);
+        }
     }
 
     private void givePlayersItem(ItemStack item, String message, Sound sound) {
@@ -339,53 +344,5 @@ public class TNTWarsGame extends Game {
             player.sendMessage(ChatColor.RED + "You cannot break blocks unless using the builder kit.");
             e.setCancelled(true);
         }
-    }
-
-    public void setTntLaunchPower(float tntLaunchPower) {
-        this.tntLaunchPower = tntLaunchPower;
-    }
-
-    public void setTntHeight(float tntHeight) {
-        this.tntHeight = tntHeight;
-    }
-
-    public void setFuseTime(int fuseTime) {
-        this.fuseTime = fuseTime;
-    }
-
-    public void setPlayerDoubleJumpPower(float playerDoubleJumpPower) {
-        this.playerDoubleJumpPower = playerDoubleJumpPower;
-    }
-
-    public void setForwardPower(float forwardPower) {
-        this.forwardPower = forwardPower;
-    }
-
-    public void setSnowballExplosionPower(float snowballExplosionPower) {
-        this.snowballExplosionPower = snowballExplosionPower;
-    }
-
-    public float getTntLaunchPower() {
-        return tntLaunchPower;
-    }
-
-    public float getTntHeight() {
-        return tntHeight;
-    }
-
-    public int getFuseTime() {
-        return fuseTime;
-    }
-
-    public float getPlayerDoubleJumpPower() {
-        return playerDoubleJumpPower;
-    }
-
-    public float getForwardPower() {
-        return forwardPower;
-    }
-
-    public float getSnowballExplosionPower() {
-        return snowballExplosionPower;
     }
 }
