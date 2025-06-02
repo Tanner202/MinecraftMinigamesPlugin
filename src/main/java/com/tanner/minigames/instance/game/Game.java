@@ -3,6 +3,7 @@ package com.tanner.minigames.instance.game;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.kit.Kit;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -37,7 +38,10 @@ public abstract class Game implements Listener {
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             player.getInventory().clear();
-            arena.getKits().get(uuid).onStart(Bukkit.getPlayer(uuid));
+            Kit kit = arena.getKits().get(uuid);
+            if (kit != null) {
+                kit.onStart(Bukkit.getPlayer(uuid));
+            }
         }
         onStart();
     }
