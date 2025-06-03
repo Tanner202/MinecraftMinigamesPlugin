@@ -37,6 +37,11 @@ public class BlinderKit extends Kit {
         player.getInventory().addItem(blindPotion);
     }
 
+    @Override
+    public void onStop() {
+
+    }
+
     @EventHandler
     public void onProjectileLaunchEvent(ProjectileLaunchEvent e) {
         if (e.getEntity().getShooter() instanceof Player) {

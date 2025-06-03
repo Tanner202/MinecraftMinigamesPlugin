@@ -34,6 +34,11 @@ public class FreezerKit extends Kit {
         player.getInventory().addItem(new ItemStack(Material.ICE, 3));
     }
 
+    @Override
+    public void onStop() {
+
+    }
+
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();

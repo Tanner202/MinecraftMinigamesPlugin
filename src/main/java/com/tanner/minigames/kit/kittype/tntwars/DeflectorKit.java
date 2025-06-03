@@ -33,6 +33,11 @@ public class DeflectorKit extends Kit {
     @Override
     public void onStart(Player player) { }
 
+    @Override
+    public void onStop() {
+
+    }
+
     @EventHandler
     public void onPlayerAnimation(PlayerAnimationEvent e)
     {

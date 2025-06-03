@@ -265,6 +265,7 @@ public class TNTWarsGame extends Game {
             if (!doubleJumpCooldown.asMap().containsKey(playerUniqueId)) {
                 doubleJump(player);
                 doubleJumpCooldown.put(playerUniqueId, System.currentTimeMillis() + jumpCooldown * 1000);
+                player.setAllowFlight(false);
             } else {
                 long distance = doubleJumpCooldown.asMap().get(playerUniqueId) - System.currentTimeMillis();
                 long remainingSeconds = TimeUnit.MILLISECONDS.toSeconds(distance);

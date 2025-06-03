@@ -1,6 +1,7 @@
 package com.tanner.minigames.kit;
 
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.kit.kittype.colorswap.DoubleJumperKit;
 import com.tanner.minigames.kit.kittype.colorswap.FisherKit;
 import com.tanner.minigames.kit.kittype.colorswap.SnowballerKit;
 import org.bukkit.ChatColor;
@@ -11,7 +12,8 @@ import java.util.function.BiFunction;
 
 public enum ColorSwapKitType implements KitType {
     FISHER(ChatColor.BLUE + "Fisher", Material.COD, "Fish your enemies into the void.", FisherKit::new),
-    BALLER(ChatColor.DARK_PURPLE + "Baller", Material.SNOWBALL, "Snowball your enemies into the void", SnowballerKit::new);
+    BALLER(ChatColor.DARK_PURPLE + "Baller", Material.SNOWBALL, "Snowball your enemies into the void", SnowballerKit::new),
+    DOUBLE_JUMPER(ChatColor.LIGHT_PURPLE + "Double Jumper", Material.GOLDEN_BOOTS, "Double jump to get out of trouble.", DoubleJumperKit::new);
 
     private String display, description;
     private Material material;

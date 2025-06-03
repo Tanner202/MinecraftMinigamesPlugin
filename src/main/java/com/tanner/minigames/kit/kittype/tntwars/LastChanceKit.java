@@ -24,6 +24,11 @@ public class LastChanceKit extends Kit {
         player.getInventory().addItem(new ItemStack(Material.FIREWORK_ROCKET, 1));
     }
 
+    @Override
+    public void onStop() {
+
+    }
+
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent e) {
         Player player = e.getPlayer();

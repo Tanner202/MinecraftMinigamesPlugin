@@ -34,4 +34,9 @@ public class FisherKit extends Kit {
         fishingRod.setItemMeta(itemMeta);
         player.getInventory().addItem(fishingRod);
     }
+
+    @Override
+    public void onStop() {
+
+    }
 }

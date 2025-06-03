@@ -44,6 +44,11 @@ public class SneakyKit extends Kit {
         player.getInventory().addItem(sneakItem);
     }
 
+    @Override
+    public void onStop() {
+
+    }
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
