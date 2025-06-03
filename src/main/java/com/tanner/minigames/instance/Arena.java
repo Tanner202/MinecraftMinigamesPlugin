@@ -191,6 +191,13 @@ public class Arena {
         }
     }
 
+    public void playSound(Sound sound) {
+        for (UUID uuid : players) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.playSound(player.getLocation(), sound, 1, 1);
+        }
+    }
+
     public void addPlayer(Player player) {
         players.add(player.getUniqueId());
         player.getInventory().clear();
