@@ -1,0 +1,71 @@
+crates:
+  armor:
+    display-name: "Armor Crate"
+    block-type: BARREL
+    rarity-chances:
+      common: 0.6
+      uncommon: 0.25
+      rare: 0.1
+      epic: 0.05
+    min-items: 2
+    max-items: 4
+    items:
+      common:
+        - leather_helmet
+        - leather_boots
+        - leather_chestplate
+      uncommon:
+        - chainmail_helmet
+        - iron_boots
+      rare:
+        - iron_chestplate
+        - iron_leggings
+      epic:
+        - diamond_chestplate
+
+  weapons:
+    display-name: "Weapons Crate"
+    block-type: CHEST
+    rarity-chances:
+      common: 0.5
+      uncommon: 0.3
+      rare: 0.15
+      epic: 0.05
+    min-items: 1
+    max-items: 3
+    items:
+      common:
+        - wooden_sword
+        - stick
+      uncommon:
+        - stone_sword
+        - bow
+      rare:
+        - crossbow
+        - iron_sword
+      epic:
+        - diamond_sword
+
+  utility:
+    display-name: "Utility Crate"
+    block-type: SHULKER_BOX
+    rarity-chances:
+      common: 0.5
+      uncommon: 0.3
+      rare: 0.15
+      epic: 0.05
+    min-items: 2
+    max-items: 4
+    items:
+      common:
+        - torch
+        - stick
+        - cooked_beef
+      uncommon:
+        - fishing_rod
+        - ender_pearl
+      rare:
+        - golden_apple
+        - flint_and_steel
+      epic:
+        - totem_of_undying

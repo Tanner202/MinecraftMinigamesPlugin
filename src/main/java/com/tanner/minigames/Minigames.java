@@ -10,6 +10,8 @@ import com.tanner.minigames.manager.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public final class Minigames extends JavaPlugin {
 
     private ArenaManager arenaManager;
@@ -25,6 +27,19 @@ public final class Minigames extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GameLobbyListener(this), this);
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
+
+        try {
+            initiateFile("crates.yml");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void initiateFile(String name) throws Exception {
+        File file = new File(getDataFolder(), name);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
     }
 
     @Override
