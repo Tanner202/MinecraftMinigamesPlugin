@@ -74,12 +74,14 @@ public class Arena {
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
 
-        npc = (Villager) npcSpawn.getWorld().spawnEntity(npcSpawn, EntityType.VILLAGER);
-        npc.setAI(false);
-        npc.setCollidable(false);
-        npc.setInvulnerable(true);
-        npc.setCustomNameVisible(true);
-        npc.setCustomName(ChatColor.GREEN + "Arena " + id + ChatColor.GRAY + " (Click to Join)");
+        if (npcSpawn != null) {
+            npc = (Villager) npcSpawn.getWorld().spawnEntity(npcSpawn, EntityType.VILLAGER);
+            npc.setAI(false);
+            npc.setCollidable(false);
+            npc.setInvulnerable(true);
+            npc.setCustomNameVisible(true);
+            npc.setCustomName(ChatColor.GREEN + "Arena " + id + ChatColor.GRAY + " (Click to Join)");
+        }
 
         setGameType();
     }
