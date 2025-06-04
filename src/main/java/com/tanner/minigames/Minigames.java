@@ -7,6 +7,7 @@ import com.tanner.minigames.listener.ConnectListener;
 import com.tanner.minigames.listener.GameLobbyListener;
 import com.tanner.minigames.manager.ArenaManager;
 import com.tanner.minigames.manager.ConfigManager;
+import com.tanner.minigames.manager.FileManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,11 +16,17 @@ import java.io.File;
 public final class Minigames extends JavaPlugin {
 
     private ArenaManager arenaManager;
+    private FileManager fileManager;
 
     @Override
     public void onEnable() {
         Constants.initializeConstants(this);
         ConfigManager.setupConfig(this);
+
+        fileManager = new FileManager(this);
+        fileManager.addFile(initiateFile("scrapyard_skirmish/crates.yml"));
+        fileManager.addFile(initiateFile("scrapyard_skirmish/walls.yml"));
+
         arenaManager = new ArenaManager(this);
 
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
@@ -28,18 +35,14 @@ public final class Minigames extends JavaPlugin {
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
 
-        try {
-            initiateFile("crates.yml");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    private void initiateFile(String name) throws Exception {
-        File file = new File(getDataFolder(), name);
+    private File initiateFile(String path) {
+        File file = new File(getDataFolder(), path);
         if (!file.exists()) {
-            file.createNewFile();
+            saveResource(path, false);
         }
+        return file;
     }
 
     @Override
@@ -50,4 +53,5 @@ public final class Minigames extends JavaPlugin {
     }
 
     public ArenaManager getArenaManager() { return arenaManager; }
+    public FileManager getFileManager() { return fileManager; }
 }

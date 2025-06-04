@@ -95,3 +95,43 @@ arenas:
         z: 100
         yaw: -180
         pitch: 0
+  4:
+    game: 'SCRAPYARD_SKIRMISH'
+    max-players: 16
+    amount-of-teams: 4
+    world-reload-enabled: false
+    world: 'world'
+    x: 100
+    y: 100
+    z: 100
+    yaw: -180
+    pitch: 0
+    team-spawns:
+      blue:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      red:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      green:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      yellow:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0

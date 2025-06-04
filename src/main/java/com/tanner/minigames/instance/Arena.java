@@ -8,6 +8,7 @@ import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
+import com.tanner.minigames.instance.game.scrapshuffle.ScrapyardSkirmish;
 import com.tanner.minigames.instance.game.spleef.SpleefGame;
 import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
 import com.tanner.minigames.kit.ColorSwapKitType;
@@ -155,6 +156,9 @@ public class Arena {
                 break;
             case "SPLEEF":
                 this.game = new SpleefGame(minigames, this);
+                break;
+            case "SCRAPYARD_SKIRMISH":
+                this.game = new ScrapyardSkirmish(minigames, this);
                 break;
         }
     }
