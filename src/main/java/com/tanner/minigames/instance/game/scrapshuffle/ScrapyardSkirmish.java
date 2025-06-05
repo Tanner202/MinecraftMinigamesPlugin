@@ -5,9 +5,13 @@ import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,29 +24,37 @@ public class ScrapyardSkirmish extends Game {
     private HashMap<Team, Location> teamSpawns;
     private List<UUID> remainingPlayers;
     private List<Wall> walls;
+    private List<Chest> crates;
     private YamlConfiguration wallsFile;
+    private YamlConfiguration crateLocationsFile;
 
     public ScrapyardSkirmish(Minigames minigames, Arena arena) {
         super(minigames, arena);
         remainingPlayers = new ArrayList<>();
         teamSpawns = new HashMap<>();
         walls = new ArrayList<>();
-        File file = minigames.getFileManager().getFile("scrapyard_skirmish/walls.yml");
-        if (file != null) {
-            wallsFile = YamlConfiguration.loadConfiguration(file);
-
-            for (String wallID : wallsFile.getKeys(false)) {
-                Wall wall = new Wall(getWallLoc(wallID + ".start"), getWallLoc(wallID + ".end"));
-                walls.add(wall);
-            }
+        crates = new ArrayList<>();
+        crateLocationsFile = getFile("scrapyard_skirmish/crate_locations.yml");
+        wallsFile = getFile("scrapyard_skirmish/walls.yml");
+        for (String wallID : this.wallsFile.getKeys(false)) {
+            Wall wall = new Wall(getBlockLoc(wallsFile, wallID + ".start"), getBlockLoc(wallsFile, wallID + ".end"));
+            walls.add(wall);
         }
     }
 
-    private Location getWallLoc(String path) {
-        return new Location(Bukkit.getWorld(wallsFile.getString(path + ".world")),
-                wallsFile.getDouble(path + ".x"),
-                wallsFile.getDouble(path + ".y"),
-                wallsFile.getDouble(path + ".z"));
+    private YamlConfiguration getFile(String path) {
+        File file = minigames.getFileManager().getFile(path);
+        if (file != null) {
+            return YamlConfiguration.loadConfiguration(file);
+        }
+        return null;
+    }
+
+    private Location getBlockLoc(YamlConfiguration file, String path) {
+        return new Location(Bukkit.getWorld(file.getString(path + ".world")),
+                file.getDouble(path + ".x"),
+                file.getDouble(path + ".y"),
+                file.getDouble(path + ".z"));
     }
 
     @Override
@@ -65,6 +77,9 @@ public class ScrapyardSkirmish extends Game {
             player.teleport(teamSpawnLocation);
         }
 
+        spawnCrates();
+        setCrateContents();
+
         Bukkit.getScheduler().runTaskLater(minigames, this::dropWalls, 200);
     }
 
@@ -79,6 +94,24 @@ public class ScrapyardSkirmish extends Game {
                 config.getDouble(teamSpawnPath + ".z"),
                 (float) config.getDouble(teamSpawnPath + ".yaw"),
                 (float) config.getDouble(teamSpawnPath + ".pitch"));
+    }
+
+    private void spawnCrates() {
+        for (String crateLocID : crateLocationsFile.getKeys(false)) {
+            Block crateBlock = getBlockLoc(crateLocationsFile, crateLocID).getBlock();
+            crateBlock.setType(Material.CHEST);
+            BlockState blockState = crateBlock.getState();
+            if (blockState instanceof Chest) {
+                Chest chest = (Chest) blockState;
+                crates.add(chest);
+            }
+        }
+    }
+
+    private void setCrateContents() {
+        for (Chest crate : crates) {
+            crate.getBlockInventory().addItem(new ItemStack(Material.STICK, 1));
+        }
     }
 
     private void dropWalls() {
