@@ -11,22 +11,19 @@ import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ScrapyardSkirmish extends Game {
 
     private HashMap<Team, Location> teamSpawns;
     private List<UUID> remainingPlayers;
     private List<Wall> walls;
-    private List<Chest> crates;
+    private List<Crate> crates;
     private YamlConfiguration wallsFile;
     private YamlConfiguration crateLocationsFile;
+    private CrateData crateData;
 
     public ScrapyardSkirmish(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -34,6 +31,7 @@ public class ScrapyardSkirmish extends Game {
         teamSpawns = new HashMap<>();
         walls = new ArrayList<>();
         crates = new ArrayList<>();
+        crateData = new CrateData(getFile("scrapyard_skirmish/crates.yml"));
         crateLocationsFile = getFile("scrapyard_skirmish/crate_locations.yml");
         wallsFile = getFile("scrapyard_skirmish/walls.yml");
         for (String wallID : this.wallsFile.getKeys(false)) {
@@ -78,7 +76,6 @@ public class ScrapyardSkirmish extends Game {
         }
 
         spawnCrates();
-        setCrateContents();
 
         Bukkit.getScheduler().runTaskLater(minigames, this::dropWalls, 200);
     }
@@ -103,14 +100,10 @@ public class ScrapyardSkirmish extends Game {
             BlockState blockState = crateBlock.getState();
             if (blockState instanceof Chest) {
                 Chest chest = (Chest) blockState;
-                crates.add(chest);
+                chest.getBlockInventory().clear();
+                Crate crate = new Crate(crateData, chest);
+                crates.add(crate);
             }
-        }
-    }
-
-    private void setCrateContents() {
-        for (Chest crate : crates) {
-            crate.getBlockInventory().addItem(new ItemStack(Material.STICK, 1));
         }
     }
 
