@@ -94,15 +94,24 @@ public class ScrapyardSkirmish extends Game {
     }
 
     private void spawnCrates() {
-        for (String crateLocID : crateLocationsFile.getKeys(false)) {
-            Block crateBlock = getBlockLoc(crateLocationsFile, crateLocID).getBlock();
-            crateBlock.setType(Material.CHEST);
-            BlockState blockState = crateBlock.getState();
-            if (blockState instanceof Chest) {
-                Chest chest = (Chest) blockState;
-                chest.getBlockInventory().clear();
-                Crate crate = new Crate(crateData, chest);
-                crates.add(crate);
+        int crateAmount = 2;
+        for (Team team : arena.getTeams()) {
+            String teamName = ChatColor.stripColor(team.getDisplay().toLowerCase());
+            List<String> availableCrateIds = new ArrayList<>(crateLocationsFile.getConfigurationSection(teamName).getKeys(false));
+            for (int i = 0; i < crateAmount; i++) {
+                int randomIndex = new Random().nextInt(0, availableCrateIds.size());
+                String randomCrateID = availableCrateIds.get(randomIndex);
+                availableCrateIds.remove(randomIndex);
+
+                Block crateBlock = getBlockLoc(crateLocationsFile, teamName + "." + randomCrateID).getBlock();
+                crateBlock.setType(Material.CHEST);
+                BlockState blockState = crateBlock.getState();
+                if (blockState instanceof Chest) {
+                    Chest chest = (Chest) blockState;
+                    chest.getBlockInventory().clear();
+                    Crate crate = new Crate(crateData, chest);
+                    crates.add(crate);
+                }
             }
         }
     }
