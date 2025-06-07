@@ -25,7 +25,7 @@ public class ScrapyardSkirmish extends Game {
     private YamlConfiguration wallsFile;
     private YamlConfiguration crateLocationsFile;
     private CrateData crateData;
-    private int wallTimer = 500;
+    private int wallTimer;
 
     public ScrapyardSkirmish(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -37,10 +37,11 @@ public class ScrapyardSkirmish extends Game {
         crateData = new CrateData(getFile("crates.yml"));
         crateLocationsFile = getFile("crate_locations.yml");
         wallsFile = getFile("walls.yml");
-        for (String wallID : this.wallsFile.getKeys(false)) {
-            Wall wall = new Wall(getBlockLoc(wallsFile, wallID + ".start"), getBlockLoc(wallsFile, wallID + ".end"));
+        for (String wallID : wallsFile.getConfigurationSection("wall-locations").getKeys(false)) {
+            Wall wall = new Wall(getBlockLoc(wallsFile, "wall-locations." + wallID + ".start"), getBlockLoc(wallsFile, "wall-locations." + wallID + ".end"));
             walls.add(wall);
         }
+        wallTimer = wallsFile.getInt("wall-drop-time") * 20;
     }
 
     private YamlConfiguration getFile(String fileName) {
@@ -95,16 +96,11 @@ public class ScrapyardSkirmish extends Game {
     }
 
     private void spawnCrates() {
-        int crateAmount = 10;
         for (Team team : arena.getTeams()) {
             String teamName = ChatColor.stripColor(team.getDisplay().toLowerCase());
             List<String> availableCrateIds = new ArrayList<>(crateLocationsFile.getConfigurationSection(teamName).getKeys(false));
-            for (String crateID : availableCrateIds) {
-                Block crateBlock = getBlockLoc(crateLocationsFile, teamName + "." + crateID).getBlock();
-                crateBlock.setType(Material.AIR);
-            }
 
-            for (int i = 0; i < crateAmount; i++) {
+            for (int i = 0; i < crateData.getCrateAmount(); i++) {
                 int randomIndex = new Random().nextInt(0, availableCrateIds.size());
                 String randomCrateID = availableCrateIds.get(randomIndex);
                 availableCrateIds.remove(randomIndex);

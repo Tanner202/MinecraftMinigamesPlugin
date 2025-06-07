@@ -15,11 +15,13 @@ public class CrateData {
     private int commonItemAmount;
     private int uncommonItemAmount;
     private int rareItemAmount;
+    private int crateAmount;
 
     public CrateData(YamlConfiguration crateFile) {
         crateItems = new HashMap<>();
         minItems = crateFile.getInt("min-items");
         maxItems = crateFile.getInt("max-items");
+        crateAmount = crateFile.getInt("crate-amount");
         commonItemAmount = minItems - 1;
         uncommonItemAmount = maxItems - 1;
         rareItemAmount = 1;
@@ -39,4 +41,5 @@ public class CrateData {
     public int getCommonItemAmount() { return commonItemAmount; }
     public int getUncommonItemAmount() { return uncommonItemAmount; }
     public int getRareItemAmount() { return rareItemAmount; }
+    public int getCrateAmount() { return crateAmount; }
 }

@@ -1,3 +1,4 @@
+crate-amount: 10
 min-items: 3
 max-items: 4
 items:
