@@ -42,6 +42,8 @@ public class ScrapyardSkirmish extends Game {
             walls.add(wall);
         }
         wallTimer = wallsFile.getInt("wall-drop-time") * 20;
+
+        removeCrates();
     }
 
     private YamlConfiguration getFile(String fileName) {
@@ -117,6 +119,14 @@ public class ScrapyardSkirmish extends Game {
             }
         }
     }
+
+    private void removeCrates() {
+        for (String teamName : crateLocationsFile.getConfigurationSection("").getKeys(false))
+            for (String crateID : crateLocationsFile.getConfigurationSection(teamName).getKeys(false)) {
+                Block crateBlock = getBlockLoc(crateLocationsFile, teamName + "." + crateID).getBlock();
+                crateBlock.setType(Material.AIR);
+            }
+        }
 
     private void dropWalls() {
         arena.sendTitle(ChatColor.GREEN + "The walls have dropped!", "You can now fight other players. Last team standing wins!");
