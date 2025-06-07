@@ -25,6 +25,7 @@ public class ScrapyardSkirmish extends Game {
     private YamlConfiguration wallsFile;
     private YamlConfiguration crateLocationsFile;
     private CrateData crateData;
+    private int wallTimer = 500;
 
     public ScrapyardSkirmish(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -59,13 +60,11 @@ public class ScrapyardSkirmish extends Game {
 
     @Override
     public void onStart() {
-        setWalls(Material.GLASS);
         for (Team team : arena.getTeams()) {
             teamSpawns.put(team, getTeamSpawn(team));
         }
 
-        arena.sendMessage(ChatColor.GREEN + "Game Has Started! Collect scrap for the first 5 minutes, then the walls " +
-                "will drop and you will be able to fight other players. The last team standing will win!");
+        arena.sendTitle(ChatColor.GREEN + "Game Has Started!", "Loot nearby crates for the first minute.");
 
         for (UUID uuid : arena.getPlayers()) {
             remainingPlayers.add(uuid);
@@ -79,7 +78,7 @@ public class ScrapyardSkirmish extends Game {
 
         spawnCrates();
 
-        Bukkit.getScheduler().runTaskLater(minigames, this::dropWalls, 200);
+        Bukkit.getScheduler().runTaskLater(minigames, this::dropWalls, wallTimer);
     }
 
     private Location getTeamSpawn(Team team) {
@@ -96,10 +95,15 @@ public class ScrapyardSkirmish extends Game {
     }
 
     private void spawnCrates() {
-        int crateAmount = 2;
+        int crateAmount = 10;
         for (Team team : arena.getTeams()) {
             String teamName = ChatColor.stripColor(team.getDisplay().toLowerCase());
             List<String> availableCrateIds = new ArrayList<>(crateLocationsFile.getConfigurationSection(teamName).getKeys(false));
+            for (String crateID : availableCrateIds) {
+                Block crateBlock = getBlockLoc(crateLocationsFile, teamName + "." + crateID).getBlock();
+                crateBlock.setType(Material.AIR);
+            }
+
             for (int i = 0; i < crateAmount; i++) {
                 int randomIndex = new Random().nextInt(0, availableCrateIds.size());
                 String randomCrateID = availableCrateIds.get(randomIndex);
@@ -119,9 +123,30 @@ public class ScrapyardSkirmish extends Game {
     }
 
     private void dropWalls() {
-        arena.sendMessage(ChatColor.GREEN + "The walls have dropped! You can now fight other players. Last team standing wins!");
+        arena.sendTitle(ChatColor.GREEN + "The walls have dropped!", "You can now fight other players. Last team standing wins!");
         arena.playSound(Sound.ENTITY_ENDER_DRAGON_GROWL);
-        setWalls(Material.AIR);
+        for (Wall wall : walls) {
+            Location start = wall.getStart();
+            Location end = wall.getEnd();
+
+            double minX = Math.min(start.getX(), end.getX());
+            double maxX = Math.max(start.getX(), end.getX());
+            double minY = Math.min(start.getY(), end.getY());
+            double maxY = Math.max(start.getY(), end.getY());
+            double minZ = Math.min(start.getZ(), end.getZ());
+            double maxZ = Math.max(start.getZ(), end.getZ());
+
+            for (double x = minX; x <= maxX; x++) {
+                for (double y = minY; y <= maxY; y++) {
+                    for (double z = minZ; z <= maxZ; z++) {
+                        Location location = new Location(arena.getWorld(), x, y, z);
+                        if (location.getBlock().getType().equals(Material.GLASS)) {
+                            location.getBlock().setType(Material.AIR);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override

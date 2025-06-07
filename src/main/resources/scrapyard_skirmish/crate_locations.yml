@@ -10,3 +10,15 @@ red:
     x: 0
     y: 0
     z: 0
+green:
+  1:
+    world: "world"
+    x: 0
+    y: 0
+    z: 0
+yellow:
+  1:
+    world: "world"
+    x: 0
+    y: 0
+    z: 0
