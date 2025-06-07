@@ -3,6 +3,7 @@ package com.tanner.minigames.manager;
 import com.tanner.minigames.Minigames;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +22,11 @@ public class FileManager {
         files.add(file);
     }
 
-    public File getFile(String path) {
-        System.out.println(minigames.getDataFolder() + "/" + path);
+    public File getFile(Path path) {
+        System.out.println(minigames.getDataFolder().toPath().resolve(path));
         for (File file : files) {
             System.out.println(file.getPath());
-            if (file.getPath().equals(minigames.getDataFolder() + "/" + path)) {
+            if (file.toPath().equals(minigames.getDataFolder().toPath().resolve(path))) {
                 return file;
             }
         }

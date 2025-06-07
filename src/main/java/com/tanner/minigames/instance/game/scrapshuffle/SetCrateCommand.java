@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class SetCrateCommand implements CommandExecutor, Listener {
@@ -28,7 +29,7 @@ public class SetCrateCommand implements CommandExecutor, Listener {
 
     public SetCrateCommand(Minigames minigames) {
         playersPlacingCrates = new HashMap<>();
-        file = minigames.getFileManager().getFile("scrapyard_skirmish/crate_locations.yml");
+        file = minigames.getFileManager().getFile(Paths.get("scrapyard_skirmish", "crate_locations.yml"));
         if (file != null) {
             crateLocFile = YamlConfiguration.loadConfiguration(file);
         }
@@ -73,7 +74,7 @@ public class SetCrateCommand implements CommandExecutor, Listener {
             String teamName = ChatColor.stripColor(playersPlacingCrates.get(uuid).getDisplay()).toLowerCase();
             List<String> keys = new ArrayList<>(crateLocFile.getConfigurationSection(teamName).getKeys(false));
             try {
-                int crateID = Integer.parseInt(keys.getLast()) + 1;
+                int crateID = Integer.parseInt(keys.get(keys.size() - 1)) + 1;
                 String prefix = teamName + "." + crateID;
                 crateLocFile.set(prefix + ".world", loc.getWorld().getName());
                 crateLocFile.set(prefix + ".x", loc.getX());

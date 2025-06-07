@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class ScrapyardSkirmish extends Game {
@@ -31,17 +32,18 @@ public class ScrapyardSkirmish extends Game {
         teamSpawns = new HashMap<>();
         walls = new ArrayList<>();
         crates = new ArrayList<>();
-        crateData = new CrateData(getFile("scrapyard_skirmish/crates.yml"));
-        crateLocationsFile = getFile("scrapyard_skirmish/crate_locations.yml");
-        wallsFile = getFile("scrapyard_skirmish/walls.yml");
+
+        crateData = new CrateData(getFile("crates.yml"));
+        crateLocationsFile = getFile("crate_locations.yml");
+        wallsFile = getFile("walls.yml");
         for (String wallID : this.wallsFile.getKeys(false)) {
             Wall wall = new Wall(getBlockLoc(wallsFile, wallID + ".start"), getBlockLoc(wallsFile, wallID + ".end"));
             walls.add(wall);
         }
     }
 
-    private YamlConfiguration getFile(String path) {
-        File file = minigames.getFileManager().getFile(path);
+    private YamlConfiguration getFile(String fileName) {
+        File file = minigames.getFileManager().getFile(Paths.get("scrapyard_skirmish", fileName));
         if (file != null) {
             return YamlConfiguration.loadConfiguration(file);
         }
@@ -120,29 +122,6 @@ public class ScrapyardSkirmish extends Game {
         arena.sendMessage(ChatColor.GREEN + "The walls have dropped! You can now fight other players. Last team standing wins!");
         arena.playSound(Sound.ENTITY_ENDER_DRAGON_GROWL);
         setWalls(Material.AIR);
-    }
-
-    private void setWalls(Material material) {
-        for (Wall wall : walls) {
-            Location start = wall.getStart();
-            Location end = wall.getEnd();
-
-            double minX = Math.min(start.getX(), end.getX());
-            double maxX = Math.max(start.getX(), end.getX());
-            double minY = Math.min(start.getY(), end.getY());
-            double maxY = Math.max(start.getY(), end.getY());
-            double minZ = Math.min(start.getZ(), end.getZ());
-            double maxZ = Math.max(start.getZ(), end.getZ());
-
-            for (double x = minX; x <= maxX; x++) {
-                for (double y = minY; y <= maxY; y++) {
-                    for (double z = minZ; z <= maxZ; z++) {
-                        Location location = new Location(arena.getWorld(), x, y, z);
-                        location.getBlock().setType(material);
-                    }
-                }
-            }
-        }
     }
 
     @Override
