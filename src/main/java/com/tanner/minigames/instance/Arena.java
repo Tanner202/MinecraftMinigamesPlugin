@@ -24,6 +24,10 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 
@@ -91,6 +95,7 @@ public class Arena {
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
             player.setInvulnerable(false);
+            player.getScoreboard().getObjective("lobby").unregister();
             player.closeInventory();
         }
         game.start();
@@ -202,11 +207,45 @@ public class Arena {
         }
     }
 
+    private void setPlayerScoreboard(Player player) {
+
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+
+        Objective obj = board.registerNewObjective("lobby", "dummy");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        obj.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "LOBBY");
+
+        Score name = obj.getScore(ChatColor.BLUE + "Name: " + player.getDisplayName());
+        name.setScore(5);
+
+        Score space = obj.getScore(" ");
+        space.setScore(2);
+
+        org.bukkit.scoreboard.Team playerAmount = board.registerNewTeam("player_amount");
+        playerAmount.addEntry(ChatColor.BOLD.toString());
+        playerAmount.setPrefix(ChatColor.AQUA + "Players: ");
+        playerAmount.setSuffix(ChatColor.AQUA.toString() + players.size() + "/" + maxPlayers);
+        obj.getScore(ChatColor.BOLD.toString()).setScore(3);
+
+        Score space2 = obj.getScore("  ");
+        space2.setScore(4);
+
+        org.bukkit.scoreboard.Team arenaState = board.registerNewTeam("arena_state");
+        arenaState.addEntry(ChatColor.DARK_GRAY.toString());
+        arenaState.setPrefix(ChatColor.DARK_GRAY + "State: ");
+        arenaState.setSuffix(ChatColor.DARK_GRAY + state.toString());
+        obj.getScore(ChatColor.DARK_GRAY.toString()).setScore(1);
+
+        player.setScoreboard(board);
+    }
+
     public void addPlayer(Player player) {
         players.add(player.getUniqueId());
         player.getInventory().clear();
         player.setInvulnerable(true);
         giveLobbyItems(player);
+        setPlayerScoreboard(player);
+        updateScoreboard();
 
         player.teleport(spawn);
 
@@ -232,6 +271,10 @@ public class Arena {
         removeKit(player.getUniqueId());
         player.teleport(ConfigManager.getLobbySpawn());
         player.sendTitle("", "");
+        if (player.getScoreboard().getObjective("lobby") != null) {
+            player.getScoreboard().getObjective("lobby").unregister();
+        }
+        updateScoreboard();
 
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "There are not enough players. Countdown stopped.");
@@ -242,6 +285,14 @@ public class Arena {
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "The game has ended because too many players have left.");
             game.end(false);
+        }
+    }
+
+    private void updateScoreboard() {
+        for (UUID uuid : players) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.getScoreboard().getTeam("player_amount").setSuffix(ChatColor.AQUA.toString() + players.size() + "/" + maxPlayers);
+            player.getScoreboard().getTeam("arena_state").setSuffix(ChatColor.DARK_GRAY + state.toString());
         }
     }
 
@@ -308,7 +359,10 @@ public class Arena {
     public int getId() { return id; }
 
     public GameState getState() { return state; }
-    public void setState(GameState state) { this.state = state; }
+    public void setState(GameState state) {
+        this.state = state;
+        updateScoreboard();
+    }
     public Location getSpawn() { return spawn; }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return worldReloadEnabled; }
