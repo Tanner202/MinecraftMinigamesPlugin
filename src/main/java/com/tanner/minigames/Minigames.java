@@ -28,6 +28,7 @@ public final class Minigames extends JavaPlugin {
         fileManager.addFile(initiateFile("scrapyard_skirmish/crates.yml"));
         fileManager.addFile(initiateFile("scrapyard_skirmish/walls.yml"));
         fileManager.addFile(initiateFile("scrapyard_skirmish/crate_locations.yml"));
+        fileManager.addFile(initiateFile("dragon_escape/dragon_locations.yml"));
 
         arenaManager = new ArenaManager(this);
 
