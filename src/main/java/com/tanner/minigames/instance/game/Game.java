@@ -63,7 +63,7 @@ public abstract class Game implements Listener {
     protected void victoryCelebration() {
         celebrationTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
             for (Player player : winningPlayers) {
-                player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+                player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK_ROCKET);
         }}, 0, celebrationFireworkInterval);
     }
 

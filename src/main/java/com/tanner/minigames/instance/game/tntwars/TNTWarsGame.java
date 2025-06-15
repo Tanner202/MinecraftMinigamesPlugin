@@ -201,7 +201,7 @@ public class TNTWarsGame extends Game {
                 itemInMainHand.setAmount(itemInMainHand.getAmount() - 1);
 
                 World world = player.getWorld();
-                TNTPrimed tntPrimed = (TNTPrimed) world.spawnEntity(player.getEyeLocation(), EntityType.PRIMED_TNT);
+                TNTPrimed tntPrimed = (TNTPrimed) world.spawnEntity(player.getEyeLocation(), EntityType.TNT);
                 tntPrimed.setFuseTicks(fuseTime);
                 Vector playerFacing = player.getEyeLocation().getDirection();
 

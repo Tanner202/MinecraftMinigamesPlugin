@@ -51,7 +51,7 @@ public class DeflectorKit extends Kit {
         if (rayTraceResult == null) return;
         Entity hitEntity = rayTraceResult.getHitEntity();
 
-        if (hitEntity != null && hitEntity.getType().equals(EntityType.PRIMED_TNT)) {
+        if (hitEntity != null && hitEntity.getType().equals(EntityType.TNT)) {
             Vector heightVector = new Vector(0, tntHeight, 0);
             hitEntity.setVelocity(playerFacing.multiply(tntLaunchPower).add(heightVector));
             TNTPrimed primedTNT = (TNTPrimed) hitEntity;

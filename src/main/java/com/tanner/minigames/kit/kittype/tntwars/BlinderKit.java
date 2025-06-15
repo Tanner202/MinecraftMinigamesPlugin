@@ -48,7 +48,7 @@ public class BlinderKit extends Kit {
             Player player = (Player) e.getEntity().getShooter();
 
             if (player.getUniqueId() != getKitOwnerUUID()) return;
-            if (e.getEntity().getType().equals(EntityType.SPLASH_POTION)) {
+            if (e.getEntity().getType().equals(EntityType.POTION)) {
                 Vector playerFacing = player.getEyeLocation().getDirection();
 
                 Vector heightVector = new Vector(0, blindPotionThrowHeight, 0);

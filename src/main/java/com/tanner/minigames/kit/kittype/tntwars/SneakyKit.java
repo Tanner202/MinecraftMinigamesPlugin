@@ -5,15 +5,13 @@ import com.google.common.cache.CacheBuilder;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.TNTWarsKitType;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -26,16 +24,18 @@ public class SneakyKit extends Kit {
     private int sneakDuration = 120;
     private long sneakCooldownDuration = 15;
     private Cache<UUID, Long> sneakCooldown = CacheBuilder.newBuilder().expireAfterWrite(sneakCooldownDuration, TimeUnit.SECONDS).build();
+    private NamespacedKey sneakKey;
 
     public SneakyKit(Minigames minigames, UUID uuid) {
         super(minigames, TNTWarsKitType.SNEAKY, uuid);
+        sneakKey = new NamespacedKey(minigames, "sneak_ability");
     }
 
     @Override
     public void onStart(Player player) {
         ItemStack sneakItem = new ItemStack(Material.INK_SAC, 1);
         ItemMeta sneakItemMeta = sneakItem.getItemMeta();
-        sneakItemMeta.setLocalizedName("Sneaky");
+        sneakItemMeta.getPersistentDataContainer().set(sneakKey, PersistentDataType.BOOLEAN, true);
         sneakItemMeta.setDisplayName(ChatColor.DARK_PURPLE + "Sneak");
         String lore = ChatColor.GRAY + "Activate Sneak Ability";
         sneakItemMeta.setLore(Arrays.asList(lore));
@@ -58,10 +58,10 @@ public class SneakyKit extends Kit {
         ItemMeta itemMeta = heldItem.getItemMeta();
         if (itemMeta == null) return;
 
-        if (itemMeta.getLocalizedName().equalsIgnoreCase("sneaky")) {
+        if (itemMeta.getPersistentDataContainer().get(sneakKey, PersistentDataType.BOOLEAN) != null) {
             if (!sneakCooldown.asMap().containsKey(player.getUniqueId())) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, sneakDuration, 1, false, false));
-                player.getWorld().spawnParticle(Particle.SMOKE_NORMAL, player.getLocation(), 10);
+                player.getWorld().spawnParticle(Particle.SMOKE, player.getLocation(), 10);
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
                 sneakCooldown.asMap().put(player.getUniqueId(), System.currentTimeMillis() + sneakCooldownDuration * 1000);
             } else {
