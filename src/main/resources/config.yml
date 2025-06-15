@@ -135,3 +135,14 @@ arenas:
         z: 100
         yaw: -180
         pitch: 0
+  5:
+    game: 'DRAGON_ESCAPE'
+    max-players: 8
+    amount-of-teams: 8
+    world-reload-enabled: true
+    world: 'world'
+    x: 100
+    y: 100
+    z: 100
+    yaw: -180
+    pitch: 0

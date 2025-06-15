@@ -8,6 +8,7 @@ import com.tanner.minigames.instance.game.BlockBreakGame;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.PVPGame;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
+import com.tanner.minigames.instance.game.dragonescape.DragonEscapeGame;
 import com.tanner.minigames.instance.game.scrapshuffle.ScrapyardSkirmish;
 import com.tanner.minigames.instance.game.spleef.SpleefGame;
 import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
@@ -164,6 +165,9 @@ public class Arena {
                 break;
             case "SCRAPYARD_SKIRMISH":
                 this.game = new ScrapyardSkirmish(minigames, this);
+                break;
+            case "DRAGON_ESCAPE":
+                this.game = new DragonEscapeGame(minigames, this);
                 break;
         }
     }
