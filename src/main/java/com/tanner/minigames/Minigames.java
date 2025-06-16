@@ -2,6 +2,7 @@ package com.tanner.minigames;
 
 import com.tanner.minigames.command.ArenaCommand;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.instance.game.dragonescape.SetDragonWaypointsCommand;
 import com.tanner.minigames.instance.game.scrapshuffle.SetCrateCommand;
 import com.tanner.minigames.listener.ArenaListener;
 import com.tanner.minigames.listener.ConnectListener;
@@ -31,14 +32,16 @@ public final class Minigames extends JavaPlugin {
         fileManager.addFile(initiateFile("dragon_escape/dragon_locations.yml"));
 
         arenaManager = new ArenaManager(this);
+        SetDragonWaypointsCommand setDragonWaypointsCommand = new SetDragonWaypointsCommand(this);
 
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ArenaListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameLobbyListener(this), this);
+        Bukkit.getPluginManager().registerEvents(setDragonWaypointsCommand, this);
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
         getCommand("setcrate").setExecutor(new SetCrateCommand(this));
-
+        getCommand("setdragonwaypoints").setExecutor(setDragonWaypointsCommand);
     }
 
     private File initiateFile(String path) {
