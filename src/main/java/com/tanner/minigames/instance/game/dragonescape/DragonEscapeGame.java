@@ -3,19 +3,28 @@ package com.tanner.minigames.instance.game.dragonescape;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class DragonEscapeGame extends Game {
 
     private YamlConfiguration file;
     private Location dragonSpawnLocation;
     private CustomEnderDragon customDragon;
+    private List<UUID> alivePlayers = new ArrayList<>();
 
     public DragonEscapeGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -36,7 +45,6 @@ public class DragonEscapeGame extends Game {
     @Override
     public void onStart() {
         Vec3[] targets = getTargetLocations();
-        Bukkit.broadcastMessage(targets.toString());
         try {
             customDragon = new CustomEnderDragon(((CraftWorld) arena.getWorld()).getHandle().getLevel(), dragonSpawnLocation, targets);
         } catch (NoSuchFieldException e) {
@@ -44,6 +52,8 @@ public class DragonEscapeGame extends Game {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
+        alivePlayers.addAll(arena.getPlayers());
     }
 
     private Vec3[] getTargetLocations() {
@@ -65,5 +75,50 @@ public class DragonEscapeGame extends Game {
     @Override
     public void onEnd() {
 
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
+        Location belowPlayer = player.getLocation().subtract(0, 1, 0);
+        Block blockBelowPlayer = belowPlayer.getBlock();
+        if (blockBelowPlayer.getType().equals(Material.BEACON) && alivePlayers.contains(player.getUniqueId())) {
+            victory(player);
+        }
+
+        if (arena != null && alivePlayers.contains(player.getUniqueId())) {
+            Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
+            if (blockAtPlayerLocation == Material.WATER) {
+                player.setHealth(0);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e) {
+        Player player = e.getEntity();
+
+        if (arena.getPlayers().contains(player.getUniqueId())) {
+            minigames.getServer().getScheduler().scheduleSyncDelayedTask(minigames, () -> {
+                if (player.isDead()) {
+                    player.spigot().respawn();
+                    player.teleport(arena.getSpawn());
+                    player.sendTitle(ChatColor.RED + "You Died!", "");
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
+                alivePlayers.remove(player.getUniqueId());
+                if (alivePlayers.size() == 1) {
+                    Player winningPlayer = Bukkit.getPlayer(alivePlayers.get(0));
+                    victory(winningPlayer);
+                }
+            });
+        }
+    }
+
+    private void victory(Player winningPlayer) {
+        arena.sendMessage(ChatColor.GOLD + winningPlayer.getDisplayName() + " has Won! Thanks for Playing!");
+        winningPlayers.add(winningPlayer);
+        customDragon.remove(Entity.RemovalReason.DISCARDED);
+        end(true);
     }
 }
