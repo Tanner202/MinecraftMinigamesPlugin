@@ -67,6 +67,7 @@ public abstract class Game implements Listener {
         }}, 0, celebrationFireworkInterval);
     }
 
+    public abstract void onArenaReset();
     public abstract void onStart();
     public abstract void onEnd();
 

@@ -19,6 +19,11 @@ public class PVPGame extends Game {
         super(minigames, arena);
     }
 
+    @Override
+    public void onArenaReset() {
+
+    }
+
     public void playerWins(Player player) {
         arena.sendMessage(ChatColor.GOLD + player.getName() + " has Won! Thanks for Playing!");
         arena.reset(true);

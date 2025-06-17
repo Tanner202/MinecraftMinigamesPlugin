@@ -21,6 +21,11 @@ public class BlockBreakGame extends Game {
         points = new HashMap<>();
     }
 
+    @Override
+    public void onArenaReset() {
+
+    }
+
     public void addPoint(Player player) {
         int playerPoints = points.get(player.getUniqueId()) + 1;
         if (playerPoints == 20) {

@@ -103,6 +103,7 @@ public class Arena {
     }
 
     public void reset(boolean kickPlayers) {
+        game.onArenaReset();
         if (kickPlayers) {
             Location loc = ConfigManager.getLobbySpawn();
             for (UUID uuid : players) {

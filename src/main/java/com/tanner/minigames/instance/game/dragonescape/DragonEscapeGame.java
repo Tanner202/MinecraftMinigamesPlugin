@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -56,23 +56,46 @@ public class DragonEscapeGame extends Game {
             throw new RuntimeException(e);
         }
 
-        Team scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("noCollision");
-        if (scoreboardTeam == null) {
-            scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("noCollision");
-        }
-        scoreboardTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-            scoreboardTeam.addEntry(player.getName());
             player.setInvisible(true);
 
             com.tanner.minigames.team.Team team = arena.getTeam(player);
             Location teamSpawnLocation = getTeamSpawn(team);
             player.teleport(teamSpawnLocation);
+            Scoreboard board = setScoreboard();
+            player.setScoreboard(board);
         }
 
         alivePlayers.addAll(arena.getPlayers());
+    }
+
+    private Scoreboard setScoreboard() {
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective obj = board.registerNewObjective("dragon_escape", "dummy");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        Team noCollisionTeam = board.registerNewTeam("no_collision");
+        noCollisionTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        obj.setDisplayName(ChatColor.GOLD + "DRAGON ESCAPE");
+
+        int count = 0;
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            noCollisionTeam.addEntry(player.getName());
+            Team team = board.registerNewTeam(player.getName());
+            team.setSuffix(ChatColor.GREEN + player.getDisplayName());
+            team.addEntry(String.valueOf(count));
+            obj.getScore(String.valueOf(count)).setScore(count);
+            count++;
+        }
+        return board;
+    }
+
+    private void updateScoreboard(Player deadPlayer) {
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.getScoreboard().getTeam(deadPlayer.getName()).setSuffix(ChatColor.RED + deadPlayer.getDisplayName());
+        }
     }
 
     private Location getTeamSpawn(com.tanner.minigames.team.Team team) {
@@ -106,11 +129,19 @@ public class DragonEscapeGame extends Game {
 
     @Override
     public void onEnd() {
-        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("noCollision");
+
+    }
+
+    @Override
+    public void onArenaReset() {
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
-            team.removeEntry(player.getName());
             player.setInvisible(false);
+            player.getScoreboard().getTeam(player.getName()).unregister();
+            player.getScoreboard().getTeam("no_collision").unregister();
+            ;
+            player.getScoreboard().getObjective("dragon_escape").unregister();
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
 
@@ -143,6 +174,7 @@ public class DragonEscapeGame extends Game {
                     player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.setGameMode(GameMode.SPECTATOR);
                 }
+                updateScoreboard(player);
                 alivePlayers.remove(player.getUniqueId());
                 if (alivePlayers.size() == 1) {
                     Player winningPlayer = Bukkit.getPlayer(alivePlayers.get(0));

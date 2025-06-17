@@ -58,6 +58,11 @@ public class TNTWarsGame extends Game {
     }
 
     @Override
+    public void onArenaReset() {
+
+    }
+
+    @Override
     public void onStart() {
         for (Team team : arena.getTeams()) {
             teamSpawns.put(team, getTeamSpawn(team));
