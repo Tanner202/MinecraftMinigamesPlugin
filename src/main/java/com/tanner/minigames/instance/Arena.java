@@ -12,10 +12,7 @@ import com.tanner.minigames.instance.game.dragonescape.DragonEscapeGame;
 import com.tanner.minigames.instance.game.scrapshuffle.ScrapyardSkirmish;
 import com.tanner.minigames.instance.game.spleef.SpleefGame;
 import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
-import com.tanner.minigames.kit.ColorSwapKitType;
-import com.tanner.minigames.kit.Kit;
-import com.tanner.minigames.kit.KitType;
-import com.tanner.minigames.kit.TNTWarsKitType;
+import com.tanner.minigames.kit.*;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
@@ -168,6 +165,7 @@ public class Arena {
                 this.game = new ScrapyardSkirmish(minigames, this);
                 break;
             case "DRAGON_ESCAPE":
+                availableKitTypes = DragonEscapeKitType.values();
                 this.game = new DragonEscapeGame(minigames, this);
                 break;
         }

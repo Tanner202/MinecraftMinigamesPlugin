@@ -4,6 +4,7 @@ import com.tanner.minigames.Minigames;
 import com.tanner.minigames.kit.ColorSwapKitType;
 import com.tanner.minigames.kit.Kit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +34,9 @@ public class DoubleJumperKit extends Kit {
 
     @Override
     public void onStop() {
-        kitOwner.setAllowFlight(false);
+        if (!kitOwner.getGameMode().equals(GameMode.CREATIVE) && !kitOwner.getGameMode().equals(GameMode.SPECTATOR)) {
+            kitOwner.setAllowFlight(false);
+        }
         kitOwner.setFlying(true);
     }
 
