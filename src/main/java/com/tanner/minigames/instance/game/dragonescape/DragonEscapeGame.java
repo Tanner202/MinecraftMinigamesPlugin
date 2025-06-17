@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scoreboard.Team;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -53,6 +54,18 @@ public class DragonEscapeGame extends Game {
             throw new RuntimeException(e);
         }
 
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("noCollision");
+        if (team == null) {
+            team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("noCollision");
+        }
+        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+            team.addEntry(player.getName());
+            player.setInvisible(true);
+        }
+
         alivePlayers.addAll(arena.getPlayers());
     }
 
@@ -74,7 +87,12 @@ public class DragonEscapeGame extends Game {
 
     @Override
     public void onEnd() {
-
+        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("noCollision");
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            team.removeEntry(player.getName());
+            player.setInvisible(false);
+        }
     }
 
     @EventHandler
@@ -111,6 +129,8 @@ public class DragonEscapeGame extends Game {
                     Player winningPlayer = Bukkit.getPlayer(alivePlayers.get(0));
                     victory(winningPlayer);
                 }
+
+                player.setInvisible(false);
             });
         }
     }
