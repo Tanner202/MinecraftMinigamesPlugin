@@ -11,15 +11,21 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scoreboard.*;
+import org.bukkit.util.Vector;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class DragonEscapeGame extends Game {
@@ -28,11 +34,15 @@ public class DragonEscapeGame extends Game {
     private Location dragonSpawnLocation;
     private CustomEnderDragon customDragon;
     private List<UUID> alivePlayers = new ArrayList<>();
+    private Random random;
+    private float minBlockThrowPower = 0.1f;
+    private float maxBlockThrowPower = 0.5f;
 
     public DragonEscapeGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
         file = YamlConfiguration.loadConfiguration(minigames.getFileManager().getFile(Paths.get("dragon_escape/dragon_locations.yml")));
         dragonSpawnLocation = getDragonSpawn(file);
+        random = new Random();
     }
 
     private Location getDragonSpawn(YamlConfiguration file) {
@@ -183,6 +193,19 @@ public class DragonEscapeGame extends Game {
 
                 player.setInvisible(false);
             });
+        }
+    }
+
+    @EventHandler
+    public void onDragonBlockBreak(EntityExplodeEvent e) {
+        if (e.getEntityType().equals(EntityType.ENDER_DRAGON)) {
+            EnderDragon dragon = (EnderDragon) e.getEntity();
+            for (Block block : e.blockList()) {
+                FallingBlock fallingBlock = dragon.getWorld().spawnFallingBlock(dragon.getLocation(), block.getBlockData());
+                float randXPower = random.nextFloat(minBlockThrowPower, maxBlockThrowPower);
+                float randZPower = random.nextFloat(minBlockThrowPower, maxBlockThrowPower);
+                fallingBlock.setVelocity(new Vector(randXPower, maxBlockThrowPower, randZPower));
+            }
         }
     }
 
