@@ -1,5 +1,6 @@
 package com.tanner.minigames.instance.game.dragonescape;
 
+import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
@@ -7,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
 import org.bukkit.entity.Player;
@@ -54,19 +56,36 @@ public class DragonEscapeGame extends Game {
             throw new RuntimeException(e);
         }
 
-        Team team = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("noCollision");
-        if (team == null) {
-            team = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("noCollision");
+        Team scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("noCollision");
+        if (scoreboardTeam == null) {
+            scoreboardTeam = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("noCollision");
         }
-        team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        scoreboardTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-            team.addEntry(player.getName());
+            scoreboardTeam.addEntry(player.getName());
             player.setInvisible(true);
+
+            com.tanner.minigames.team.Team team = arena.getTeam(player);
+            Location teamSpawnLocation = getTeamSpawn(team);
+            player.teleport(teamSpawnLocation);
         }
 
         alivePlayers.addAll(arena.getPlayers());
+    }
+
+    private Location getTeamSpawn(com.tanner.minigames.team.Team team) {
+        FileConfiguration config = minigames.getConfig();
+        String teamName = ChatColor.stripColor(team.getDisplay());
+        String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
+        return new Location(
+                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
+                config.getDouble( teamSpawnPath + ".x"),
+                config.getDouble(teamSpawnPath + ".y"),
+                config.getDouble(teamSpawnPath + ".z"),
+                (float) config.getDouble(teamSpawnPath + ".yaw"),
+                (float) config.getDouble(teamSpawnPath + ".pitch"));
     }
 
     private Vec3[] getTargetLocations() {

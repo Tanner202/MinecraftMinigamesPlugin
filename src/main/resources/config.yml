@@ -137,8 +137,8 @@ arenas:
         pitch: 0
   5:
     game: 'DRAGON_ESCAPE'
-    max-players: 8
-    amount-of-teams: 8
+    max-players: 4
+    amount-of-teams: 4
     world-reload-enabled: true
     world: 'world'
     x: 100
@@ -146,3 +146,32 @@ arenas:
     z: 100
     yaw: -180
     pitch: 0
+    team-spawns:
+      blue:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      red:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      green:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
+      yellow:
+        world: 'world'
+        x: 100
+        y: 100
+        z: 100
+        yaw: -180
+        pitch: 0
