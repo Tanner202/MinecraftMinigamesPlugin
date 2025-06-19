@@ -2,6 +2,7 @@ package com.tanner.minigames.manager;
 
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.instance.GameType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,10 +27,18 @@ public class ArenaManager {
 
     private void addArenasFromConfig(Minigames minigames) {
         for (String arenaID : config.getConfigurationSection("arenas").getKeys(false)) {
+            String gameName = config.getString("arenas." + arenaID + ".game");
+            GameType gameType;
+            try {
+                gameType = GameType.valueOf(gameName);
+            } catch (IllegalArgumentException e) {
+                minigames.getLogger().warning("Could not find gamemode of type " + gameName + " - " + e.getMessage());
+                continue;
+            }
             arenas.add(new Arena(minigames,
                     Integer.parseInt(arenaID),
                     getArenaLocation(arenaID),
-                    config.getString("arenas." + arenaID + ".game"),
+                    gameType,
                     getNPCSpawn(arenaID),
                     config.getInt("arenas." + arenaID + ".amount-of-teams"),
                     config.getInt("arenas." + arenaID + ".max-players"),

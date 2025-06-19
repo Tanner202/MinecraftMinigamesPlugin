@@ -38,7 +38,7 @@ public class Arena {
     private World world;
     private Villager npc;
     private Location npcSpawn;
-    private String gameName;
+    private GameType gameType;
     private int maxPlayers;
     private int worldUnloadWaitTime = 60;
     // The world load wait time must be longer than the unload wait time
@@ -57,12 +57,12 @@ public class Arena {
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, String game, Location npcSpawn, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
+    public Arena(Minigames minigames, int id, Location spawn, GameType gameType, Location npcSpawn, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
         this.minigames = minigames;
 
         this.id = id;
         this.spawn = spawn;
-        this.gameName = game;
+        this.gameType = gameType;
         this.npcSpawn = npcSpawn;
         this.maxPlayers = maxPlayers;
         world = spawn.getWorld();
@@ -143,28 +143,22 @@ public class Arena {
     }
 
     private void setGameType() {
-        switch (gameName) {
-            case "BLOCK":
-                this.game = new BlockBreakGame(minigames, this);
-                break;
-            case "PVP":
-                this.game = new PVPGame(minigames, this);
-                break;
-            case "COLORSWAP":
+        switch (gameType) {
+            case COLORSWAP:
                 availableKitTypes = ColorSwapKitType.values();
                 this.game = new ColorSwapGame(minigames, this);
                 break;
-            case "TNTWARS":
+            case TNT_WARS:
                 availableKitTypes = TNTWarsKitType.values();
                 this.game = new TNTWarsGame(minigames, this);
                 break;
-            case "SPLEEF":
+            case SPLEEF:
                 this.game = new SpleefGame(minigames, this);
                 break;
-            case "SCRAPYARD_SKIRMISH":
+            case SCRAPYARD_SKIRMISH:
                 this.game = new ScrapyardSkirmish(minigames, this);
                 break;
-            case "DRAGON_ESCAPE":
+            case DRAGON_ESCAPE:
                 availableKitTypes = DragonEscapeKitType.values();
                 this.game = new DragonEscapeGame(minigames, this);
                 break;
