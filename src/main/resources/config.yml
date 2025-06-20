@@ -9,42 +9,6 @@ lobby-spawn:
   pitch: 0
 arenas:
   0:
-    game: 'BLOCK'
-    max-players: 8
-    amount-of-teams: 8
-    world-reload-enabled: false
-    npc-spawn:
-      world: 'world'
-      x: 100
-      y: 100
-      z: 100
-      yaw: -180
-      pitch: 0
-    world: 'world'
-    x: 100
-    y: 100
-    z: 100
-    yaw: -180
-    pitch: 0
-  1:
-    game: 'PVP'
-    max-players: 8
-    amount-of-teams: 8
-    world-reload-enabled: false
-    npc-spawn:
-      world: 'world'
-      x: 100
-      y: 100
-      z: 100
-      yaw: -180
-      pitch: 0
-    world: 'world'
-    x: 100
-    y: 100
-    z: 100
-    yaw: -180
-    pitch: 0
-  2:
     game: 'COLORSWAP'
     max-players: 8
     amount-of-teams: 8
@@ -62,7 +26,7 @@ arenas:
     z: 100
     yaw: -180
     pitch: 0
-  3:
+  1:
     game: 'TNTWARS'
     max-players: 16
     amount-of-teams: 2
@@ -95,7 +59,7 @@ arenas:
         z: 100
         yaw: -180
         pitch: 0
-  4:
+  2:
     game: 'SCRAPYARD_SKIRMISH'
     max-players: 16
     amount-of-teams: 4
@@ -135,7 +99,7 @@ arenas:
         z: 100
         yaw: -180
         pitch: 0
-  5:
+  3:
     game: 'DRAGON_ESCAPE'
     max-players: 4
     amount-of-teams: 4
