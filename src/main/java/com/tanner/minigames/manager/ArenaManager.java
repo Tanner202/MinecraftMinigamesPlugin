@@ -27,12 +27,16 @@ public class ArenaManager {
 
     private void addArenasFromConfig(Minigames minigames) {
         for (String arenaID : config.getConfigurationSection("arenas").getKeys(false)) {
+            if (!isValidArena(arenaID)) {
+                minigames.getLogger().warning("Arena ID: " + arenaID + " has missing or invalid values in the config file.");
+                continue;
+            }
             String gameName = config.getString("arenas." + arenaID + ".game");
             GameType gameType;
             try {
                 gameType = GameType.valueOf(gameName);
             } catch (IllegalArgumentException e) {
-                minigames.getLogger().warning("Could not find gamemode of type " + gameName + " - " + e.getMessage());
+                minigames.getLogger().warning("Could not find gamemode of type " + gameName + " which is used in the config");
                 continue;
             }
             arenas.add(new Arena(minigames,
@@ -44,6 +48,28 @@ public class ArenaManager {
                     config.getInt("arenas." + arenaID + ".max-players"),
                     config.getBoolean("arenas." + arenaID + ".world-reload-enabled")));
         }
+    }
+
+    private boolean isValidArena(String arenaID) {
+        String path = "arenas." + arenaID;
+        if (!config.contains(path + ".game") ||
+                !config.contains(path + ".amount-of-teams") ||
+                !config.contains(path + ".max-players") ||
+                !config.contains(path + ".world-reload-enabled")) {
+            return false;
+        }
+
+        if (!ConfigManager.isValidLocation("arenas." + arenaID)) {
+            return false;
+        }
+
+        try {
+            Integer.parseInt(arenaID);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
     }
 
     private Location getArenaLocation(String arenaID) {
