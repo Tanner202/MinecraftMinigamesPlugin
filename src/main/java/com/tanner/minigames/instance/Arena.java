@@ -266,7 +266,10 @@ public class Arena {
         if (player.getScoreboard().getObjective("lobby") != null) {
             player.getScoreboard().getObjective("lobby").unregister();
         }
-        updateScoreboard();
+
+        if (state == GameState.RECRUITING || state == GameState.COUNTDOWN) {
+            updateScoreboard();
+        }
 
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "There are not enough players. Countdown stopped.");
@@ -353,7 +356,10 @@ public class Arena {
     public GameState getState() { return state; }
     public void setState(GameState state) {
         this.state = state;
-        updateScoreboard();
+
+        if (state == GameState.RECRUITING || state == GameState.COUNTDOWN) {
+            updateScoreboard();
+        }
     }
     public Location getSpawn() { return spawn; }
     public World getWorld() { return world; }
