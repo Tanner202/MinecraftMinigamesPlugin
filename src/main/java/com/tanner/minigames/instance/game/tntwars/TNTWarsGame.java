@@ -58,11 +58,6 @@ public class TNTWarsGame extends Game {
     }
 
     @Override
-    public void onArenaReset() {
-
-    }
-
-    @Override
     public void onStart() {
         for (Team team : arena.getTeams()) {
             teamSpawns.put(team, getTeamSpawn(team));
@@ -135,6 +130,11 @@ public class TNTWarsGame extends Game {
     public void onEnd() {
         giveTntTask.cancel();
         giveSnowballTask.cancel();
+    }
+
+    @Override
+    public void onPlayerRemoved(Player player) {
+
     }
 
     public List<UUID> getRemainingPlayers() { return remainingPlayers; }

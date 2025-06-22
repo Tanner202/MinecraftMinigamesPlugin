@@ -98,14 +98,11 @@ public class Arena {
     }
 
     public void reset(boolean kickPlayers) {
-        game.onArenaReset();
+        setState(GameState.ENDING);
         if (kickPlayers) {
-            Location loc = ConfigManager.getLobbySpawn();
             for (UUID uuid : players) {
                 Player player = Bukkit.getPlayer(uuid);
-                player.getInventory().clear();
-                player.teleport(loc);
-                removeKit(uuid);
+                removePlayer(player);
             }
 
             if (worldReloadEnabled) {
@@ -116,7 +113,6 @@ public class Arena {
             teams.clear();
         }
         kits.clear();
-        sendTitle("", "");
         countdown.cancel();
 
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
@@ -260,6 +256,7 @@ public class Arena {
     }
 
     public void removePlayer(Player player) {
+        game.onPlayerRemoved(player);
         players.remove(player.getUniqueId());
         player.getInventory().clear();
         player.setInvulnerable(false);

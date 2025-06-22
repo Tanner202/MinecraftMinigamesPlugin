@@ -145,16 +145,13 @@ public class DragonEscapeGame extends Game {
     }
 
     @Override
-    public void onArenaReset() {
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            player.setInvisible(false);
-            player.getScoreboard().getTeam(player.getName()).unregister();
-            player.getScoreboard().getTeam("no_collision").unregister();
+    public void onPlayerRemoved(Player player) {
+        player.setInvisible(false);
+        player.getScoreboard().getTeam(player.getName()).unregister();
+        player.getScoreboard().getTeam("no_collision").unregister();
 
-            player.getScoreboard().getObjective("dragon_escape").unregister();
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        }
+        player.getScoreboard().getObjective("dragon_escape").unregister();
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
     @EventHandler

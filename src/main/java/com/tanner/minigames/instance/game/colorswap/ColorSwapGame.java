@@ -31,11 +31,6 @@ public class ColorSwapGame extends Game {
     }
 
     @Override
-    public void onArenaReset() {
-
-    }
-
-    @Override
     public void onStart() {
         remainingPlayers.addAll(arena.getPlayers());
         grid.start();
@@ -45,6 +40,11 @@ public class ColorSwapGame extends Game {
     public void onEnd() {
         grid.Stop();
         remainingPlayers.clear();
+    }
+
+    @Override
+    public void onPlayerRemoved(Player player) {
+
     }
 
     @EventHandler

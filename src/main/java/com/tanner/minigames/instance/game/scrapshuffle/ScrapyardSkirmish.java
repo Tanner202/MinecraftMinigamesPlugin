@@ -46,11 +46,6 @@ public class ScrapyardSkirmish extends Game {
         removeCrates();
     }
 
-    @Override
-    public void onArenaReset() {
-
-    }
-
     private YamlConfiguration getFile(String fileName) {
         File file = minigames.getFileManager().getFile(Paths.get("scrapyard_skirmish", fileName));
         if (file != null) {
@@ -162,6 +157,11 @@ public class ScrapyardSkirmish extends Game {
 
     @Override
     public void onEnd() {
+
+    }
+
+    @Override
+    public void onPlayerRemoved(Player player) {
 
     }
 }

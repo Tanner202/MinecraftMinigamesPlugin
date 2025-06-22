@@ -35,11 +35,6 @@ public class SpleefGame extends Game {
     }
 
     @Override
-    public void onArenaReset() {
-
-    }
-
-    @Override
     public void onStart() {
         for (Team team : arena.getTeams()) {
             teamSpawns.put(team, getTeamSpawn(team));
@@ -66,6 +61,11 @@ public class SpleefGame extends Game {
     @Override
     public void onEnd() {
         remainingPlayers.clear();
+    }
+
+    @Override
+    public void onPlayerRemoved(Player player) {
+
     }
 
     private Location getTeamSpawn(Team team) {
