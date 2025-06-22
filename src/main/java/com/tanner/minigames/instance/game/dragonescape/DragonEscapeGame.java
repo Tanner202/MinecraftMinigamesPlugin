@@ -37,6 +37,8 @@ public class DragonEscapeGame extends Game {
     private Random random;
     private float minBlockThrowPower = 0.1f;
     private float maxBlockThrowPower = 0.5f;
+    private long timeMillisSinceLastThrownBlock;
+    private long timeMillisBetweenBlockThrows = 250;
 
     public DragonEscapeGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -149,7 +151,7 @@ public class DragonEscapeGame extends Game {
             player.setInvisible(false);
             player.getScoreboard().getTeam(player.getName()).unregister();
             player.getScoreboard().getTeam("no_collision").unregister();
-            ;
+
             player.getScoreboard().getObjective("dragon_escape").unregister();
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
@@ -198,8 +200,10 @@ public class DragonEscapeGame extends Game {
 
     @EventHandler
     public void onDragonBlockBreak(EntityExplodeEvent e) {
-        if (e.getEntityType().equals(EntityType.ENDER_DRAGON)) {
+        if (e.getEntityType().equals(EntityType.ENDER_DRAGON) && System.currentTimeMillis() - timeMillisSinceLastThrownBlock >= timeMillisBetweenBlockThrows) {
             EnderDragon dragon = (EnderDragon) e.getEntity();
+            timeMillisSinceLastThrownBlock = System.currentTimeMillis();
+
             for (Block block : e.blockList()) {
                 FallingBlock fallingBlock = dragon.getWorld().spawnFallingBlock(dragon.getLocation(), block.getBlockData());
                 float randXPower = random.nextFloat(minBlockThrowPower, maxBlockThrowPower);
