@@ -100,8 +100,9 @@ public class Arena {
     public void reset(boolean kickPlayers) {
         setState(GameState.ENDING);
         if (kickPlayers) {
-            for (UUID uuid : players) {
-                Player player = Bukkit.getPlayer(uuid);
+
+            while (!players.isEmpty()) {
+                Player player = Bukkit.getPlayer(players.getFirst());
                 removePlayer(player);
             }
 
