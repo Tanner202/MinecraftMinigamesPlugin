@@ -7,6 +7,8 @@ public class Constants {
     public static NamespacedKey KIT_NAME;
     public static NamespacedKey TEAM_SELECTION;
     public static NamespacedKey KIT_SELECTION;
+    public static int DEFAULT_REQUIRED_PLAYERS = 2;
+    public static int DEFAULT_COUNTDOWN_TIME = 15;
 
     public static void initializeConstants(Minigames minigames) {
         TEAM_NAME = new NamespacedKey(minigames, "TeamName");

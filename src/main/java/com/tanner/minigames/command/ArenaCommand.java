@@ -75,6 +75,12 @@ public class ArenaCommand implements CommandExecutor {
                 }
 
                 Arena arena = minigames.getArenaManager().getArena(id);
+
+                if (arena == null) {
+                    player.sendMessage(ChatColor.RED + "This arena ID doesn't exist in the config.");
+                    return false;
+                }
+
                 if (arena.getPlayers().size() >= arena.getMaxPlayers()) {
                     player.sendMessage(ChatColor.RED + "This arena is currently full.");
                     return false;
