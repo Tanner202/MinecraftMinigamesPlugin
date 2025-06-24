@@ -146,6 +146,8 @@ public class DragonEscapeGame extends Game {
 
     @Override
     public void onPlayerRemoved(Player player) {
+
+        if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
         player.setInvisible(false);
         player.getScoreboard().getTeam(player.getName()).unregister();
         player.getScoreboard().getTeam("no_collision").unregister();
