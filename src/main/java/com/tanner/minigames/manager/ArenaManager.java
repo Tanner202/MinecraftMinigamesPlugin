@@ -126,7 +126,7 @@ public class ArenaManager {
 
     public int getArena(UUID npcUUID) {
         for (Arena arena : arenas) {
-            if (arena.getNPC().getUniqueId().equals(npcUUID)) {
+            if (arena.getNPC() != null && arena.getNPC().getUniqueId().equals(npcUUID)) {
                 return arena.getId();
             }
         }
