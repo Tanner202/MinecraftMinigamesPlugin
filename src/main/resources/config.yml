@@ -7,6 +7,21 @@ lobby-spawn:
   z: 100
   yaw: -180
   pitch: 0
+victory-podium:
+  npc-spawn:
+    world: 'world'
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 0
+  player-spawn:
+    world: 'world'
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 0
 arenas:
   0:
     game: 'COLORSWAP'

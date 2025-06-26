@@ -19,19 +19,23 @@ public class ConfigManager {
 
     public static int getCountdownSeconds() { return config.getInt("countdown-seconds", Constants.DEFAULT_COUNTDOWN_TIME); }
 
-    public static Location getLobbySpawn() {
-        if (isValidLocation("lobby-spawn")) {
+    public static Location getSpawn(String path) {
+        if (isValidLocation(path)) {
             return new Location(
-                    Bukkit.getWorld(config.getString("lobby-spawn.world")),
-                    config.getDouble("lobby-spawn.x"),
-                    config.getDouble("lobby-spawn.y"),
-                    config.getDouble("lobby-spawn.z"),
-                    (float) config.getDouble("lobby-spawn.yaw", 0.0),
-                    (float) config.getDouble("lobby-spawn.pitch", 0.0));
+                    Bukkit.getWorld(config.getString(path + ".world")),
+                    config.getDouble(path + ".x"),
+                    config.getDouble(path + ".y"),
+                    config.getDouble(path + ".z"),
+                    (float) config.getDouble(path + ".yaw", 0.0),
+                    (float) config.getDouble(path + ".pitch", 0.0));
         } else {
-            Bukkit.getLogger().warning("[Minigames] Invalid or missing config location: lobby-spawn");
+            Bukkit.getLogger().warning("[Minigames] Invalid or missing config location: " + path);
             return null;
         }
+    }
+
+    public static Location getLobbySpawn() {
+        return getSpawn("lobby-spawn");
     }
 
     public static boolean isValidLocation(String path) {
