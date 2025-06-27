@@ -39,8 +39,6 @@ public abstract class Game implements Listener {
     protected List<Player> winningPlayers;
 
     protected int arenaResetWaitTime = 200;
-    private int celebrationFireworkInterval = 20;
-    private BukkitTask celebrationTask;
 
     public Game(Minigames minigames, Arena arena) {
         this.arena = arena;
@@ -66,65 +64,14 @@ public abstract class Game implements Listener {
         unregisterEvents();
         onEnd();
         if (gameComplete) {
-            victoryCelebration();
+            VictoryCelebration celebration = new VictoryCelebration(minigames, this);
             Bukkit.getScheduler().runTaskLater(minigames, () -> {
-                celebrationTask.cancel();
+                celebration.end();
                 arena.reset(true);
             }, arenaResetWaitTime);
         } else {
             arena.reset(true);
         }
-    }
-
-    protected void victoryCelebration() {
-
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            player.teleport(ConfigManager.getSpawn("victory-podium.player-spawn"));
-        }
-
-        Player winningPlayer = winningPlayers.getFirst();
-        CraftPlayer winningCraftPlayer = (CraftPlayer) winningPlayer;
-        ServerPlayer winningServerPlayer = winningCraftPlayer.getHandle();
-
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), winningPlayer.getDisplayName());
-
-        ServerPlayer playerNPC = new ServerPlayer(winningServerPlayer.getServer(), winningServerPlayer.serverLevel(), gameProfile, ClientInformation.createDefault());
-        Location npcPodiumSpawn = ConfigManager.getSpawn("victory-podium.npc-spawn");
-        playerNPC.setPos(new Vec3(npcPodiumSpawn.getX(), npcPodiumSpawn.getY(), npcPodiumSpawn.getZ()));
-
-        Set<ServerPlayerConnection> set = new HashSet<>();
-        ServerEntity playerNPCServerEntity = new ServerEntity(playerNPC.serverLevel(), playerNPC, 0, false, packet -> {
-        }, set);
-
-        playerNPC.connection = new ServerGamePacketListenerImpl(playerNPC.getServer(), new Connection(PacketFlow.SERVERBOUND), playerNPC,
-                CommonListenerCookie.createInitial(gameProfile, false));
-
-        float yaw = npcPodiumSpawn.getYaw();
-        float pitch = npcPodiumSpawn.getPitch();
-
-        Util.sendPacket(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerNPC));
-        Util.sendPacket(new ClientboundAddEntityPacket(playerNPC, playerNPCServerEntity));
-        Util.sendPacket(new ClientboundRotateHeadPacket(playerNPC, (byte) ((yaw % 360) * 256 / 360)));
-        Util.sendPacket(new ClientboundMoveEntityPacket.Rot(playerNPC.getBukkitEntity().getEntityId(),
-                    (byte) ((yaw % 360) * 256 / 360),
-                    (byte) ((pitch % 360) * 256 / 360),
-                    true));
-
-        SynchedEntityData data = playerNPC.getEntityData();
-        EntityDataAccessor<Pose> POSE = new EntityDataAccessor<>(6, EntityDataSerializers.POSE);
-        celebrationTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
-            for (Player player : winningPlayers) {
-                player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK_ROCKET);
-            }
-
-            Pose pose = data.get(POSE);
-            pose = (pose == Pose.CROUCHING) ? Pose.STANDING : Pose.CROUCHING;
-
-            data.set(POSE, pose);
-            Util.sendPacket(new ClientboundSetEntityDataPacket(playerNPC.getId(), data.packDirty()));
-            Util.sendPacket(new ClientboundAnimatePacket(playerNPC, 0));
-        }, 0, celebrationFireworkInterval);
     }
 
     public abstract void onStart();
