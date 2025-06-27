@@ -56,9 +56,14 @@ public class DoubleJumperKit extends Kit {
         if (!cooldown.asMap().containsKey(player.getUniqueId()) && remainingUses != 0) {
             cooldown.put(player.getUniqueId(), TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + doubleJumpCooldown);
             setExpBarCooldownVisual(player);
-        } else {
+        } else if (cooldown.asMap().containsKey(player.getUniqueId())) {
             long timeRemaining = cooldown.asMap().get(player.getUniqueId()) - TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
             player.sendMessage(ChatColor.RED + "You must wait " + timeRemaining + " second(s) before using double jump!");
+            e.setCancelled(true);
+            return;
+        } else if (remainingUses == 0) {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    TextComponent.fromLegacy("§4§lYou are out of usages!"));
             e.setCancelled(true);
             return;
         }
@@ -90,7 +95,11 @@ public class DoubleJumperKit extends Kit {
     private void setExpBarCooldownVisual(Player player) {
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
             float timeRemaining = TimeUnit.SECONDS.toMillis(cooldown.asMap().get(player.getUniqueId())) - System.currentTimeMillis();
-            player.setExp(timeRemaining/TimeUnit.SECONDS.toMillis(doubleJumpCooldown));
+            if (timeRemaining >= 0) {
+                player.setExp(timeRemaining/TimeUnit.SECONDS.toMillis(doubleJumpCooldown));
+            } else {
+                player.setExp(0);
+            }
         }, 0, 1);
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
             task.cancel();
