@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
@@ -81,34 +82,35 @@ public abstract class Game implements Listener {
             player.teleport(ConfigManager.getSpawn("victory-podium.player-spawn"));
         }
 
-        for (Player player : winningPlayers) {
+        Player winningPlayer = winningPlayers.getFirst();
+        CraftPlayer winningCraftPlayer = (CraftPlayer) winningPlayer;
+        ServerPlayer winningServerPlayer = winningCraftPlayer.getHandle();
+
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), winningPlayer.getDisplayName());
+
+        ServerPlayer playerNPC = new ServerPlayer(winningServerPlayer.getServer(), winningServerPlayer.serverLevel(), gameProfile, ClientInformation.createDefault());
+        Location npcPodiumSpawn = ConfigManager.getSpawn("victory-podium.npc-spawn");
+        playerNPC.setPos(new Vec3(npcPodiumSpawn.getX(), npcPodiumSpawn.getY(), npcPodiumSpawn.getZ()));
+
+        Set<ServerPlayerConnection> set = new HashSet<>();
+        ServerEntity playerNPCServerEntity = new ServerEntity(playerNPC.serverLevel(), playerNPC, 0, false, packet -> {
+        }, set);
+
+        playerNPC.connection = new ServerGamePacketListenerImpl(playerNPC.getServer(), new Connection(PacketFlow.SERVERBOUND), playerNPC,
+                CommonListenerCookie.createInitial(gameProfile, false));
+
+        float yaw = npcPodiumSpawn.getYaw();
+        float pitch = npcPodiumSpawn.getPitch();
+
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+
             CraftPlayer craftPlayer = (CraftPlayer) player;
             ServerPlayer serverPlayer = craftPlayer.getHandle();
-
-            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), player.getDisplayName());
-
-            ServerPlayer playerNPC = new ServerPlayer(serverPlayer.getServer(), serverPlayer.serverLevel(), gameProfile, ClientInformation.createDefault());
-            Location npcPodiumSpawn = ConfigManager.getSpawn("victory-podium.npc-spawn");
-            playerNPC.setPos(new Vec3(npcPodiumSpawn.getX(), npcPodiumSpawn.getY(), npcPodiumSpawn.getZ()));
-
-            Set<ServerPlayerConnection> set = new HashSet<>();
-            ServerEntity playerNPCServerEntity = new ServerEntity(playerNPC.serverLevel(), playerNPC, 0, false, packet -> {
-            }, set);
-
             ServerGamePacketListenerImpl connection = serverPlayer.connection;
-
-            SynchedEntityData data = playerNPC.getEntityData();
-            byte bitmask = (byte) (0x01 | 0x04 | 0x08 | 0x010 | 0x20 | 0x40);
-            data.set(new EntityDataAccessor<>(17, EntityDataSerializers.BYTE), bitmask);
-
-            playerNPC.connection = new ServerGamePacketListenerImpl(playerNPC.getServer(), new Connection(PacketFlow.SERVERBOUND), playerNPC,
-                    CommonListenerCookie.createInitial(gameProfile, false));
 
             connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerNPC));
             connection.send(new ClientboundAddEntityPacket(playerNPC, playerNPCServerEntity));
-
-            float yaw = npcPodiumSpawn.getYaw();
-            float pitch = npcPodiumSpawn.getPitch();
             connection.send(new ClientboundRotateHeadPacket(playerNPC, (byte) ((yaw % 360) * 256 / 360)));
             connection.send(new ClientboundMoveEntityPacket.Rot(playerNPC.getBukkitEntity().getEntityId(),
                     (byte) ((yaw % 360) * 256 / 360),
@@ -116,10 +118,29 @@ public abstract class Game implements Listener {
                     true));
         }
 
+        SynchedEntityData data = playerNPC.getEntityData();
+        EntityDataAccessor<Pose> POSE = new EntityDataAccessor<>(6, EntityDataSerializers.POSE);
         celebrationTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
             for (Player player : winningPlayers) {
                 player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK_ROCKET);
-        }}, 0, celebrationFireworkInterval);
+            }
+
+            Pose pose = data.get(POSE);
+            pose = (pose == Pose.CROUCHING) ? Pose.STANDING : Pose.CROUCHING;
+
+            for (UUID uuid : arena.getPlayers()) {
+                Player player = Bukkit.getPlayer(uuid);
+
+                CraftPlayer craftPlayer = (CraftPlayer) player;
+                ServerPlayer serverPlayer = craftPlayer.getHandle();
+                ServerGamePacketListenerImpl connection = serverPlayer.connection;
+
+                data.set(POSE, pose);
+                data.markDirty(POSE);
+                connection.send(new ClientboundSetEntityDataPacket(playerNPC.getId(), data.packDirty()));
+                connection.send(new ClientboundAnimatePacket(playerNPC, 0));
+            }
+        }, 0, celebrationFireworkInterval);
     }
 
     public abstract void onStart();
