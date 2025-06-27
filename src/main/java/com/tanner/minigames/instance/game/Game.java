@@ -3,6 +3,7 @@ package com.tanner.minigames.instance.game;
 import com.mojang.authlib.GameProfile;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.Util;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.manager.ConfigManager;
@@ -102,21 +103,13 @@ public abstract class Game implements Listener {
         float yaw = npcPodiumSpawn.getYaw();
         float pitch = npcPodiumSpawn.getPitch();
 
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-
-            CraftPlayer craftPlayer = (CraftPlayer) player;
-            ServerPlayer serverPlayer = craftPlayer.getHandle();
-            ServerGamePacketListenerImpl connection = serverPlayer.connection;
-
-            connection.send(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerNPC));
-            connection.send(new ClientboundAddEntityPacket(playerNPC, playerNPCServerEntity));
-            connection.send(new ClientboundRotateHeadPacket(playerNPC, (byte) ((yaw % 360) * 256 / 360)));
-            connection.send(new ClientboundMoveEntityPacket.Rot(playerNPC.getBukkitEntity().getEntityId(),
+        Util.sendPacket(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerNPC));
+        Util.sendPacket(new ClientboundAddEntityPacket(playerNPC, playerNPCServerEntity));
+        Util.sendPacket(new ClientboundRotateHeadPacket(playerNPC, (byte) ((yaw % 360) * 256 / 360)));
+        Util.sendPacket(new ClientboundMoveEntityPacket.Rot(playerNPC.getBukkitEntity().getEntityId(),
                     (byte) ((yaw % 360) * 256 / 360),
                     (byte) ((pitch % 360) * 256 / 360),
                     true));
-        }
 
         SynchedEntityData data = playerNPC.getEntityData();
         EntityDataAccessor<Pose> POSE = new EntityDataAccessor<>(6, EntityDataSerializers.POSE);
@@ -128,18 +121,9 @@ public abstract class Game implements Listener {
             Pose pose = data.get(POSE);
             pose = (pose == Pose.CROUCHING) ? Pose.STANDING : Pose.CROUCHING;
 
-            for (UUID uuid : arena.getPlayers()) {
-                Player player = Bukkit.getPlayer(uuid);
-
-                CraftPlayer craftPlayer = (CraftPlayer) player;
-                ServerPlayer serverPlayer = craftPlayer.getHandle();
-                ServerGamePacketListenerImpl connection = serverPlayer.connection;
-
-                data.set(POSE, pose);
-                data.markDirty(POSE);
-                connection.send(new ClientboundSetEntityDataPacket(playerNPC.getId(), data.packDirty()));
-                connection.send(new ClientboundAnimatePacket(playerNPC, 0));
-            }
+            data.set(POSE, pose);
+            Util.sendPacket(new ClientboundSetEntityDataPacket(playerNPC.getId(), data.packDirty()));
+            Util.sendPacket(new ClientboundAnimatePacket(playerNPC, 0));
         }, 0, celebrationFireworkInterval);
     }
 
