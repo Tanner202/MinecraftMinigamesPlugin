@@ -160,6 +160,12 @@ public class Arena {
         }
     }
 
+    public void setDefaultKit(UUID uuid) {
+        if (availableKitTypes.length == 0) return;
+
+        setKit(uuid, availableKitTypes[0]);
+    }
+
     public void setKit(UUID uuid, KitType type) {
         removeKit(uuid);
 
@@ -238,6 +244,7 @@ public class Arena {
         giveLobbyItems(player);
         setPlayerScoreboard(player);
         updateScoreboard();
+        setDefaultKit(player.getUniqueId());
 
         player.teleport(spawn);
 
