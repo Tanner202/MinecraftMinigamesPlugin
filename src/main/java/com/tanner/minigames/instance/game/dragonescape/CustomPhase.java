@@ -44,7 +44,7 @@ public class CustomPhase extends AbstractDragonPhaseInstance {
         Vec3 direction = delta.normalize();
 
         // Movement speed (adjust this as needed)
-        double speed = 0.2;
+        double speed = 0.1;
 
         // Apply motion
         dragon.setDeltaMovement(direction.scale(speed));
