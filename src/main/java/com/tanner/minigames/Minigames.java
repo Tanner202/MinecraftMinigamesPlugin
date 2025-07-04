@@ -55,7 +55,9 @@ public final class Minigames extends JavaPlugin {
     @Override
     public void onDisable() {
         for (Arena arena : arenaManager.getArenas()) {
-            arena.getNPC().remove();
+            if (arena.getNPC() != null) {
+                arena.getNPC().remove();
+            }
         }
     }
 
