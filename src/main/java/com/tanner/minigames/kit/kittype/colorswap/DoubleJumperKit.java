@@ -31,12 +31,12 @@ public class DoubleJumperKit extends Kit {
 
     public DoubleJumperKit(Minigames minigames, UUID uuid) {
         super(minigames, ColorSwapKitType.DOUBLE_JUMPER, uuid);
+        kitOwner = Bukkit.getPlayer(uuid);
     }
 
 
     @Override
     public void onStart(Player player) {
-        kitOwner = player;
         kitOwner.setAllowFlight(true);
         kitOwner.setFlying(false);
     }
