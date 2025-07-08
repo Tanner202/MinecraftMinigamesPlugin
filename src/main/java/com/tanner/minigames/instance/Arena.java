@@ -81,7 +81,7 @@ public class Arena {
             npc.setCollidable(false);
             npc.setInvulnerable(true);
             npc.setCustomNameVisible(true);
-            npc.setCustomName(ChatColor.GREEN + "Arena " + id + ChatColor.GRAY + " (Click to Join)");
+            npc.setCustomName(gameType.getDisplayName() + ChatColor.GRAY + " " + getPlayers().size() + "/" + getMaxPlayers() + " (Click to Join)");
         }
 
         setGameType();
