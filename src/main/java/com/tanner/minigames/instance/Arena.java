@@ -170,6 +170,7 @@ public class Arena {
         removeKit(uuid);
 
         kits.put(uuid, type.createKit(minigames, uuid));
+        setPlayerScoreboard(Bukkit.getPlayer(uuid));
     }
 
     public void removeKit(UUID uuid) {
@@ -213,26 +214,46 @@ public class Arena {
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         obj.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "LOBBY");
 
-        Score name = obj.getScore(ChatColor.BLUE + "Name: " + player.getDisplayName());
-        name.setScore(5);
+        Score name = obj.getScore(ChatColor.GRAY + "▶ Name: " + ChatColor.GREEN + player.getDisplayName());
+        name.setScore(6);
 
         Score space = obj.getScore(" ");
-        space.setScore(2);
+        space.setScore(1);
 
         org.bukkit.scoreboard.Team playerAmount = board.registerNewTeam("player_amount");
         playerAmount.addEntry(ChatColor.BOLD.toString());
-        playerAmount.setPrefix(ChatColor.AQUA + "Players: ");
-        playerAmount.setSuffix(ChatColor.AQUA.toString() + players.size() + "/" + maxPlayers);
-        obj.getScore(ChatColor.BOLD.toString()).setScore(3);
+        playerAmount.setPrefix(ChatColor.GRAY + "▶ Players: ");
+        playerAmount.setSuffix(ChatColor.GREEN.toString() + players.size() + "/" + maxPlayers);
+        obj.getScore(ChatColor.BOLD.toString()).setScore(2);
 
         Score space2 = obj.getScore("  ");
-        space2.setScore(4);
+        space2.setScore(3);
 
         org.bukkit.scoreboard.Team arenaState = board.registerNewTeam("arena_state");
         arenaState.addEntry(ChatColor.DARK_GRAY.toString());
-        arenaState.setPrefix(ChatColor.DARK_GRAY + "State: ");
-        arenaState.setSuffix(ChatColor.DARK_GRAY + state.toString());
-        obj.getScore(ChatColor.DARK_GRAY.toString()).setScore(1);
+        arenaState.setPrefix(ChatColor.GRAY + "▶ State: ");
+        arenaState.setSuffix(ChatColor.GREEN + state.toString());
+        obj.getScore(ChatColor.DARK_GRAY.toString()).setScore(0);
+
+        org.bukkit.scoreboard.Team team = board.registerNewTeam("team");
+        team.addEntry(ChatColor.YELLOW.toString());
+        team.setPrefix(ChatColor.GRAY + "▶ Team: ");
+        if (getTeam(player) != null) {
+            team.setSuffix(getTeam(player).getDisplay());
+        } else {
+            team.setSuffix("");
+        }
+        obj.getScore(ChatColor.YELLOW.toString()).setScore(5);
+
+        org.bukkit.scoreboard.Team kit = board.registerNewTeam("kit");
+        kit.addEntry(ChatColor.GREEN.toString());
+        kit.setPrefix(ChatColor.GRAY + "▶ Kit: ");
+        if (getKit(player) != null) {
+            kit.setSuffix(getKit(player).getDisplay());
+        } else {
+            kit.setSuffix("");
+        }
+        obj.getScore(ChatColor.GREEN.toString()).setScore(4);
 
         player.setScoreboard(board);
     }
@@ -242,8 +263,6 @@ public class Arena {
         player.getInventory().clear();
         player.setInvulnerable(true);
         giveLobbyItems(player);
-        setPlayerScoreboard(player);
-        updateScoreboard();
         setDefaultKit(player.getUniqueId());
 
         player.teleport(spawn);
@@ -292,16 +311,16 @@ public class Arena {
     }
 
     private void updateScoreboard() {
-        for (UUID uuid : players) {
+        for (UUID uuid : getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
-            player.getScoreboard().getTeam("player_amount").setSuffix(ChatColor.AQUA.toString() + players.size() + "/" + maxPlayers);
-            player.getScoreboard().getTeam("arena_state").setSuffix(ChatColor.DARK_GRAY + state.toString());
+            setPlayerScoreboard(player);
         }
     }
 
     public void setTeam(Player player, Team team) {
         removeTeam(player);
         teams.put(player.getUniqueId(), team);
+        setPlayerScoreboard(player);
     }
 
     public void removeTeam(Player player) {
