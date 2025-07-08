@@ -63,6 +63,11 @@ public abstract class Game implements Listener {
     public void end(boolean gameComplete) {
         unregisterEvents();
         onEnd();
+
+        for (UUID uuid : arena.getPlayers()) {
+            arena.removeKit(uuid);
+        }
+
         if (gameComplete) {
             VictoryCelebration celebration = new VictoryCelebration(minigames, this);
             Bukkit.getScheduler().runTaskLater(minigames, () -> {
