@@ -288,10 +288,27 @@ public class Arena {
         player.getInventory().clear();
         player.setInvulnerable(false);
         removeKit(player.getUniqueId());
+        removeTeam(player);
         player.teleport(ConfigManager.getLobbySpawn());
         player.sendTitle("", "");
         if (player.getScoreboard().getObjective("lobby") != null) {
             player.getScoreboard().getObjective("lobby").unregister();
+        }
+
+        TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
+        for (Team team : availableTeams) {
+            teamCount.put(getTeamCount(team), team);
+        }
+
+        Team highestPlayerTeam = (Team) teamCount.values().toArray()[teamCount.values().size() - 1];
+        Team lowestPlayerTeam = (Team) teamCount.values().toArray()[0];
+        for (UUID uuid : players) {
+            Player _player = Bukkit.getPlayer(uuid);
+            if (getTeam(_player) == highestPlayerTeam) {
+                setTeam(_player, lowestPlayerTeam);
+                _player.sendMessage(ChatColor.AQUA + "You have been moved to " + lowestPlayerTeam.getDisplay() + ChatColor.AQUA + " team to balance the teams.");
+                break;
+            }
         }
 
         if (state == GameState.RECRUITING || state == GameState.COUNTDOWN) {

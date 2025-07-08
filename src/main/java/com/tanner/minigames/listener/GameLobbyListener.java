@@ -49,8 +49,20 @@ public class GameLobbyListener implements Listener {
             }
             if (team == null) return;
 
+            boolean isTeamTooLarge = false;
+            if (arena.getTeams().size() < arena.getAvailableTeams().length || arena.getTeamCount(arena.getTeam(player)) == 1) {
+                isTeamTooLarge = true;
+            }
+            for (Team _team : arena.getTeams()) {
+                if (arena.getTeamCount(team) > arena.getTeamCount(_team)) {
+                    isTeamTooLarge = true;
+                }
+            }
+
             if (arena.getTeam(player) == team) {
                 player.sendMessage(ChatColor.RED + "You are already on this team.");
+            } else if (isTeamTooLarge) {
+                player.sendMessage(ChatColor.RED + "This team is too large to join.");
             } else {
                 player.sendMessage(ChatColor.AQUA + "You are now on " + team.getDisplay() + ChatColor.AQUA + " team.");
                 arena.setTeam(player, team);
