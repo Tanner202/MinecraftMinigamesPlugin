@@ -8,6 +8,7 @@ import com.tanner.minigames.kit.KitType;
 import com.tanner.minigames.kit.KitUI;
 import com.tanner.minigames.team.Team;
 import com.tanner.minigames.team.TeamUI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -114,6 +115,9 @@ public class GameLobbyListener implements Listener {
             } else if (itemMeta.getPersistentDataContainer().has(Constants.KIT_SELECTION)) {
                 e.setCancelled(true);
                 new KitUI(player, arena.getKitTypes());
+            } else if (itemMeta.getPersistentDataContainer().has(Constants.LEAVE_ITEM)) {
+                e.setCancelled(true);
+                Bukkit.dispatchCommand(player, "arena leave");
             }
         }
     }

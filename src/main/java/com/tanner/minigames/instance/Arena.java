@@ -391,8 +391,15 @@ public class Arena {
         kitSelectionMeta.getPersistentDataContainer().set(Constants.KIT_SELECTION, PersistentDataType.STRING, "KitSelection");
         kitSelection.setItemMeta(kitSelectionMeta);
 
+        ItemStack leaveItem = new ItemStack(Material.RED_BED);
+        ItemMeta leaveItemMeta = leaveItem.getItemMeta();
+        leaveItemMeta.setDisplayName(ChatColor.RED + "Leave");
+        leaveItemMeta.getPersistentDataContainer().set(Constants.LEAVE_ITEM, PersistentDataType.STRING, "LeaveItem");
+        leaveItem.setItemMeta(leaveItemMeta);
+
         player.getInventory().setItem(0, teamSelection);
         player.getInventory().setItem(1, kitSelection);
+        player.getInventory().setItem(8, leaveItem);
     }
 
     public int getId() { return id; }
