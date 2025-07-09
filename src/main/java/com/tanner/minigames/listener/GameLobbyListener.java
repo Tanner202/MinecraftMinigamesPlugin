@@ -51,11 +51,8 @@ public class GameLobbyListener implements Listener {
             if (team == null) return;
 
             boolean isTeamTooLarge = false;
-            if (arena.getTeams().size() < arena.getAvailableTeams().length || arena.getTeamCount(arena.getTeam(player)) == 1) {
-                isTeamTooLarge = true;
-            }
             for (Team _team : arena.getTeams()) {
-                if (arena.getTeamCount(team) > arena.getTeamCount(_team)) {
+                if (arena.getTeamCount(team) >= arena.getTeamCount(_team) && team != _team) {
                     isTeamTooLarge = true;
                 }
             }
