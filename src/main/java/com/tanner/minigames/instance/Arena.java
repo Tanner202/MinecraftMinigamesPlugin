@@ -82,12 +82,12 @@ public class Arena {
             npc.setAI(false);
             npc.setCollidable(false);
             npc.setInvulnerable(true);
-            String[] lines = new String[]{
+            String[] hologramLines = new String[]{
                     ChatColor.YELLOW + ChatColor.BOLD.toString() + "CLICK HERE",
                     gameType.getDisplayName(),
                     ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getMaxPlayers()
             };
-            npcHologram = new Hologram(npcSpawn, lines);
+            npcHologram = new Hologram(npcSpawn, hologramLines);
         }
 
         setGameType();
@@ -286,6 +286,8 @@ public class Arena {
         if (state.equals(GameState.RECRUITING) && players.size() >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
         }
+
+        updateNPCHologramPlayerCount();
     }
 
     public void removePlayer(Player player) {
@@ -333,6 +335,8 @@ public class Arena {
             sendMessage(ChatColor.RED + "The game has ended because too many players have left.");
             game.end(false);
         }
+
+        updateNPCHologramPlayerCount();
     }
 
     private void updateScoreboard() {
@@ -408,6 +412,10 @@ public class Arena {
         player.getInventory().setItem(0, teamSelection);
         player.getInventory().setItem(1, kitSelection);
         player.getInventory().setItem(8, leaveItem);
+    }
+
+    private void updateNPCHologramPlayerCount() {
+        npcHologram.update(2, ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getMaxPlayers());
     }
 
     public int getId() { return id; }

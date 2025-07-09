@@ -13,7 +13,7 @@ public class Hologram {
     private List<ArmorStand> armorStands = new ArrayList<>();
 
     public Hologram(Location loc, String[] lines) {
-        Location hologramLoc = loc.add(0 , (lines.length - 1) * spacing, 0);
+        Location hologramLoc = loc.clone().add(0 , (lines.length - 1) * spacing, 0);
         for (String line : lines) {
             ArmorStand stand = (ArmorStand) loc.getWorld().spawnEntity(hologramLoc, EntityType.ARMOR_STAND);
             stand.setInvisible(true);
@@ -24,6 +24,11 @@ public class Hologram {
             hologramLoc.subtract(0, spacing, 0);
             armorStands.add(stand);
         }
+    }
+
+    public void update(int lineNum, String line) {
+        ArmorStand stand = armorStands.get(lineNum);
+        stand.setCustomName(line);
     }
 
     public void removeHologram() {
