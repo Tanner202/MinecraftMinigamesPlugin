@@ -9,7 +9,11 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
@@ -80,6 +84,35 @@ public class ColorSwapGame extends Game {
             if (blockAtPlayerLocation == Material.WATER) {
                 player.setHealth(0);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent e) {
+        if (arena.getPlayers().contains(e.getPlayer().getUniqueId())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (arena.getPlayers().contains(e.getPlayer().getUniqueId())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        if (arena.getPlayers().contains(e.getPlayer().getUniqueId())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryInteract(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        if (arena.getPlayers().contains(player.getUniqueId())) {
+            e.setCancelled(true);
         }
     }
 }
