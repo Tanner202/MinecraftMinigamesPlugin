@@ -57,6 +57,7 @@ public final class Minigames extends JavaPlugin {
         for (Arena arena : arenaManager.getArenas()) {
             if (arena.getNPC() != null) {
                 arena.getNPC().remove();
+                arena.getNPCHologram().removeHologram();
             }
         }
     }

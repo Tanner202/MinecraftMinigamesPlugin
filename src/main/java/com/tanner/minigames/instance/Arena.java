@@ -3,6 +3,7 @@ package com.tanner.minigames.instance;
 import com.google.common.collect.TreeMultimap;
 import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
+import com.tanner.minigames.Hologram;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
@@ -36,6 +37,7 @@ public class Arena {
     private World world;
     private Villager npc;
     private Location npcSpawn;
+    private Hologram npcHologram;
     private GameType gameType;
     private int maxPlayers;
     private int worldUnloadWaitTime = 60;
@@ -80,8 +82,12 @@ public class Arena {
             npc.setAI(false);
             npc.setCollidable(false);
             npc.setInvulnerable(true);
-            npc.setCustomNameVisible(true);
-            npc.setCustomName(gameType.getDisplayName() + ChatColor.GRAY + " " + getPlayers().size() + "/" + getMaxPlayers() + " (Click to Join)");
+            String[] lines = new String[]{
+                    ChatColor.YELLOW + ChatColor.BOLD.toString() + "CLICK HERE",
+                    gameType.getDisplayName(),
+                    ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getMaxPlayers()
+            };
+            npcHologram = new Hologram(npcSpawn, lines);
         }
 
         setGameType();
@@ -417,6 +423,7 @@ public class Arena {
     public boolean worldReloadEnabled() { return worldReloadEnabled; }
     public int getMaxPlayers() { return maxPlayers; }
     public Villager getNPC() { return npc; }
+    public Hologram getNPCHologram() { return npcHologram; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
 
