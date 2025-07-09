@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.UUID;
 
 public final class Minigames extends JavaPlugin {
 
@@ -58,6 +59,12 @@ public final class Minigames extends JavaPlugin {
             if (arena.getNPC() != null) {
                 arena.getNPC().remove();
                 arena.getNPCHologram().removeHologram();
+            }
+        }
+
+        for (Arena arena : arenaManager.getArenas()) {
+            for (UUID uuid : arena.getPlayers()) {
+                arena.removePlayer(Bukkit.getPlayer(uuid));
             }
         }
     }
