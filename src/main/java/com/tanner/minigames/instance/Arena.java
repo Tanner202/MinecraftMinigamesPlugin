@@ -308,12 +308,14 @@ public class Arena {
 
         Team highestPlayerTeam = (Team) teamCount.values().toArray()[teamCount.values().size() - 1];
         Team lowestPlayerTeam = (Team) teamCount.values().toArray()[0];
-        for (UUID uuid : players) {
-            Player _player = Bukkit.getPlayer(uuid);
-            if (getTeam(_player) == highestPlayerTeam) {
-                setTeam(_player, lowestPlayerTeam);
-                _player.sendMessage(ChatColor.AQUA + "You have been moved to " + lowestPlayerTeam.getDisplay() + ChatColor.AQUA + " team to balance the teams.");
-                break;
+        if (getTeamCount(highestPlayerTeam) - 1 > getTeamCount(lowestPlayerTeam)) {
+            for (UUID uuid : players) {
+                Player _player = Bukkit.getPlayer(uuid);
+                if (getTeam(_player) == highestPlayerTeam) {
+                    setTeam(_player, lowestPlayerTeam);
+                    _player.sendMessage(ChatColor.AQUA + "You have been moved to " + lowestPlayerTeam.getDisplay() + ChatColor.AQUA + " team to balance the teams.");
+                    break;
+                }
             }
         }
 
