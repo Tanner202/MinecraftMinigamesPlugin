@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -27,9 +29,11 @@ public class Grid {
 
     private long timeBetweenColorSwaps = 5;
     private long timeBetweenRemovingWool = 5;
+    private int timeRemaining;
 
     BukkitTask generateGridTask;
     BukkitTask removeGridTask;
+    BukkitTask removeWoolCountdownTask;
 
     public Grid(Minigames minigames, Arena arena, Location arenaSpawn, int gridSize, int cellSize) {
         this.arena = arena;
@@ -82,17 +86,39 @@ public class Grid {
     // This function generates a grid temporarily for the game
     private void setGridTask() {
         setGrid();
-        chooseRandomWool();
+        GridColor gridColor = chooseRandomWool();
         removeGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, timeBetweenRemovingWool * 20);
+        ItemStack wool = new ItemStack(gridColor.getMaterial(), 1);
+        ItemMeta woolMeta = wool.getItemMeta();
+        woolMeta.setEnchantmentGlintOverride(true);
+        wool.setItemMeta(woolMeta);
+
+        timeRemaining = (int) timeBetweenRemovingWool;
+        removeWoolCountdownTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
+            arena.setBossBar(gridColor.getColorCode() + repeat("⬛", timeRemaining) + gridColor.getDisplay() + gridColor.getColorCode() + repeat("⬛", timeRemaining));
+            timeRemaining--;
+        }, 0, 20);
+        for (int i = 0; i < 9; i++) {
+            arena.giveItem(i, wool);
+        }
     }
 
-    private void chooseRandomWool() {
+    private String repeat(String str, int times) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            sb.append(str);
+        }
+        return sb.toString();
+    }
+
+    private GridColor chooseRandomWool() {
         Random random = new Random();
         int randomIndex = random.nextInt(0, GridColor.values().length);
         GridColor gridColor = GridColor.values()[randomIndex];
         chosenMaterial = gridColor.getMaterial();
 
         arena.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Go to " + gridColor.getDisplay());
+        return gridColor;
     }
 
     private void removeUnchosenWool() {
@@ -105,6 +131,7 @@ public class Grid {
             }
         }
 
+        removeWoolCountdownTask.cancel();
         generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGridTask, timeBetweenColorSwaps * 20);
     }
 

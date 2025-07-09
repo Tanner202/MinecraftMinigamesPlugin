@@ -15,6 +15,9 @@ import com.tanner.minigames.kit.*;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -38,6 +41,7 @@ public class Arena {
     private Villager npc;
     private Location npcSpawn;
     private Hologram npcHologram;
+    private BossBar bossBar;
     private GameType gameType;
     private int maxPlayers;
     private int worldUnloadWaitTime = 60;
@@ -89,6 +93,8 @@ public class Arena {
             };
             npcHologram = new Hologram(npcSpawn, hologramLines);
         }
+
+        bossBar = Bukkit.createBossBar("", BarColor.PURPLE, BarStyle.SOLID);
 
         setGameType();
     }
@@ -287,6 +293,7 @@ public class Arena {
             countdown.start();
         }
 
+        bossBar.addPlayer(player);
         updateNPCHologramPlayerCount();
     }
 
@@ -336,6 +343,7 @@ public class Arena {
             game.end(false);
         }
 
+        bossBar.removePlayer(player);
         updateNPCHologramPlayerCount();
     }
 
@@ -412,6 +420,16 @@ public class Arena {
         player.getInventory().setItem(0, teamSelection);
         player.getInventory().setItem(1, kitSelection);
         player.getInventory().setItem(8, leaveItem);
+    }
+
+    public void giveItem(int slot, ItemStack item) {
+        for (UUID uuid : players) {
+            Bukkit.getPlayer(uuid).getInventory().setItem(slot, item);
+        }
+    }
+
+    public void setBossBar(String title) {
+        bossBar.setTitle(title);
     }
 
     private void updateNPCHologramPlayerCount() {
