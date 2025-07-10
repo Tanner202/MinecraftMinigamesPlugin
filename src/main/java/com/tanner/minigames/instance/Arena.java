@@ -422,12 +422,6 @@ public class Arena {
         player.getInventory().setItem(8, leaveItem);
     }
 
-    public void giveItem(int slot, ItemStack item) {
-        for (UUID uuid : players) {
-            Bukkit.getPlayer(uuid).getInventory().setItem(slot, item);
-        }
-    }
-
     public void setBossBar(String title) {
         bossBar.setTitle(title);
     }

@@ -1,18 +1,22 @@
 package com.tanner.minigames.instance.game.colorswap;
 
+import com.tanner.minigames.Constants;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class Grid {
 
@@ -91,6 +95,7 @@ public class Grid {
         ItemStack wool = new ItemStack(gridColor.getMaterial(), 1);
         ItemMeta woolMeta = wool.getItemMeta();
         woolMeta.setEnchantmentGlintOverride(true);
+        woolMeta.getPersistentDataContainer().set(Constants.WOOL, PersistentDataType.STRING, "Wool");
         wool.setItemMeta(woolMeta);
 
         timeRemaining = (int) timeBetweenRemovingWool;
@@ -98,8 +103,14 @@ public class Grid {
             arena.setBossBar(gridColor.getColorCode() + repeat("⬛", timeRemaining) + gridColor.getDisplay() + gridColor.getColorCode() + repeat("⬛", timeRemaining));
             timeRemaining--;
         }, 0, 20);
-        for (int i = 0; i < 9; i++) {
-            arena.giveItem(i, wool);
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            for (int i = 0; i < 9; i++) {
+                ItemStack item = player.getInventory().getItem(i);
+                if (item == null || item.getItemMeta().getPersistentDataContainer().has(Constants.WOOL)) {
+                    player.getInventory().setItem(i, wool);
+                }
+            }
         }
     }
 
