@@ -15,6 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,18 @@ public class ColorSwapGame extends Game {
     private int gridSize = 25;
     private int cellSize = 5;
 
+    BukkitTask gameTimeTask;
+
+    private int gameTimeElapsed = 0;
+    private DifficultyStage[] difficultyStages = {
+            new DifficultyStage(15, 5),
+            new DifficultyStage(30, 4),
+            new DifficultyStage(50, 3),
+            new DifficultyStage(90, 2.5f),
+            new DifficultyStage(150, 2.25f),
+            new DifficultyStage(Integer.MAX_VALUE, 2f)
+    };
+
     public ColorSwapGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
         grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);
@@ -38,12 +51,21 @@ public class ColorSwapGame extends Game {
     public void onStart() {
         remainingPlayers.addAll(arena.getPlayers());
         grid.start();
+        gameTimeTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
+            gameTimeElapsed += 1;
+            for (DifficultyStage stage : difficultyStages) {
+                if (stage.stageEndTime < gameTimeElapsed) {
+                    grid.setSwapInterval((long) stage.interval);
+                }
+            }
+        }, 0, 20);
     }
 
     @Override
     public void onEnd() {
         grid.Stop();
         remainingPlayers.clear();
+        gameTimeTask.cancel();
     }
 
     @Override

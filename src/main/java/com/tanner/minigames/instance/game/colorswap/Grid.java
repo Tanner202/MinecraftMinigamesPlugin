@@ -31,8 +31,7 @@ public class Grid {
 
     private List<Material> remainingColors = new ArrayList<>();
 
-    private long timeBetweenColorSwaps = 5;
-    private long timeBetweenRemovingWool = 5;
+    private long swapInterval = 5;
     private int timeRemaining;
 
     BukkitTask generateGridTask;
@@ -91,14 +90,14 @@ public class Grid {
     private void setGridTask() {
         setGrid();
         GridColor gridColor = chooseRandomWool();
-        removeGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, timeBetweenRemovingWool * 20);
+        removeGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, swapInterval * 20);
         ItemStack wool = new ItemStack(gridColor.getMaterial(), 1);
         ItemMeta woolMeta = wool.getItemMeta();
         woolMeta.setEnchantmentGlintOverride(true);
         woolMeta.getPersistentDataContainer().set(Constants.WOOL, PersistentDataType.STRING, "Wool");
         wool.setItemMeta(woolMeta);
 
-        timeRemaining = (int) timeBetweenRemovingWool;
+        timeRemaining = (int) swapInterval;
         removeWoolCountdownTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
             arena.setBossBar(gridColor.getColorCode() + repeat("⬛", timeRemaining) + gridColor.getDisplay() + gridColor.getColorCode() + repeat("⬛", timeRemaining));
             timeRemaining--;
@@ -143,7 +142,7 @@ public class Grid {
         }
 
         removeWoolCountdownTask.cancel();
-        generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGridTask, timeBetweenColorSwaps * 20);
+        generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGridTask, swapInterval * 20);
     }
 
     private int getCellAmount() {
@@ -173,5 +172,9 @@ public class Grid {
                 location.getBlock().setType(randomWool);
             }
         }
+    }
+
+    public void setSwapInterval(long interval) {
+        swapInterval = interval;
     }
 }
