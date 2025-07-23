@@ -1,7 +1,9 @@
 package com.tanner.minigames.instance.game.colorswap;
 
+import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.instance.GameType;
 import com.tanner.minigames.instance.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +53,11 @@ public class ColorSwapGame extends Game {
     @Override
     public void onStart() {
         remainingPlayers.addAll(arena.getPlayers());
+
+        for (UUID uuid : arena.getPlayers()) {
+            setScoreboard(Bukkit.getPlayer(uuid));
+        }
+
         grid.start();
         gameTimeTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
             gameTimeElapsed += 1;
@@ -70,7 +78,47 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onPlayerRemoved(Player player) {
+        resetScoreboard(player);
+    }
 
+    private void setScoreboard(Player player) {
+        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective obj = board.registerNewObjective("colorswap", "dummy");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        obj.setDisplayName(GameType.COLORSWAP.getDisplayName());
+
+        String padding = ChatColor.RESET + "      ";
+
+        Score teamScore = obj.getScore(ChatColor.GRAY + "▶ Team: " + arena.getTeam(player).getDisplay() + padding);
+        teamScore.setScore(3);
+
+        Score kitScore = obj.getScore(ChatColor.GRAY + "▶ Kit: " + arena.getKit(player).getDisplay() + padding);
+        kitScore.setScore(2);
+
+        Score empty = obj.getScore("");
+        empty.setScore(1);
+
+        Team playersRemaining = board.registerNewTeam("playersRemaining");
+        playersRemaining.addEntry(ChatColor.BLUE.toString());
+        playersRemaining.setPrefix(ChatColor.GRAY + "▶ Players Left: ");
+        playersRemaining.setSuffix(ChatColor.GREEN.toString() + remainingPlayers.size());
+        obj.getScore(ChatColor.BLUE.toString()).setScore(0);
+
+        player.setScoreboard(board);
+    }
+
+    private void updateScoreboard() {
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            player.getScoreboard().getTeam("playersRemaining").setSuffix(ChatColor.GREEN.toString() + remainingPlayers.size());
+        }
+    }
+
+    private void resetScoreboard(Player player) {
+        if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
+
+        player.getScoreboard().getObjective("colorswap").unregister();
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
     @EventHandler
@@ -93,6 +141,7 @@ public class ColorSwapGame extends Game {
                     end(true);
                 }
             });
+            updateScoreboard();
         }
     }
 
