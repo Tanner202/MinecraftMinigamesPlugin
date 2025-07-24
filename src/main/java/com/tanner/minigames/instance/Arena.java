@@ -1,10 +1,7 @@
 package com.tanner.minigames.instance;
 
 import com.google.common.collect.TreeMultimap;
-import com.tanner.minigames.Constants;
-import com.tanner.minigames.GameState;
-import com.tanner.minigames.Hologram;
-import com.tanner.minigames.Minigames;
+import com.tanner.minigames.*;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
 import com.tanner.minigames.instance.game.dragonescape.DragonEscapeGame;
@@ -36,21 +33,17 @@ public class Arena {
     private Minigames minigames;
 
     private int id;
-    private Location spawn;
+    private GameSettings gameSettings;
     private World world;
     private Villager npc;
-    private Location npcSpawn;
     private Hologram npcHologram;
     private BossBar bossBar;
-    private GameType gameType;
-    private int maxPlayers;
     private int worldUnloadWaitTime = 60;
     // The world load wait time must be longer than the unload wait time
     private int worldLoadWaitTime = 120;
     // This is the delay to set up the arena after the world has started loading
     private int setupDelay = 60;
     private boolean canJoin;
-    private boolean worldReloadEnabled;
 
     private GameState state;
     private List<UUID> players;
@@ -61,26 +54,23 @@ public class Arena {
     private Countdown countdown;
     private Game game;
 
-    public Arena(Minigames minigames, int id, Location spawn, GameType gameType, Location npcSpawn, int numberOfTeams, int maxPlayers, boolean worldReloadEnabled) {
+    public Arena(Minigames minigames, int id, GameSettings gameSettings) {
         this.minigames = minigames;
 
         this.id = id;
-        this.spawn = spawn;
-        this.gameType = gameType;
-        this.npcSpawn = npcSpawn;
-        this.maxPlayers = maxPlayers;
-        world = spawn.getWorld();
-        this.worldReloadEnabled = worldReloadEnabled;
+        this.gameSettings = gameSettings;
+        world = gameSettings.getLobbySpawn().getWorld();
 
         this.state = GameState.RECRUITING;
         this.players = new ArrayList<>();
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
-        this.availableTeams = Arrays.copyOf(Team.values(), numberOfTeams);
+        this.availableTeams = Arrays.copyOf(Team.values(), gameSettings.getTeamAmount());
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
 
+        Location npcSpawn = gameSettings.getNpcSpawn();
         if (npcSpawn != null) {
             npc = (Villager) npcSpawn.getWorld().spawnEntity(npcSpawn, EntityType.VILLAGER);
             npc.setAI(false);
@@ -88,7 +78,7 @@ public class Arena {
             npc.setInvulnerable(true);
             String[] hologramLines = new String[]{
                     ChatColor.YELLOW + ChatColor.BOLD.toString() + "CLICK HERE",
-                    gameType.getDisplayName(),
+                    gameSettings.getGameType().getDisplayName(),
                     ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getMaxPlayers()
             };
             npcHologram = new Hologram(npcSpawn, hologramLines);
@@ -118,7 +108,7 @@ public class Arena {
                 removePlayer(player);
             }
 
-            if (worldReloadEnabled) {
+            if (gameSettings.isWorldReloadEnabled()) {
                 reloadWorld();
             }
 
@@ -145,12 +135,12 @@ public class Arena {
         Bukkit.getScheduler().runTaskLater(minigames, () -> {
             world = Bukkit.createWorld(new WorldCreator(worldName));
             world.setAutoSave(false);
-            spawn.setWorld(world);
+            gameSettings.getLobbySpawn().setWorld(world);
         }, worldLoadWaitTime);
     }
 
     private void setGameType() {
-        switch (gameType) {
+        switch (gameSettings.getGameType()) {
             case COLORSWAP:
                 availableKitTypes = ColorSwapKitType.values();
                 this.game = new ColorSwapGame(minigames, this);
@@ -235,7 +225,7 @@ public class Arena {
         org.bukkit.scoreboard.Team playerAmount = board.registerNewTeam("player_amount");
         playerAmount.addEntry(ChatColor.BOLD.toString());
         playerAmount.setPrefix(ChatColor.GRAY + "▶ Players: ");
-        playerAmount.setSuffix(ChatColor.GREEN.toString() + players.size() + "/" + maxPlayers);
+        playerAmount.setSuffix(ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getMaxPlayerAmount());
         obj.getScore(ChatColor.BOLD.toString()).setScore(2);
 
         Score space2 = obj.getScore("  ");
@@ -277,7 +267,7 @@ public class Arena {
         giveLobbyItems(player);
         setDefaultKit(player.getUniqueId());
 
-        player.teleport(spawn);
+        player.teleport(gameSettings.getLobbySpawn());
 
         TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
         for (Team team : availableTeams) {
@@ -440,10 +430,10 @@ public class Arena {
             updateScoreboard();
         }
     }
-    public Location getSpawn() { return spawn; }
+    public Location getSpawn() { return gameSettings.getLobbySpawn(); }
     public World getWorld() { return world; }
-    public boolean worldReloadEnabled() { return worldReloadEnabled; }
-    public int getMaxPlayers() { return maxPlayers; }
+    public boolean worldReloadEnabled() { return gameSettings.isWorldReloadEnabled(); }
+    public int getMaxPlayers() { return gameSettings.getMaxPlayerAmount(); }
     public Villager getNPC() { return npc; }
     public Hologram getNPCHologram() { return npcHologram; }
     public boolean canJoin() { return canJoin; }

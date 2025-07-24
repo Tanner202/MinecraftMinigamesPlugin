@@ -1,11 +1,13 @@
 package com.tanner.minigames.manager;
 
+import com.tanner.minigames.GameSettings;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.GameType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -15,17 +17,19 @@ import java.util.UUID;
 
 public class ArenaManager {
 
+    private Minigames minigames;
     private List<Arena> arenas = new ArrayList<>();
 
     private FileConfiguration config;
 
     public ArenaManager(Minigames minigames) {
+        this.minigames = minigames;
         config = minigames.getConfig();
 
-        addArenasFromConfig(minigames);
+        addArenasFromConfig();
     }
 
-    private void addArenasFromConfig(Minigames minigames) {
+    private void addArenasFromConfig() {
         for (String arenaID : config.getConfigurationSection("arenas").getKeys(false)) {
             if (!isValidArena(arenaID)) {
                 minigames.getLogger().warning("Arena ID: " + arenaID + " has missing or invalid values in the config file.");
@@ -39,14 +43,18 @@ public class ArenaManager {
                 minigames.getLogger().warning("Could not find gamemode of type " + gameName + " which is used in the config");
                 continue;
             }
-            arenas.add(new Arena(minigames,
-                    Integer.parseInt(arenaID),
-                    getArenaLocation(arenaID),
+
+            GameSettings gameSettings = new GameSettings(
                     gameType,
+                    getArenaLocation(arenaID),
                     getNPCSpawn(arenaID),
                     config.getInt("arenas." + arenaID + ".amount-of-teams"),
                     config.getInt("arenas." + arenaID + ".max-players"),
-                    config.getBoolean("arenas." + arenaID + ".world-reload-enabled")));
+                    config.getBoolean("arenas." + arenaID + ".world-reload-enabled"));
+
+            arenas.add(new Arena(minigames,
+                    Integer.parseInt(arenaID),
+                    gameSettings));
         }
     }
 
