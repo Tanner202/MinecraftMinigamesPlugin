@@ -3,9 +3,7 @@ package com.tanner.minigames.instance.game.spleef;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
-import com.tanner.minigames.team.Team;
 import org.bukkit.*;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -26,7 +24,6 @@ import java.util.UUID;
 public class SpleefGame extends Game {
 
     private List<UUID> remainingPlayers;
-    private HashMap<Team, Location> teamSpawns;
 
     public SpleefGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -36,11 +33,6 @@ public class SpleefGame extends Game {
 
     @Override
     public void onStart() {
-        for (Team team : arena.getTeams()) {
-            teamSpawns.put(team, getTeamSpawn(team));
-        }
-
-        int count = 0;
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL);
@@ -49,12 +41,7 @@ public class SpleefGame extends Game {
             shovel.setItemMeta(shovelMeta);
             player.getInventory().addItem(shovel);
 
-            Team team = arena.getTeam(player);
-            Location teamSpawnLocation = teamSpawns.get(team);
-            player.teleport(teamSpawnLocation);
-
             remainingPlayers.add(uuid);
-            count++;
         }
     }
 
@@ -67,20 +54,6 @@ public class SpleefGame extends Game {
     public void onPlayerRemoved(Player player) {
 
     }
-
-    private Location getTeamSpawn(Team team) {
-        FileConfiguration config = minigames.getConfig();
-        String teamName = ChatColor.stripColor(team.getDisplay());
-        String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
-        return new Location(
-                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
-                config.getDouble( teamSpawnPath + ".x"),
-                config.getDouble(teamSpawnPath + ".y"),
-                config.getDouble(teamSpawnPath + ".z"),
-                (float) config.getDouble(teamSpawnPath + ".yaw"),
-                (float) config.getDouble(teamSpawnPath + ".pitch"));
-    }
-
 
     public List<UUID> getRemainingPlayers() {
         return remainingPlayers;

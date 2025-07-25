@@ -9,7 +9,6 @@ import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.team.Team;
 import org.bukkit.*;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -23,7 +22,6 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -47,7 +45,6 @@ public class TNTWarsGame extends Game {
     private int tntInterval = 200;
     private int snowballInterval = 25;
 
-    private HashMap<Team, Location> teamSpawns;
     private BukkitTask giveTntTask;
     private BukkitTask giveSnowballTask;
 
@@ -63,20 +60,12 @@ public class TNTWarsGame extends Game {
 
     @Override
     public void onStart() {
-        for (Team team : arena.getTeams()) {
-            teamSpawns.put(team, getTeamSpawn(team));
-        }
-
         arena.sendMessage(ChatColor.GREEN + "Game Has Started! Knock the other player off by launching TNT. Last team standing wins!");
 
         for (UUID uuid : arena.getPlayers()) {
             remainingPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);
             player.closeInventory();
-
-            Team team = arena.getTeam(player);
-            Location teamSpawnLocation = teamSpawns.get(team);
-            player.teleport(teamSpawnLocation);
 
             setScoreboard(player);
 
@@ -86,19 +75,6 @@ public class TNTWarsGame extends Game {
 
         giveTntTask = Bukkit.getScheduler().runTaskTimer(minigames, this::givePlayersTnt, 100, tntInterval);
         giveSnowballTask = Bukkit.getScheduler().runTaskTimer(minigames, this::givePlayersSnowball, 50, snowballInterval);
-    }
-
-    private Location getTeamSpawn(Team team) {
-        FileConfiguration config = minigames.getConfig();
-        String teamName = ChatColor.stripColor(team.getDisplay());
-        String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
-        return new Location(
-                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
-                config.getDouble( teamSpawnPath + ".x"),
-                config.getDouble(teamSpawnPath + ".y"),
-                config.getDouble(teamSpawnPath + ".z"),
-                (float) config.getDouble(teamSpawnPath + ".yaw"),
-                (float) config.getDouble(teamSpawnPath + ".pitch"));
     }
 
     private void givePlayersTnt() {

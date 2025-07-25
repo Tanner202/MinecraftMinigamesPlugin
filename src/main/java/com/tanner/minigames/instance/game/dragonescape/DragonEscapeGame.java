@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
 import org.bukkit.entity.EnderDragon;
@@ -72,9 +71,6 @@ public class DragonEscapeGame extends Game {
             Player player = Bukkit.getPlayer(uuid);
             player.setInvisible(true);
 
-            com.tanner.minigames.team.Team team = arena.getTeam(player);
-            Location teamSpawnLocation = getTeamSpawn(team);
-            player.teleport(teamSpawnLocation);
             Scoreboard board = setScoreboard();
             player.setScoreboard(board);
         }
@@ -108,19 +104,6 @@ public class DragonEscapeGame extends Game {
             Player player = Bukkit.getPlayer(uuid);
             player.getScoreboard().getTeam(deadPlayer.getName()).setSuffix(ChatColor.RED + deadPlayer.getDisplayName());
         }
-    }
-
-    private Location getTeamSpawn(com.tanner.minigames.team.Team team) {
-        FileConfiguration config = minigames.getConfig();
-        String teamName = ChatColor.stripColor(team.getDisplay());
-        String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
-        return new Location(
-                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
-                config.getDouble( teamSpawnPath + ".x"),
-                config.getDouble(teamSpawnPath + ".y"),
-                config.getDouble(teamSpawnPath + ".z"),
-                (float) config.getDouble(teamSpawnPath + ".yaw"),
-                (float) config.getDouble(teamSpawnPath + ".pitch"));
     }
 
     private Vec3[] getTargetLocations() {

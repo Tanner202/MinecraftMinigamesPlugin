@@ -1,33 +1,15 @@
 package com.tanner.minigames.instance.game;
 
-import com.mojang.authlib.GameProfile;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
-import com.tanner.minigames.Util;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.kit.Kit;
-import com.tanner.minigames.manager.ConfigManager;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ClientInformation;
-import net.minecraft.server.level.ServerEntity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.server.network.ServerPlayerConnection;
-import net.minecraft.world.entity.Pose;
-import net.minecraft.world.phys.Vec3;
+import com.tanner.minigames.team.Team;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
-import org.bukkit.entity.EntityType;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -37,6 +19,7 @@ public abstract class Game implements Listener {
     protected Arena arena;
 
     protected List<Player> winningPlayers;
+    protected HashMap<Team, Location> teamSpawns = new HashMap<>();
 
     protected int arenaResetWaitTime = 200;
 
@@ -49,6 +32,11 @@ public abstract class Game implements Listener {
     public void start() {
         arena.setState(GameState.LIVE);
         Bukkit.getPluginManager().registerEvents(this, minigames);
+
+        for (Team team : arena.getTeams()) {
+            teamSpawns.put(team, getTeamSpawn(team));
+        }
+
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             player.getInventory().clear();
@@ -56,6 +44,10 @@ public abstract class Game implements Listener {
             if (kit != null) {
                 kit.onStart(Bukkit.getPlayer(uuid));
             }
+
+            Team team = arena.getTeam(player);
+            Location teamSpawnLocation = teamSpawns.get(team);
+            player.teleport(teamSpawnLocation);
         }
         onStart();
     }
@@ -77,6 +69,19 @@ public abstract class Game implements Listener {
         } else {
             arena.reset(true);
         }
+    }
+
+    protected Location getTeamSpawn(Team team) {
+        FileConfiguration config = minigames.getConfig();
+        String teamName = ChatColor.stripColor(team.getDisplay());
+        String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
+        return new Location(
+                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
+                config.getDouble( teamSpawnPath + ".x"),
+                config.getDouble(teamSpawnPath + ".y"),
+                config.getDouble(teamSpawnPath + ".z"),
+                (float) config.getDouble(teamSpawnPath + ".yaw"),
+                (float) config.getDouble(teamSpawnPath + ".pitch"));
     }
 
     public abstract void onStart();

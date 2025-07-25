@@ -8,7 +8,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -18,7 +17,6 @@ import java.util.*;
 
 public class ScrapyardSkirmish extends Game {
 
-    private HashMap<Team, Location> teamSpawns;
     private List<UUID> remainingPlayers;
     private List<Wall> walls;
     private List<Crate> crates;
@@ -63,38 +61,17 @@ public class ScrapyardSkirmish extends Game {
 
     @Override
     public void onStart() {
-        for (Team team : arena.getTeams()) {
-            teamSpawns.put(team, getTeamSpawn(team));
-        }
-
         arena.sendTitle(ChatColor.GREEN + "Game Has Started!", "Loot nearby crates for the first minute.");
 
         for (UUID uuid : arena.getPlayers()) {
             remainingPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);
             player.closeInventory();
-
-            Team team = arena.getTeam(player);
-            Location teamSpawnLocation = teamSpawns.get(team);
-            player.teleport(teamSpawnLocation);
         }
 
         spawnCrates();
 
         Bukkit.getScheduler().runTaskLater(minigames, this::dropWalls, wallTimer);
-    }
-
-    private Location getTeamSpawn(Team team) {
-        FileConfiguration config = minigames.getConfig();
-        String teamName = ChatColor.stripColor(team.getDisplay());
-        String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
-        return new Location(
-                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
-                config.getDouble( teamSpawnPath + ".x"),
-                config.getDouble(teamSpawnPath + ".y"),
-                config.getDouble(teamSpawnPath + ".z"),
-                (float) config.getDouble(teamSpawnPath + ".yaw"),
-                (float) config.getDouble(teamSpawnPath + ".pitch"));
     }
 
     private void spawnCrates() {
