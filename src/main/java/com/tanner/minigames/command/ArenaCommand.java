@@ -97,19 +97,15 @@ public class ArenaCommand implements CommandExecutor, Listener {
                     return false;
                 }
 
-                if (id >= 0 && id < minigames.getArenaManager().getArenas().size()) {
-                    if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
-                        if (arena.canJoin()) {
-                            player.sendMessage(ChatColor.GREEN + "You are now playing in arena " + id + ".");
-                            arena.addPlayer(player);
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot join this arena right now. Map is still loading.");
-                        }
+                if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
+                    if (arena.canJoin()) {
+                        player.sendMessage(ChatColor.GREEN + "You are now playing in arena " + id + ".");
+                        arena.addPlayer(player);
                     } else {
-                        player.sendMessage(ChatColor.RED + "You cannot join this arena right now.");
+                        player.sendMessage(ChatColor.RED + "You cannot join this arena right now. Map is still loading.");
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "You specified an invalid arena ID.");
+                    player.sendMessage(ChatColor.RED + "You cannot join this arena right now.");
                 }
             } else if (args.length == 2 && args[0].equalsIgnoreCase("save")) {
                 int id;

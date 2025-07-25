@@ -66,7 +66,7 @@ public class Arena {
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
-        this.availableTeams = Arrays.copyOf(Team.values(), gameSettings.getTeamAmount());
+        this.availableTeams = Arrays.copyOf(Team.values(), gameSettings.getPlayerLimit() / Math.max(1, gameSettings.getTeamSize()));
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
 
@@ -225,7 +225,7 @@ public class Arena {
         org.bukkit.scoreboard.Team playerAmount = board.registerNewTeam("player_amount");
         playerAmount.addEntry(ChatColor.BOLD.toString());
         playerAmount.setPrefix(ChatColor.GRAY + "▶ Players: ");
-        playerAmount.setSuffix(ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getMaxPlayerAmount());
+        playerAmount.setSuffix(ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getPlayerLimit());
         obj.getScore(ChatColor.BOLD.toString()).setScore(2);
 
         Score space2 = obj.getScore("  ");
@@ -433,7 +433,7 @@ public class Arena {
     public Location getSpawn() { return gameSettings.getLobbySpawn(); }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return gameSettings.isWorldReloadEnabled(); }
-    public int getMaxPlayers() { return gameSettings.getMaxPlayerAmount(); }
+    public int getMaxPlayers() { return gameSettings.getPlayerLimit(); }
     public Villager getNPC() { return npc; }
     public Hologram getNPCHologram() { return npcHologram; }
     public boolean canJoin() { return canJoin; }

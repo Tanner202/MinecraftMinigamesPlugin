@@ -8,16 +8,16 @@ public class GameSettings {
     private GameType gameType;
     private Location lobbySpawn;
     private Location npcSpawn;
-    private int teamAmount;
-    private int maxPlayerAmount;
+    private int teamSize;
+    private int playerLimit;
     private boolean worldReloadEnabled;
 
-    public GameSettings(GameType gameType, Location lobbySpawn, Location npcSpawn, int teamAmount, int maxPlayerAmount, boolean worldReloadEnabled) {
+    public GameSettings(GameType gameType, Location lobbySpawn, Location npcSpawn, int teamSize, int playerLimit, boolean worldReloadEnabled) {
         this.gameType = gameType;
         this.lobbySpawn = lobbySpawn;
         this.npcSpawn = npcSpawn;
-        this.teamAmount = teamAmount;
-        this.maxPlayerAmount = maxPlayerAmount;
+        this.teamSize = teamSize;
+        this.playerLimit = playerLimit;
         this.worldReloadEnabled = worldReloadEnabled;
     }
 
@@ -45,20 +45,20 @@ public class GameSettings {
         this.npcSpawn = npcSpawn;
     }
 
-    public int getTeamAmount() {
-        return teamAmount;
+    public int getTeamSize() {
+        return teamSize;
     }
 
-    public void setTeamAmount(int teamAmount) {
-        this.teamAmount = teamAmount;
+    public void setTeamSize(int teamSize) {
+        this.teamSize = teamSize;
     }
 
-    public int getMaxPlayerAmount() {
-        return maxPlayerAmount;
+    public int getPlayerLimit() {
+        return playerLimit;
     }
 
-    public void setMaxPlayerAmount(int maxPlayerAmount) {
-        this.maxPlayerAmount = maxPlayerAmount;
+    public void setPlayerLimit(int playerLimit) {
+        this.playerLimit = playerLimit;
     }
 
     public boolean isWorldReloadEnabled() {

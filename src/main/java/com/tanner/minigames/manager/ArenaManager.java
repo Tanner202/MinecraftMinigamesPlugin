@@ -48,7 +48,7 @@ public class ArenaManager {
                     gameType,
                     getArenaLocation(arenaID),
                     getNPCSpawn(arenaID),
-                    config.getInt("arenas." + arenaID + ".amount-of-teams"),
+                    config.getInt("arenas." + arenaID + ".team-size"),
                     config.getInt("arenas." + arenaID + ".max-players"),
                     config.getBoolean("arenas." + arenaID + ".world-reload-enabled"));
 
@@ -61,7 +61,7 @@ public class ArenaManager {
     private boolean isValidArena(String arenaID) {
         String path = "arenas." + arenaID;
         if (!config.contains(path + ".game") ||
-                !config.contains(path + ".amount-of-teams") ||
+                !config.contains(path + ".team-size") ||
                 !config.contains(path + ".max-players") ||
                 !config.contains(path + ".world-reload-enabled")) {
             return false;

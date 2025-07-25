@@ -26,7 +26,7 @@ arenas:
   0:
     game: 'COLORSWAP'
     max-players: 8
-    amount-of-teams: 8
+    team-size: 1
     world-reload-enabled: false
     npc-spawn:
       world: 'world'
@@ -44,7 +44,7 @@ arenas:
   1:
     game: 'TNTWARS'
     max-players: 16
-    amount-of-teams: 2
+    team-size: 8
     world-reload-enabled: false
     world: 'world'
     x: 100
@@ -77,7 +77,7 @@ arenas:
   2:
     game: 'SCRAPYARD_SKIRMISH'
     max-players: 16
-    amount-of-teams: 4
+    team-size: 4
     world-reload-enabled: false
     world: 'world'
     x: 100
@@ -117,7 +117,7 @@ arenas:
   3:
     game: 'DRAGON_ESCAPE'
     max-players: 4
-    amount-of-teams: 4
+    team-size: 1
     world-reload-enabled: true
     world: 'world'
     x: 100
