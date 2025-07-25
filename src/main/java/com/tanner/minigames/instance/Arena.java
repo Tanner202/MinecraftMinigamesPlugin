@@ -438,6 +438,7 @@ public class Arena {
     public Hologram getNPCHologram() { return npcHologram; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
+    public GameType getGameType() { return gameSettings.getGameType(); }
 
     public List<UUID> getPlayers() { return players;}
 }

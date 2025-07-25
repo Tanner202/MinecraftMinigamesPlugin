@@ -9,6 +9,7 @@ public class Constants {
     public static NamespacedKey KIT_SELECTION;
     public static NamespacedKey LEAVE_ITEM;
     public static NamespacedKey WOOL;
+    public static NamespacedKey ARENA_ID;
     public static int DEFAULT_REQUIRED_PLAYERS = 2;
     public static int DEFAULT_COUNTDOWN_TIME = 15;
 
@@ -19,5 +20,6 @@ public class Constants {
         KIT_SELECTION = new NamespacedKey(minigames, "KitSelection");
         LEAVE_ITEM = new NamespacedKey(minigames, "LeaveItem");
         WOOL = new NamespacedKey(minigames, "Wool");
+        ARENA_ID = new NamespacedKey(minigames, "ArenaID");
     }
 }
