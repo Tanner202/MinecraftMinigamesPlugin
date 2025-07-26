@@ -2,7 +2,7 @@ package com.tanner.minigames.instance.game;
 
 import com.mojang.authlib.GameProfile;
 import com.tanner.minigames.Minigames;
-import com.tanner.minigames.Util;
+import com.tanner.minigames.Utils.Util;
 import com.tanner.minigames.manager.ConfigManager;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;

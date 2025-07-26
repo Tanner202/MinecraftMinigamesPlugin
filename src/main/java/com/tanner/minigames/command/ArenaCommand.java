@@ -3,6 +3,7 @@ package com.tanner.minigames.command;
 import com.tanner.minigames.Constants;
 import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.Utils.ItemBuilder;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.GameType;
 import com.tanner.minigames.kit.KitUI;
@@ -20,7 +21,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ArenaCommand implements CommandExecutor, Listener {
 
@@ -171,53 +174,37 @@ public class ArenaCommand implements CommandExecutor, Listener {
             GameType gameType = clickedArena.getGameType();
             Inventory inv = Bukkit.createInventory(null, 9, ChatColor.BOLD + gameType.getDisplayName());
 
-            ItemStack gameTypeItem = new ItemStack(Material.ENDER_EYE);
-            ItemMeta gameTypeMeta = gameTypeItem.getItemMeta();
-            gameTypeMeta.setItemName(ChatColor.BLUE + "Game Type: " + gameType);
-            gameTypeItem.setItemMeta(gameTypeMeta);
+            ItemStack gameTypeItem = ItemBuilder.createItem(Material.ENDER_EYE, ChatColor.BLUE + "Game Type: " + gameType);
             inv.addItem(gameTypeItem);
 
             Location spawn = clickedArena.getSpawn();
-            ItemStack lobbySpawnItem = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
-            ItemMeta lobbySpawnMeta = lobbySpawnItem.getItemMeta();
-            lobbySpawnMeta.setItemName(ChatColor.GREEN + "Set Lobby Spawn");
-            lobbySpawnMeta.setLore(Arrays.asList("Current Spawn: ",
+            ItemStack lobbySpawnItem = ItemBuilder.createItem(Material.LIGHT_WEIGHTED_PRESSURE_PLATE,
+                    ChatColor.GREEN + "Set Lobby Spawn",
+                    "Current Spawn: ",
                     "X: " + spawn.getX(),
                     "Y: " + spawn.getY(),
-                    "Z: " + spawn.getZ()));
-            lobbySpawnItem.setItemMeta(lobbySpawnMeta);
+                    "Z: " + spawn.getZ());
             inv.addItem(lobbySpawnItem);
 
-            ItemStack npcSpawnItem = new ItemStack(Material.VILLAGER_SPAWN_EGG);
-            ItemMeta npcSpawnMeta = npcSpawnItem.getItemMeta();
-            npcSpawnMeta.setItemName(ChatColor.GREEN + "Set NPC Spawn");
+            List<String> lore = new ArrayList<>();
             if (clickedArena.getNPC() != null) {
                 Location npcSpawn = clickedArena.getNPC().getLocation();
-                npcSpawnMeta.setLore(Arrays.asList("Current Location: ",
+                lore = Arrays.asList("Current Location: ",
                         "X: " + npcSpawn.getX(),
                         "Y: " + npcSpawn.getY(),
-                        "Z: " + npcSpawn.getZ()));
+                        "Z: " + npcSpawn.getZ());
             }
-            npcSpawnItem.setItemMeta(npcSpawnMeta);
+            ItemStack npcSpawnItem = ItemBuilder.createItem(Material.VILLAGER_SPAWN_EGG, ChatColor.GREEN + "Set NPC Spawn", lore);
             inv.addItem(npcSpawnItem);
 
-            ItemStack teamAmountItem = new ItemStack(Material.LEATHER_CHESTPLATE);
-            ItemMeta teamAmountMeta = teamAmountItem.getItemMeta();
-            teamAmountMeta.setItemName(ChatColor.GREEN + "Team Amount: " + clickedArena.getAvailableTeams().length);
-            teamAmountItem.setItemMeta(teamAmountMeta);
+            ItemStack teamAmountItem = ItemBuilder.createItem(Material.LEATHER_CHESTPLATE, ChatColor.GREEN + "Team Amount: " + clickedArena.getAvailableTeams().length);
             inv.addItem(teamAmountItem);
 
-            ItemStack maxPlayerAmountItem = new ItemStack(Material.PLAYER_HEAD);
-            ItemMeta maxPlayerAmountMeta = maxPlayerAmountItem.getItemMeta();
-            maxPlayerAmountMeta.setItemName(ChatColor.GREEN + "Max Player Amount: " + clickedArena.getMaxPlayers());
-            maxPlayerAmountItem.setItemMeta(maxPlayerAmountMeta);
+            ItemStack maxPlayerAmountItem = ItemBuilder.createItem(Material.PLAYER_HEAD, ChatColor.GREEN + "Max Player Amount: " + clickedArena.getMaxPlayers());
             inv.addItem(maxPlayerAmountItem);
 
             boolean worldReloadEnabled = clickedArena.worldReloadEnabled();
-            ItemStack worldReloadItem = new ItemStack(Material.END_PORTAL_FRAME);
-            ItemMeta worldReloadMeta = worldReloadItem.getItemMeta();
-            worldReloadMeta.setItemName(ChatColor.GREEN + "World Reload Enabled: " + (worldReloadEnabled ? ChatColor.GREEN : ChatColor.RED) + worldReloadEnabled);
-            worldReloadItem.setItemMeta(worldReloadMeta);
+            ItemStack worldReloadItem = ItemBuilder.createItem(Material.END_PORTAL_FRAME, ChatColor.GREEN + "World Reload Enabled: " + (worldReloadEnabled ? ChatColor.GREEN : ChatColor.RED) + worldReloadEnabled);
             inv.addItem(worldReloadItem);
 
             player.openInventory(inv);

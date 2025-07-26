@@ -1,6 +1,7 @@
 package com.tanner.minigames.instance.game.dragonescape;
 
 import com.tanner.minigames.Minigames;
+import com.tanner.minigames.Utils.ItemBuilder;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -114,33 +115,23 @@ public class SetDragonWaypointsCommand implements CommandExecutor, Listener {
     private void giveWaypointItems(Player player) {
         Inventory inv = player.getInventory();
 
-        ItemStack addWaypointItem = new ItemStack(Material.ARMOR_STAND);
-        ItemMeta addWaypointMeta = addWaypointItem.getItemMeta();
-        addWaypointMeta.setItemName(ChatColor.GREEN + "Waypoint Creator");
-        addWaypointMeta.setLore(Arrays.asList("Right click a block to add a waypoint after the current waypoint"));
-        addWaypointItem.setItemMeta(addWaypointMeta);
+        ItemStack addWaypointItem = ItemBuilder.createItem(Material.ARMOR_STAND,
+                ChatColor.GREEN + "Waypoint Creator",
+                "Right click a block to add a waypoint after the current waypoint");
 
-        ItemStack removeWaypointItem = new ItemStack(Material.IRON_AXE);
-        ItemMeta removeWaypointMeta = removeWaypointItem.getItemMeta();
-        removeWaypointMeta.setItemName(ChatColor.RED + "Waypoint Remover");
-        removeWaypointMeta.setLore(Arrays.asList("Right click a waypoint to remove it!"));
-        removeWaypointItem.setItemMeta(removeWaypointMeta);
+        ItemStack removeWaypointItem = ItemBuilder.createItem(Material.IRON_AXE,
+                ChatColor.RED + "Waypoint Remover",
+                "Right click a waypoint to remove it!");
 
-        ItemStack waypointSelectorItem = new ItemStack(Material.STICK);
-        ItemMeta waypointSelectorMeta = waypointSelectorItem.getItemMeta();
-        waypointSelectorMeta.setItemName(ChatColor.AQUA + "Waypoint Selector");
-        waypointSelectorMeta.setLore(Arrays.asList("Right click a waypoint to select it!"));
-        waypointSelectorItem.setItemMeta(waypointSelectorMeta);
+        ItemStack waypointSelectorItem = ItemBuilder.createItem(Material.STICK,
+                ChatColor.AQUA + "Waypoint Selector",
+                "Right click a waypoint to select it!");
 
-        ItemStack waypointTeleporterItem = new ItemStack(Material.COMPASS);
-        ItemMeta waypointTeleporterMeta = waypointTeleporterItem.getItemMeta();
-        waypointTeleporterMeta.setItemName(ChatColor.DARK_PURPLE + "Waypoint Teleporter (Right Click)");
-        waypointTeleporterItem.setItemMeta(waypointTeleporterMeta);
+        ItemStack waypointTeleporterItem = ItemBuilder.createItem(Material.COMPASS,
+                ChatColor.DARK_PURPLE + "Waypoint Teleporter (Right Click)");
 
-        ItemStack saveItem = new ItemStack(Material.PAPER);
-        ItemMeta saveMeta = saveItem.getItemMeta();
-        saveMeta.setItemName(ChatColor.GREEN + "Save");
-        saveItem.setItemMeta(saveMeta);
+        ItemStack saveItem = ItemBuilder.createItem(Material.PAPER,
+                ChatColor.GREEN + "Save");
 
         inv.setItem(0, addWaypointItem);
         inv.setItem(1, removeWaypointItem);
@@ -165,12 +156,10 @@ public class SetDragonWaypointsCommand implements CommandExecutor, Listener {
             } else if (e.getItem().getType().equals(Material.COMPASS)) {
                 Inventory gui = Bukkit.createInventory(player, 27, ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Waypoint Teleporter");
                 for (int i = 0; i < waypoints.size(); i++) {
-                    ItemStack stand = new ItemStack(Material.ARMOR_STAND);
-                    ItemMeta standMeta = stand.getItemMeta();
-                    standMeta.setItemName(ChatColor.GREEN + "Waypoint " + i);
                     Location loc = waypoints.get(i).getLocation();
-                    standMeta.setLore(Arrays.asList("X: " + loc.getX(), "Y: " + loc.getY(), "Z: " + loc.getZ()));
-                    stand.setItemMeta(standMeta);
+                    ItemStack stand = ItemBuilder.createItem(Material.ARMOR_STAND,
+                            ChatColor.GREEN + "Waypoint " + i,
+                            "X: " + loc.getX(), "Y: " + loc.getY(), "Z: " + loc.getZ());
                     gui.setItem(i, stand);
                 }
                 player.openInventory(gui);
