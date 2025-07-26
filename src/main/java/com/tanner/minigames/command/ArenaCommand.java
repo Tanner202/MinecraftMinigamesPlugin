@@ -16,18 +16,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ArenaCommand implements CommandExecutor, Listener {
 
     private Minigames minigames;
+
+    private HashMap<UUID, Deque<Inventory>> guiHistory = new HashMap<>();
+    private Set<UUID> suppressInventoryClose = new HashSet<>();
 
     public ArenaCommand(Minigames minigames) {
         this.minigames = minigames;
@@ -147,7 +149,11 @@ public class ArenaCommand implements CommandExecutor, Listener {
                     inv.addItem(arenaItem);
                 }
 
+                suppressInventoryClose.add(player.getUniqueId());
                 player.openInventory(inv);
+                Deque<Inventory> inventoryHistory =  guiHistory.computeIfAbsent(player.getUniqueId(), k -> new ArrayDeque<>());
+                inventoryHistory.push(inv);
+
             } else {
                 player.sendMessage(ChatColor.RED + "Invalid Usage! These are the options:");
                 player.sendMessage(ChatColor.RED + "- /arena list");
@@ -207,7 +213,10 @@ public class ArenaCommand implements CommandExecutor, Listener {
             ItemStack worldReloadItem = ItemBuilder.createItem(Material.END_PORTAL_FRAME, ChatColor.GREEN + "World Reload Enabled: " + (worldReloadEnabled ? ChatColor.GREEN : ChatColor.RED) + worldReloadEnabled);
             inv.addItem(worldReloadItem);
 
+            suppressInventoryClose.add(player.getUniqueId());
             player.openInventory(inv);
+            Deque<Inventory> inventoryHistory =  guiHistory.get(player.getUniqueId());
+            inventoryHistory.push(inv);
 
             e.setCancelled(true);
         } else {
@@ -217,5 +226,20 @@ public class ArenaCommand implements CommandExecutor, Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        Player player = (Player) e.getPlayer();
+        Deque<Inventory> inventoryHistory = guiHistory.get(player.getUniqueId());
+        if (inventoryHistory.contains(e.getInventory()) && !suppressInventoryClose.contains(player.getUniqueId())) {
+            inventoryHistory.pop();
+            if (!inventoryHistory.isEmpty()) {
+                Bukkit.getScheduler().runTaskLater(minigames,
+                        () -> player.openInventory(inventoryHistory.getFirst()),
+                        1);
+            }
+        }
+        suppressInventoryClose.remove(player.getUniqueId());
     }
 }
