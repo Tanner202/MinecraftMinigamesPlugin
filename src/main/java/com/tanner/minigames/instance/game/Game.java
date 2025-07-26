@@ -47,7 +47,9 @@ public abstract class Game implements Listener {
 
             Team team = arena.getTeam(player);
             Location teamSpawnLocation = teamSpawns.get(team);
-            player.teleport(teamSpawnLocation);
+            if (teamSpawnLocation != null) {
+                player.teleport(teamSpawnLocation);
+            }
         }
         onStart();
     }
@@ -75,13 +77,26 @@ public abstract class Game implements Listener {
         FileConfiguration config = minigames.getConfig();
         String teamName = ChatColor.stripColor(team.getDisplay());
         String teamSpawnPath = "arenas." + arena.getId() + ".team-spawns." + teamName.toLowerCase();
-        return new Location(
-                Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
-                config.getDouble( teamSpawnPath + ".x"),
-                config.getDouble(teamSpawnPath + ".y"),
-                config.getDouble(teamSpawnPath + ".z"),
-                (float) config.getDouble(teamSpawnPath + ".yaw"),
-                (float) config.getDouble(teamSpawnPath + ".pitch"));
+        String allTeamPath = "arenas." + arena.getId() + ".team-spawns.all";
+
+        if (config.contains(teamSpawnPath, true)) {
+            return new Location(
+                    Bukkit.getWorld(config.getString(teamSpawnPath + ".world")),
+                    config.getDouble( teamSpawnPath + ".x"),
+                    config.getDouble(teamSpawnPath + ".y"),
+                    config.getDouble(teamSpawnPath + ".z"),
+                    (float) config.getDouble(teamSpawnPath + ".yaw"),
+                    (float) config.getDouble(teamSpawnPath + ".pitch"));
+        } else if (config.contains(allTeamPath, true)) {
+            return new Location(
+                    Bukkit.getWorld(config.getString(allTeamPath + ".world")),
+                    config.getDouble( allTeamPath + ".x"),
+                    config.getDouble(allTeamPath + ".y"),
+                    config.getDouble(allTeamPath + ".z"),
+                    (float) config.getDouble(allTeamPath + ".yaw"),
+                    (float) config.getDouble(allTeamPath + ".pitch"));
+        }
+        return null;
     }
 
     public abstract void onStart();
