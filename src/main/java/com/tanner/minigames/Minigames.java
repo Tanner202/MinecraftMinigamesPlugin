@@ -34,15 +34,15 @@ public final class Minigames extends JavaPlugin {
 
         arenaManager = new ArenaManager(this);
         SetDragonWaypointsCommand setDragonWaypointsCommand = new SetDragonWaypointsCommand(this);
-        ArenaCommand arenaCommand = new ArenaCommand(this);
 
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ArenaListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameLobbyListener(this), this);
         Bukkit.getPluginManager().registerEvents(setDragonWaypointsCommand, this);
-        Bukkit.getPluginManager().registerEvents(arenaCommand, this);
+        ArenaManageGUI arenaManageGUI = new ArenaManageGUI(this);
+        Bukkit.getPluginManager().registerEvents(arenaManageGUI, this);
 
-        getCommand("arena").setExecutor(arenaCommand);
+        getCommand("arena").setExecutor(new ArenaCommand(this, arenaManageGUI));
         getCommand("setcrate").setExecutor(new SetCrateCommand(this));
         getCommand("setdragonwaypoints").setExecutor(setDragonWaypointsCommand);
     }

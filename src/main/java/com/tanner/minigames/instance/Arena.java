@@ -15,6 +15,7 @@ import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -31,6 +32,7 @@ import java.util.*;
 public class Arena {
 
     private Minigames minigames;
+    private FileConfiguration config;
 
     private int id;
     private GameSettings gameSettings;
@@ -56,6 +58,7 @@ public class Arena {
 
     public Arena(Minigames minigames, int id, GameSettings gameSettings) {
         this.minigames = minigames;
+        this.config = minigames.getConfig();
 
         this.id = id;
         this.gameSettings = gameSettings;
@@ -431,6 +434,16 @@ public class Arena {
         }
     }
     public Location getSpawn() { return gameSettings.getLobbySpawn(); }
+    public void setLobbySpawn(Location spawn) {
+        gameSettings.setLobbySpawn(spawn);
+        config.set("arenas." + id + ".world", spawn.getWorld().getName());
+        config.set("arenas." + id + ".x", spawn.getX());
+        config.set("arenas." + id + ".y", spawn.getY());
+        config.set("arenas." + id + ".z", spawn.getZ());
+        config.set("arenas." + id + ".yaw", spawn.getYaw());
+        config.set("arenas." + id + ".pitch", spawn.getPitch());
+        minigames.saveConfig();
+    }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return gameSettings.isWorldReloadEnabled(); }
     public int getMaxPlayers() { return gameSettings.getPlayerLimit(); }
