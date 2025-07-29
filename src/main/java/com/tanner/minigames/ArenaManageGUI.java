@@ -22,7 +22,8 @@ public class ArenaManageGUI implements Listener {
     private Minigames minigames;
 
     private HashMap<UUID, Arena> selectedArena = new HashMap<>();
-    private List<UUID> playersSettingSpawnpoints = new ArrayList<>();
+    private List<UUID> playersSettingLobbySpawnpoints = new ArrayList<>();
+    private List<UUID> playersSettingNPCSpawnpoints = new ArrayList<>();
     private List<UUID> playerGUIHistoryGroup = new ArrayList<>();
 
     public ArenaManageGUI(Minigames minigames) {
@@ -108,11 +109,15 @@ public class ArenaManageGUI implements Listener {
 
                     switch (e.getRawSlot()) {
                         case 1:
-                            playersSettingSpawnpoints.add(player.getUniqueId());
+                            playersSettingLobbySpawnpoints.add(player.getUniqueId());
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Set spawnpoint by standing at a location and typing 'confirm'");
 
                             break;
+                        case 2:
+                            playersSettingNPCSpawnpoints.add(player.getUniqueId());
+                            closeInventory(player, false);
+                            player.sendMessage(ChatColor.GREEN + "Set NPC spawnpoint by standing at a location and typing 'confirm'");
                     }
                     e.setCancelled(true);
                 }
@@ -143,10 +148,10 @@ public class ArenaManageGUI implements Listener {
     public void playerChatEvent(PlayerChatEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (playersSettingSpawnpoints.contains(uuid)) {
+        if (playersSettingLobbySpawnpoints.contains(uuid)) {
             if (e.getMessage().equalsIgnoreCase("confirm")) {
                 selectedArena.get(uuid).setLobbySpawn(player.getLocation());
-                player.sendMessage(ChatColor.GREEN + "Set Lobby Location!");
+                player.sendMessage(ChatColor.GREEN + "Set Lobby Spawn Location!");
                 player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             } else {
                 player.sendMessage(ChatColor.RED + "Spawn Location Cancelled");
@@ -154,7 +159,19 @@ public class ArenaManageGUI implements Listener {
             }
             openArenaGUI(selectedArena.get(uuid), player);
             e.setCancelled(true);
-            playersSettingSpawnpoints.remove(player.getUniqueId());
+            playersSettingLobbySpawnpoints.remove(player.getUniqueId());
+        } else if (playersSettingNPCSpawnpoints.contains(uuid)) {
+            if (e.getMessage().equalsIgnoreCase("confirm")) {
+                selectedArena.get(uuid).setNPCSpawn(player.getLocation());
+                player.sendMessage(ChatColor.GREEN + "Set NPC Location!");
+                player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            } else {
+                player.sendMessage(ChatColor.RED + "Spawn Location Cancelled");
+                player.playSound(player, Sound.ITEM_MACE_SMASH_GROUND, 1, 1);
+            }
+            openArenaGUI(selectedArena.get(uuid), player);
+            e.setCancelled(true);
+            playersSettingNPCSpawnpoints.remove(player.getUniqueId());
         }
     }
 }

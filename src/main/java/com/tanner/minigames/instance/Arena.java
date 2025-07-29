@@ -436,18 +436,18 @@ public class Arena {
     public Location getSpawn() { return gameSettings.getLobbySpawn(); }
     public void setLobbySpawn(Location spawn) {
         gameSettings.setLobbySpawn(spawn);
-        config.set("arenas." + id + ".world", spawn.getWorld().getName());
-        config.set("arenas." + id + ".x", spawn.getX());
-        config.set("arenas." + id + ".y", spawn.getY());
-        config.set("arenas." + id + ".z", spawn.getZ());
-        config.set("arenas." + id + ".yaw", spawn.getYaw());
-        config.set("arenas." + id + ".pitch", spawn.getPitch());
+        ConfigManager.setLocation("arenas." + id, spawn);
         minigames.saveConfig();
     }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return gameSettings.isWorldReloadEnabled(); }
     public int getMaxPlayers() { return gameSettings.getPlayerLimit(); }
     public Villager getNPC() { return npc; }
+    public void setNPCSpawn(Location spawn) {
+        gameSettings.setNpcSpawn(spawn);
+        ConfigManager.setLocation("arenas." + id + ".npc-spawn", spawn);
+        minigames.saveConfig();
+    }
     public Hologram getNPCHologram() { return npcHologram; }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }

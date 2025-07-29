@@ -54,4 +54,13 @@ public class ConfigManager {
         return true;
     }
 
+    public static void setLocation(String path, Location location) {
+        config.set(path + ".world", location.getWorld().getName());
+        config.set(path + ".x", location.getX());
+        config.set(path + ".y", location.getY());
+        config.set(path + ".z", location.getZ());
+        config.set(path + ".yaw", location.getYaw());
+        config.set(path + ".pitch", location.getPitch());
+    }
+
 }
