@@ -466,6 +466,12 @@ public class Arena {
         minigames.saveConfig();
     }
     public Hologram getNPCHologram() { return npcHologram; }
+    public int getTeamSize() { return gameSettings.getTeamSize(); }
+    public void setTeamSize(int teamSize) {
+        gameSettings.setTeamSize(teamSize);
+        config.set("arenas." + id + ".team-size", teamSize);
+        minigames.saveConfig();
+    }
     public boolean canJoin() { return canJoin; }
     public void setCanJoin(boolean canJoin) { this.canJoin = canJoin; }
     public GameType getGameType() { return gameSettings.getGameType(); }

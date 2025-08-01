@@ -24,6 +24,7 @@ public class ArenaManageGUI implements Listener {
 
     private HashMap<UUID, Arena> selectedArena = new HashMap<>();
     private HashMap<UUID, String> playersSettingSpawnpoints = new HashMap<>();
+    private HashMap<UUID, String> playersChatInputting = new HashMap<>();
     private List<UUID> playerGUIHistoryGroup = new ArrayList<>();
 
     public ArenaManageGUI(Minigames minigames) {
@@ -81,7 +82,7 @@ public class ArenaManageGUI implements Listener {
         ItemStack npcSpawnItem = ItemBuilder.createItem(Material.VILLAGER_SPAWN_EGG, ChatColor.GREEN + "Set NPC Spawn", lore);
         inv.addItem(npcSpawnItem);
 
-        ItemStack teamAmountItem = ItemBuilder.createItem(Material.LEATHER_CHESTPLATE, ChatColor.GREEN + "Team Amount: " + arena.getAvailableTeams().length);
+        ItemStack teamAmountItem = ItemBuilder.createItem(Material.LEATHER_CHESTPLATE, ChatColor.GREEN + "Team Size: " + arena.getTeamSize());
         inv.addItem(teamAmountItem);
 
         ItemStack maxPlayerAmountItem = ItemBuilder.createItem(Material.PLAYER_HEAD, ChatColor.GREEN + "Max Player Amount: " + arena.getMaxPlayers());
@@ -164,6 +165,11 @@ public class ArenaManageGUI implements Listener {
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Set NPC spawnpoint by standing at a location and typing 'confirm'");
                             break;
+                        case 4:
+                            playersChatInputting.put(player.getUniqueId(), "team_size");
+                            closeInventory(player, false);
+                            player.sendMessage(ChatColor.GREEN + "Send a number in chat to set team size.");
+                            break;
                     }
                     e.setCancelled(true);
                 }
@@ -225,7 +231,19 @@ public class ArenaManageGUI implements Listener {
             }
             openArenaGUI(selectedArena.get(uuid), player);
             e.setCancelled(true);
-            playersSettingSpawnpoints.remove(player.getUniqueId());
+            playersSettingSpawnpoints.remove(uuid);
+        } else if (playersChatInputting.containsKey(uuid)) {
+            Arena arena = selectedArena.get(uuid);
+            if (playersChatInputting.get(uuid).equalsIgnoreCase("team_size")) {
+                try {
+                    int teamSize = Integer.parseInt(e.getMessage());
+                    arena.setTeamSize(teamSize);
+                    player.sendMessage(ChatColor.GREEN + "Set team size to " + teamSize + ".");
+                } catch (NumberFormatException exc) {
+                    player.sendMessage(ChatColor.RED + "You didn't enter a number for team size.");
+                }
+            }
+            e.setCancelled(true);
         }
     }
 }
