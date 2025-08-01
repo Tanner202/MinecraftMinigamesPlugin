@@ -3,6 +3,7 @@ package com.tanner.minigames;
 import com.tanner.minigames.Utils.ItemBuilder;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.GameType;
+import com.tanner.minigames.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,8 +23,7 @@ public class ArenaManageGUI implements Listener {
     private Minigames minigames;
 
     private HashMap<UUID, Arena> selectedArena = new HashMap<>();
-    private List<UUID> playersSettingLobbySpawnpoints = new ArrayList<>();
-    private List<UUID> playersSettingNPCSpawnpoints = new ArrayList<>();
+    private HashMap<UUID, String> playersSettingSpawnpoints = new HashMap<>();
     private List<UUID> playerGUIHistoryGroup = new ArrayList<>();
 
     public ArenaManageGUI(Minigames minigames) {
@@ -64,11 +64,14 @@ public class ArenaManageGUI implements Listener {
                 "Pitch: " + spawn.getPitch());
         inv.addItem(lobbySpawnItem);
 
+        ItemStack teamSpawnItem = ItemBuilder.createItem(Material.RED_BED, ChatColor.GREEN + "Team Spawns");
+        inv.addItem(teamSpawnItem);
+
         List<String> lore = new ArrayList<>();
         if (arena.getNPC() != null) {
             Location npcSpawn = arena.getNPC().getLocation();
             lore = Arrays.asList("Current Location: ",
-                    "World" + npcSpawn.getWorld().getName(),
+                    "World: " + npcSpawn.getWorld().getName(),
                     "X: " + npcSpawn.getX(),
                     "Y: " + npcSpawn.getY(),
                     "Z: " + npcSpawn.getZ(),
@@ -103,21 +106,64 @@ public class ArenaManageGUI implements Listener {
             selectedArena.put(player.getUniqueId(), clickedArena);
             openArenaGUI(clickedArena, player);
             e.setCancelled(true);
+        } else if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD.toString() + ChatColor.GREEN + "Team Spawns")) {
+            Arena arena = selectedArena.get(player.getUniqueId());
+            if (e.getRawSlot() == 0) {
+                playersSettingSpawnpoints.put(player.getUniqueId(), "all_team");
+                closeInventory(player, false);
+                player.sendMessage(ChatColor.GREEN + "Set spawnpoint by standing in location and typing 'confirm'. Type anything else to cancel.");
+            }
+            int count = 1;
+            for (Team team : arena.getAvailableTeams()) {
+                if (count == e.getRawSlot()) {
+                    playersSettingSpawnpoints.put(player.getUniqueId(), team.toString());
+                    closeInventory(player, false);
+                    player.sendMessage(ChatColor.GREEN + "Set spawnpoint by standing in location and typing 'confirm'. Type anything else to cancel.");
+                }
+                count++;
+            }
         } else {
             for (GameType gameType : GameType.values()) {
                 if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD + gameType.getDisplayName())) {
 
                     switch (e.getRawSlot()) {
                         case 1:
-                            playersSettingLobbySpawnpoints.add(player.getUniqueId());
+                            playersSettingSpawnpoints.put(player.getUniqueId(), "lobby");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Set spawnpoint by standing at a location and typing 'confirm'");
 
                             break;
                         case 2:
-                            playersSettingNPCSpawnpoints.add(player.getUniqueId());
+                            Arena arena = selectedArena.get(player.getUniqueId());
+                            Inventory inv = Bukkit.createInventory(null, 18, ChatColor.BOLD.toString() + ChatColor.GREEN + "Team Spawns");
+
+                            ItemStack allTeamSpawn = ItemBuilder.createItem(Material.NETHER_STAR, ChatColor.DARK_PURPLE + "All Team Spawn");
+                            inv.addItem(allTeamSpawn);
+                            for (Team team : arena.getAvailableTeams()) {
+                                Location spawn = arena.getTeamSpawn(team);
+                                List<String> lore;
+                                if (spawn != null) {
+                                    lore = Arrays.asList("World: " + spawn.getWorld().getName(),
+                                            "X: " + spawn.getX(),
+                                            "Y: " + spawn.getY(),
+                                            "Z: " + spawn.getZ(),
+                                            "Yaw: " + spawn.getYaw(),
+                                            "Pitch: " + spawn.getPitch());
+                                } else {
+                                    lore = Arrays.asList(ChatColor.RED + "Spawn not set");
+                                }
+                                ItemStack spawnItem = ItemBuilder.createItem(team.getMaterial(), team.getDisplay(),
+                                        lore);
+                                inv.addItem(spawnItem);
+                            }
+                            closeInventory(player, false);
+                            player.openInventory(inv);
+                            break;
+                        case 3:
+                            playersSettingSpawnpoints.put(player.getUniqueId(), "npc");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Set NPC spawnpoint by standing at a location and typing 'confirm'");
+                            break;
                     }
                     e.setCancelled(true);
                 }
@@ -148,10 +194,30 @@ public class ArenaManageGUI implements Listener {
     public void playerChatEvent(PlayerChatEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (playersSettingLobbySpawnpoints.contains(uuid)) {
+        if (playersSettingSpawnpoints.containsKey(uuid)) {
+            Arena arena = selectedArena.get(uuid);
             if (e.getMessage().equalsIgnoreCase("confirm")) {
-                selectedArena.get(uuid).setLobbySpawn(player.getLocation());
-                player.sendMessage(ChatColor.GREEN + "Set Lobby Spawn Location!");
+                String spawnType = playersSettingSpawnpoints.get(uuid);
+                Location spawn = player.getLocation();
+                switch (spawnType) {
+                    case "lobby":
+                        arena.setLobbySpawn(spawn);
+                        break;
+                    case "npc":
+                        arena.setNPCSpawn(spawn);
+                        break;
+                    case "all_team":
+                        arena.setTeamSpawn(Team.ALL, spawn);
+                        break;
+                    default:
+                        for (Team team : arena.getAvailableTeams()) {
+                            if (spawnType.equalsIgnoreCase(team.toString())) {
+                                arena.setTeamSpawn(team, spawn);
+                            }
+                        }
+                        break;
+                }
+                player.sendMessage(ChatColor.GREEN + "Set Spawn Location!");
                 player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             } else {
                 player.sendMessage(ChatColor.RED + "Spawn Location Cancelled");
@@ -159,19 +225,7 @@ public class ArenaManageGUI implements Listener {
             }
             openArenaGUI(selectedArena.get(uuid), player);
             e.setCancelled(true);
-            playersSettingLobbySpawnpoints.remove(player.getUniqueId());
-        } else if (playersSettingNPCSpawnpoints.contains(uuid)) {
-            if (e.getMessage().equalsIgnoreCase("confirm")) {
-                selectedArena.get(uuid).setNPCSpawn(player.getLocation());
-                player.sendMessage(ChatColor.GREEN + "Set NPC Location!");
-                player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-            } else {
-                player.sendMessage(ChatColor.RED + "Spawn Location Cancelled");
-                player.playSound(player, Sound.ITEM_MACE_SMASH_GROUND, 1, 1);
-            }
-            openArenaGUI(selectedArena.get(uuid), player);
-            e.setCancelled(true);
-            playersSettingNPCSpawnpoints.remove(player.getUniqueId());
+            playersSettingSpawnpoints.remove(player.getUniqueId());
         }
     }
 }

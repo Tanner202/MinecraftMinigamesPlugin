@@ -69,7 +69,7 @@ public class Arena {
         this.teams = new HashMap<>();
         this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
-        this.availableTeams = Arrays.copyOf(Team.values(), gameSettings.getPlayerLimit() / Math.max(1, gameSettings.getTeamSize()));
+        this.availableTeams = Arrays.copyOfRange(Team.values(), 1, (gameSettings.getPlayerLimit() / Math.max(1, gameSettings.getTeamSize())) + 1);
         this.countdown = new Countdown(minigames, this);
         this.canJoin = true;
 
@@ -437,6 +437,23 @@ public class Arena {
     public void setLobbySpawn(Location spawn) {
         gameSettings.setLobbySpawn(spawn);
         ConfigManager.setLocation("arenas." + id, spawn);
+        minigames.saveConfig();
+    }
+    public Location getTeamSpawn(Team team) {
+        FileConfiguration config = minigames.getConfig();
+        String teamName = ChatColor.stripColor(team.getDisplay());
+        String teamSpawnPath = "arenas." + id + ".team-spawns." + teamName.toLowerCase();
+        String allTeamPath = "arenas." + id + ".team-spawns.all";
+
+        if (config.contains(teamSpawnPath, true)) {
+            return ConfigManager.getSpawn(teamSpawnPath);
+        } else if (config.contains(allTeamPath, true)) {
+            return ConfigManager.getSpawn(allTeamPath);
+        }
+        return null;
+    }
+    public void setTeamSpawn(Team team, Location spawn) {
+        ConfigManager.setLocation("arenas." + id + ".team-spawns." + team.toString().toLowerCase(), spawn);
         minigames.saveConfig();
     }
     public World getWorld() { return world; }
