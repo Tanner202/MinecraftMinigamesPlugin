@@ -127,6 +127,7 @@ public class ArenaManageGUI implements Listener {
             for (GameType gameType : GameType.values()) {
                 if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD + gameType.getDisplayName())) {
 
+                    Arena arena = selectedArena.get(player.getUniqueId());
                     switch (e.getRawSlot()) {
                         case 1:
                             playersSettingSpawnpoints.put(player.getUniqueId(), "lobby");
@@ -135,7 +136,6 @@ public class ArenaManageGUI implements Listener {
 
                             break;
                         case 2:
-                            Arena arena = selectedArena.get(player.getUniqueId());
                             Inventory inv = Bukkit.createInventory(null, 18, ChatColor.BOLD.toString() + ChatColor.GREEN + "Team Spawns");
 
                             ItemStack allTeamSpawn = ItemBuilder.createItem(Material.NETHER_STAR, ChatColor.DARK_PURPLE + "All Team Spawn");
@@ -174,6 +174,11 @@ public class ArenaManageGUI implements Listener {
                             playersChatInputting.put(player.getUniqueId(), "player_limit");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Send a number in chat to set player limit: ");
+                            break;
+                        case 6:
+                            arena.setWorldReloadEnabled(!arena.worldReloadEnabled());
+                            closeInventory(player, false);
+                            openArenaGUI(arena, player);
                             break;
                     }
                     e.setCancelled(true);

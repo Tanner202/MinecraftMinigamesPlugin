@@ -458,6 +458,11 @@ public class Arena {
     }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return gameSettings.isWorldReloadEnabled(); }
+    public void setWorldReloadEnabled(boolean worldReloadEnabled) {
+        gameSettings.setWorldReloadEnabled(worldReloadEnabled);
+        config.set("arenas." + id + ".world-reload-enabled", worldReloadEnabled);
+        minigames.saveConfig();
+    }
     public Villager getNPC() { return npc; }
     public void setNPCSpawn(Location spawn) {
         gameSettings.setNpcSpawn(spawn);
