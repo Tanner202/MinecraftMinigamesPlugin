@@ -84,7 +84,7 @@ public class ArenaCommand implements CommandExecutor {
                     return false;
                 }
 
-                if (arena.getPlayers().size() >= arena.getMaxPlayers()) {
+                if (arena.getPlayers().size() >= arena.getPlayerLimit()) {
                     player.sendMessage(ChatColor.RED + "This arena is currently full.");
                     return false;
                 }

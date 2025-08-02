@@ -82,7 +82,7 @@ public class Arena {
             String[] hologramLines = new String[]{
                     ChatColor.YELLOW + ChatColor.BOLD.toString() + "CLICK HERE",
                     gameSettings.getGameType().getDisplayName(),
-                    ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getMaxPlayers()
+                    ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getPlayerLimit()
             };
             npcHologram = new Hologram(npcSpawn, hologramLines);
         }
@@ -420,7 +420,7 @@ public class Arena {
     }
 
     private void updateNPCHologramPlayerCount() {
-        npcHologram.update(2, ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getMaxPlayers());
+        npcHologram.update(2, ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getPlayerLimit());
     }
 
     public int getId() { return id; }
@@ -458,7 +458,6 @@ public class Arena {
     }
     public World getWorld() { return world; }
     public boolean worldReloadEnabled() { return gameSettings.isWorldReloadEnabled(); }
-    public int getMaxPlayers() { return gameSettings.getPlayerLimit(); }
     public Villager getNPC() { return npc; }
     public void setNPCSpawn(Location spawn) {
         gameSettings.setNpcSpawn(spawn);
@@ -470,6 +469,13 @@ public class Arena {
     public void setTeamSize(int teamSize) {
         gameSettings.setTeamSize(teamSize);
         config.set("arenas." + id + ".team-size", teamSize);
+        minigames.saveConfig();
+    }
+    public int getPlayerLimit() { return gameSettings.getPlayerLimit(); }
+    public void setPlayerLimit(int playerLimit) {
+        gameSettings.setPlayerLimit(playerLimit);
+        updateNPCHologramPlayerCount();
+        config.set("arenas." + id + ".max-players", playerLimit);
         minigames.saveConfig();
     }
     public boolean canJoin() { return canJoin; }

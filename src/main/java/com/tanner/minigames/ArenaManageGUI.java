@@ -85,8 +85,8 @@ public class ArenaManageGUI implements Listener {
         ItemStack teamAmountItem = ItemBuilder.createItem(Material.LEATHER_CHESTPLATE, ChatColor.GREEN + "Team Size: " + arena.getTeamSize());
         inv.addItem(teamAmountItem);
 
-        ItemStack maxPlayerAmountItem = ItemBuilder.createItem(Material.PLAYER_HEAD, ChatColor.GREEN + "Max Player Amount: " + arena.getMaxPlayers());
-        inv.addItem(maxPlayerAmountItem);
+        ItemStack playerLimit = ItemBuilder.createItem(Material.PLAYER_HEAD, ChatColor.GREEN + "Player Limit: " + arena.getPlayerLimit());
+        inv.addItem(playerLimit);
 
         boolean worldReloadEnabled = arena.worldReloadEnabled();
         ItemStack worldReloadItem = ItemBuilder.createItem(Material.END_PORTAL_FRAME, ChatColor.GREEN + "World Reload Enabled: " + (worldReloadEnabled ? ChatColor.GREEN : ChatColor.RED) + worldReloadEnabled);
@@ -168,7 +168,12 @@ public class ArenaManageGUI implements Listener {
                         case 4:
                             playersChatInputting.put(player.getUniqueId(), "team_size");
                             closeInventory(player, false);
-                            player.sendMessage(ChatColor.GREEN + "Send a number in chat to set team size.");
+                            player.sendMessage(ChatColor.GREEN + "Send a number in chat to set team size: ");
+                            break;
+                        case 5:
+                            playersChatInputting.put(player.getUniqueId(), "player_limit");
+                            closeInventory(player, false);
+                            player.sendMessage(ChatColor.GREEN + "Send a number in chat to set player limit: ");
                             break;
                     }
                     e.setCancelled(true);
@@ -242,7 +247,16 @@ public class ArenaManageGUI implements Listener {
                 } catch (NumberFormatException exc) {
                     player.sendMessage(ChatColor.RED + "You didn't enter a number for team size.");
                 }
+            } else if (playersChatInputting.get(uuid).equalsIgnoreCase("player_limit")) {
+                try {
+                    int playerLimit = Integer.parseInt(e.getMessage());
+                    arena.setPlayerLimit(playerLimit);
+                    player.sendMessage(ChatColor.GREEN + "Set player limit to " + playerLimit + ".");
+                } catch (NumberFormatException exc) {
+                    player.sendMessage(ChatColor.RED + "You didn't enter a number for player limit.");
+                }
             }
+            playersChatInputting.remove(uuid);
             e.setCancelled(true);
         }
     }
