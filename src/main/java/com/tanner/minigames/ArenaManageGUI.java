@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
@@ -43,6 +44,12 @@ public class ArenaManageGUI implements Listener {
             arenaItem.setItemMeta(arenaMeta);
             inv.addItem(arenaItem);
         }
+
+        ItemStack addArenaItem = ItemBuilder.createItem(Material.NETHER_STAR, ChatColor.GREEN + "Add Arena", "Click to add arena!");
+        ItemMeta addArenaMeta = addArenaItem.getItemMeta();
+        addArenaMeta.getPersistentDataContainer().set(Constants.ADD_ARENA_ITEM, PersistentDataType.BOOLEAN, true);
+        addArenaItem.setItemMeta(addArenaMeta);
+        inv.addItem(addArenaItem);
 
         player.openInventory(inv);
     }
@@ -95,6 +102,16 @@ public class ArenaManageGUI implements Listener {
         player.openInventory(inv);
     }
 
+    public void openCreateArenaGUI(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.GREEN.toString() + ChatColor.BOLD + "Create Arena: Select Gamemode");
+
+        for (GameType gameType : GameType.values()) {
+            inv.addItem(ItemBuilder.createItem(gameType.getDisplayIcon(), gameType.getDisplayName()));
+        }
+
+        player.openInventory(inv);
+    }
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
@@ -102,10 +119,15 @@ public class ArenaManageGUI implements Listener {
 
             if (e.getCurrentItem() == null) return;
 
-            String arenaID = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(Constants.ARENA_ID, PersistentDataType.STRING);
-            Arena clickedArena = minigames.getArenaManager().getArena(Integer.valueOf(arenaID));
-            selectedArena.put(player.getUniqueId(), clickedArena);
-            openArenaGUI(clickedArena, player);
+            PersistentDataContainer container = e.getCurrentItem().getItemMeta().getPersistentDataContainer();
+            if (container.has(Constants.ARENA_ID)) {
+                String arenaID = container.get(Constants.ARENA_ID, PersistentDataType.STRING);
+                Arena clickedArena = minigames.getArenaManager().getArena(Integer.valueOf(arenaID));
+                selectedArena.put(player.getUniqueId(), clickedArena);
+                openArenaGUI(clickedArena, player);
+            } else if (container.has(Constants.ADD_ARENA_ITEM)) {
+                openCreateArenaGUI(player);
+            }
             e.setCancelled(true);
         } else if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD.toString() + ChatColor.GREEN + "Team Spawns")) {
             Arena arena = selectedArena.get(player.getUniqueId());
@@ -123,6 +145,16 @@ public class ArenaManageGUI implements Listener {
                 }
                 count++;
             }
+        } else if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.GREEN.toString() + ChatColor.BOLD + "Create Arena: Select Gamemode")) {
+            GameType selectedGameType = Arrays.asList(GameType.values()).get(e.getRawSlot());
+            closeInventory(player, false);
+            GameSettings gameSettings = new GameSettings(selectedGameType,
+                    player.getLocation(), null, 1,
+                    8, false);
+            Arena arena = minigames.getArenaManager().addArena(gameSettings);
+            selectedArena.put(player.getUniqueId(), arena);
+            playersSettingSpawnpoints.put(player.getUniqueId(), "lobby_setup");
+            player.sendMessage(ChatColor.GREEN + "Set Lobby Spawn by standing in a location and typing 'confirm'. Type anything else to cancel arena creation.");
         } else {
             for (GameType gameType : GameType.values()) {
                 if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD + gameType.getDisplayName())) {
@@ -218,6 +250,11 @@ public class ArenaManageGUI implements Listener {
                 switch (spawnType) {
                     case "lobby":
                         arena.setLobbySpawn(spawn);
+                        break;
+                    case "lobby_setup":
+                        minigames.getArenaManager().saveArena(arena);
+                        arena.setLobbySpawn(spawn);
+                        openArenaGUI(arena, player);
                         break;
                     case "npc":
                         arena.setNPCSpawn(spawn);

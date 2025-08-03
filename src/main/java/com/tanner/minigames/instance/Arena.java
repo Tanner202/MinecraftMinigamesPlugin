@@ -287,7 +287,9 @@ public class Arena {
         }
 
         bossBar.addPlayer(player);
-        updateNPCHologramPlayerCount();
+        if (npc != null) {
+            updateNPCHologramPlayerCount();
+        }
     }
 
     public void removePlayer(Player player) {
@@ -337,7 +339,9 @@ public class Arena {
         }
 
         bossBar.removePlayer(player);
-        updateNPCHologramPlayerCount();
+        if (npc != null) {
+            updateNPCHologramPlayerCount();
+        }
     }
 
     private void updateScoreboard() {
@@ -436,6 +440,7 @@ public class Arena {
     public Location getSpawn() { return gameSettings.getLobbySpawn(); }
     public void setLobbySpawn(Location spawn) {
         gameSettings.setLobbySpawn(spawn);
+        world = spawn.getWorld();
         ConfigManager.setLocation("arenas." + id, spawn);
         minigames.saveConfig();
     }
@@ -479,7 +484,9 @@ public class Arena {
     public int getPlayerLimit() { return gameSettings.getPlayerLimit(); }
     public void setPlayerLimit(int playerLimit) {
         gameSettings.setPlayerLimit(playerLimit);
-        updateNPCHologramPlayerCount();
+        if (npc != null) {
+            updateNPCHologramPlayerCount();
+        }
         config.set("arenas." + id + ".max-players", playerLimit);
         minigames.saveConfig();
     }

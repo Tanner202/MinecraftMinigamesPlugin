@@ -140,4 +140,43 @@ public class ArenaManager {
         }
         return -1;
     }
+
+    public Arena addArena(GameSettings gameSettings) {
+        int newID = arenas.getLast().getId() + 1;
+        Arena arena = new Arena(minigames,
+                newID,
+                gameSettings);
+        arenas.add(arena);
+        return arena;
+    }
+
+    public void saveArena(Arena arena) {
+        int id = arena.getId();
+
+        ConfigurationSection arenaSection = config.createSection("arenas." + id);
+        arenaSection.set(".game", arena.getGameType().toString());
+        arenaSection.set(".max-players", arena.getPlayerLimit());
+        arenaSection.set(".team-size", arena.getTeamSize());
+        arenaSection.set(".world-reload-enabled", arena.worldReloadEnabled());
+
+        Location spawn = arena.getSpawn();
+        arenaSection.set(".world", spawn.getWorld().getName());
+        arenaSection.set(".x", spawn.getX());
+        arenaSection.set(".y", spawn.getY());
+        arenaSection.set(".z", spawn.getZ());
+        arenaSection.set(".yaw", spawn.getYaw());
+        arenaSection.set(".pitch", spawn.getPitch());
+
+        ConfigurationSection npcSpawnConfigSection = arenaSection.createSection("npc-spawn");
+        if (arena.getNPC() != null) {
+            Location npcSpawn = arena.getNPC().getLocation();
+            npcSpawnConfigSection.set(".world", npcSpawn.getWorld().getName());
+            npcSpawnConfigSection.set(".x", npcSpawn.getX());
+            npcSpawnConfigSection.set(".y", npcSpawn.getY());
+            npcSpawnConfigSection.set(".z", npcSpawn.getZ());
+            npcSpawnConfigSection.set(".yaw", npcSpawn.getYaw());
+            npcSpawnConfigSection.set(".pitch", npcSpawn.getPitch());
+        }
+        minigames.saveConfig();
+    }
 }
