@@ -102,6 +102,9 @@ public class ArenaManageGUI implements Listener {
         ItemStack deleteArenaItem = ItemBuilder.createItem(Material.LAVA_BUCKET, ChatColor.RED + "Delete Arena");
         inv.addItem(deleteArenaItem);
 
+        ItemStack backButtonItem = ItemBuilder.createItem(Material.BARRIER, ChatColor.RED + "Exit");
+        inv.addItem(backButtonItem);
+
         player.openInventory(inv);
     }
 
@@ -220,6 +223,8 @@ public class ArenaManageGUI implements Listener {
                             player.sendMessage(ChatColor.RED + "Type 'DELETE ARENA' to confirm arena deletion. Type anything else to cancel.");
                             closeInventory(player, false);
                             break;
+                        case 8:
+                            closeInventory(player, true);
                     }
                     e.setCancelled(true);
                 }
