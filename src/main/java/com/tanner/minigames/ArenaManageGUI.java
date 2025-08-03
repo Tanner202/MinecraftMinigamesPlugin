@@ -99,6 +99,9 @@ public class ArenaManageGUI implements Listener {
         ItemStack worldReloadItem = ItemBuilder.createItem(Material.END_PORTAL_FRAME, ChatColor.GREEN + "World Reload Enabled: " + (worldReloadEnabled ? ChatColor.GREEN : ChatColor.RED) + worldReloadEnabled);
         inv.addItem(worldReloadItem);
 
+        ItemStack deleteArenaItem = ItemBuilder.createItem(Material.LAVA_BUCKET, ChatColor.RED + "Delete Arena");
+        inv.addItem(deleteArenaItem);
+
         player.openInventory(inv);
     }
 
@@ -212,6 +215,11 @@ public class ArenaManageGUI implements Listener {
                             closeInventory(player, false);
                             openArenaGUI(arena, player);
                             break;
+                        case 7:
+                            playersChatInputting.put(player.getUniqueId(), "delete_arena");
+                            player.sendMessage(ChatColor.RED + "Type 'DELETE ARENA' to confirm arena deletion. Type anything else to cancel.");
+                            closeInventory(player, false);
+                            break;
                     }
                     e.setCancelled(true);
                 }
@@ -296,6 +304,13 @@ public class ArenaManageGUI implements Listener {
                     player.sendMessage(ChatColor.GREEN + "Set player limit to " + playerLimit + ".");
                 } catch (NumberFormatException exc) {
                     player.sendMessage(ChatColor.RED + "You didn't enter a number for player limit.");
+                }
+            } else if (playersChatInputting.get(uuid).equalsIgnoreCase("delete_arena")) {
+                if (e.getMessage().equals("DELETE ARENA")) {
+                    player.sendMessage(ChatColor.GREEN + "Arena successfully deleted.");
+                    minigames.getArenaManager().deleteArena(arena);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Arena deletion cancelled.");
                 }
             }
             playersChatInputting.remove(uuid);

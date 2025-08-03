@@ -150,6 +150,12 @@ public class ArenaManager {
         return arena;
     }
 
+    public void deleteArena(Arena arena) {
+        arenas.remove(arena);
+        config.set("arenas." + arena.getId(), null);
+        minigames.saveConfig();
+    }
+
     public void saveArena(Arena arena) {
         int id = arena.getId();
 
