@@ -26,7 +26,7 @@ public class ArenaManageGUI implements Listener {
     private HashMap<UUID, Arena> selectedArena = new HashMap<>();
     private HashMap<UUID, String> playersSettingSpawnpoints = new HashMap<>();
     private HashMap<UUID, String> playersChatInputting = new HashMap<>();
-    private List<UUID> playerGUIHistoryGroup = new ArrayList<>();
+    private List<UUID> guiHistoryWhitelistGroup = new ArrayList<>();
 
     public ArenaManageGUI(Minigames minigames) {
         this.minigames = minigames;
@@ -109,7 +109,7 @@ public class ArenaManageGUI implements Listener {
     }
 
     public void openCreateArenaGUI(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.GREEN.toString() + ChatColor.BOLD + "Create Arena: Select Gamemode");
+        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.GREEN.toString() + ChatColor.BOLD + "Select Gamemode: ");
 
         for (GameType gameType : GameType.values()) {
             inv.addItem(ItemBuilder.createItem(gameType.getDisplayIcon(), gameType.getDisplayName()));
@@ -233,8 +233,8 @@ public class ArenaManageGUI implements Listener {
     }
 
     private void closeInventory(Player player, boolean withHistory) {
-        if (withHistory) {
-            playerGUIHistoryGroup.add(player.getUniqueId());
+        if (!withHistory) {
+            guiHistoryWhitelistGroup.add(player.getUniqueId());
         }
         player.closeInventory();
     }
@@ -242,11 +242,19 @@ public class ArenaManageGUI implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
-        if (playerGUIHistoryGroup.contains(player.getUniqueId())) {
+        if (guiHistoryWhitelistGroup.contains(player.getUniqueId())) {
+            guiHistoryWhitelistGroup.remove(player.getUniqueId());
+        } else {
             for (GameType gameType : GameType.values()) {
                 if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD + gameType.getDisplayName())) {
                     Bukkit.getScheduler().runTaskLater(minigames, () -> openArenaManagerGUI(player), 1);
                 }
+            }
+
+            if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.GREEN.toString() + ChatColor.BOLD + "Select Gamemode: ")) {
+                Bukkit.getScheduler().runTaskLater(minigames, () -> openArenaManagerGUI(player), 1);
+            } else if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.BOLD.toString() + ChatColor.GREEN + "Team Spawns")) {
+                Bukkit.getScheduler().runTaskLater(minigames, () -> openArenaGUI(selectedArena.get(player.getUniqueId()), player), 1);
             }
         }
     }
@@ -302,6 +310,7 @@ public class ArenaManageGUI implements Listener {
                 } catch (NumberFormatException exc) {
                     player.sendMessage(ChatColor.RED + "You didn't enter a number for team size.");
                 }
+                openArenaGUI(arena, player);
             } else if (playersChatInputting.get(uuid).equalsIgnoreCase("player_limit")) {
                 try {
                     int playerLimit = Integer.parseInt(e.getMessage());
@@ -310,12 +319,14 @@ public class ArenaManageGUI implements Listener {
                 } catch (NumberFormatException exc) {
                     player.sendMessage(ChatColor.RED + "You didn't enter a number for player limit.");
                 }
+                openArenaGUI(arena, player);
             } else if (playersChatInputting.get(uuid).equalsIgnoreCase("delete_arena")) {
                 if (e.getMessage().equals("DELETE ARENA")) {
                     player.sendMessage(ChatColor.GREEN + "Arena successfully deleted.");
                     minigames.getArenaManager().deleteArena(arena);
                 } else {
                     player.sendMessage(ChatColor.RED + "Arena deletion cancelled.");
+                    openArenaGUI(arena, player);
                 }
             }
             playersChatInputting.remove(uuid);
