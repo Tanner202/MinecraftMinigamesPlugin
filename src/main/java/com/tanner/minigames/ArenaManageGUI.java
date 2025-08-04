@@ -151,7 +151,7 @@ public class ArenaManageGUI implements Listener {
                 }
                 count++;
             }
-        } else if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.GREEN.toString() + ChatColor.BOLD + "Create Arena: Select Gamemode")) {
+        } else if (ChatColor.translateAlternateColorCodes('&', e.getView().getTitle()).equals(ChatColor.GREEN.toString() + ChatColor.BOLD + "Select Gamemode: ")) {
             GameType selectedGameType = Arrays.asList(GameType.values()).get(e.getRawSlot());
             closeInventory(player, false);
             GameSettings gameSettings = new GameSettings(selectedGameType,
