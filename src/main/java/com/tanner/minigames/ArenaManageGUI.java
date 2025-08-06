@@ -51,29 +51,31 @@ public class ArenaManageGUI implements Listener {
         addArenaItem.setItemMeta(addArenaMeta);
         inv.addItem(addArenaItem);
 
+        fillEmptySlots(inv, Material.GRAY_STAINED_GLASS_PANE);
+
         player.openInventory(inv);
     }
 
     public void openArenaGUI(Arena arena, Player player) {
-        Inventory inv = Bukkit.createInventory(null, 9, ChatColor.BOLD + arena.getGameType().getDisplayName());
+        Inventory inv = Bukkit.createInventory(null, 27, ChatColor.BOLD + arena.getGameType().getDisplayName());
 
         ItemStack gameTypeItem = ItemBuilder.createItem(Material.ENDER_EYE, ChatColor.BLUE + "Game Type: " + arena.getGameType());
-        inv.addItem(gameTypeItem);
+        inv.setItem(4, gameTypeItem);
 
         Location spawn = arena.getSpawn();
         ItemStack lobbySpawnItem = ItemBuilder.createItem(Material.LIGHT_WEIGHTED_PRESSURE_PLATE,
                 ChatColor.GREEN + "Set Lobby Spawn",
                 "Current Spawn: ",
-                "World" + spawn.getWorld().getName(),
+                "World: " + spawn.getWorld().getName(),
                 "X: " + spawn.getX(),
                 "Y: " + spawn.getY(),
                 "Z: " + spawn.getZ(),
                 "Yaw: " + spawn.getYaw(),
                 "Pitch: " + spawn.getPitch());
-        inv.addItem(lobbySpawnItem);
+        inv.setItem(12, lobbySpawnItem);
 
         ItemStack teamSpawnItem = ItemBuilder.createItem(Material.RED_BED, ChatColor.GREEN + "Team Spawns");
-        inv.addItem(teamSpawnItem);
+        inv.setItem(13, teamSpawnItem);
 
         List<String> lore = new ArrayList<>();
         if (arena.getNPC() != null) {
@@ -87,23 +89,25 @@ public class ArenaManageGUI implements Listener {
                     "Pitch: " + spawn.getPitch());
         }
         ItemStack npcSpawnItem = ItemBuilder.createItem(Material.VILLAGER_SPAWN_EGG, ChatColor.GREEN + "Set NPC Spawn", lore);
-        inv.addItem(npcSpawnItem);
+        inv.setItem(14, npcSpawnItem);
 
         ItemStack teamAmountItem = ItemBuilder.createItem(Material.LEATHER_CHESTPLATE, ChatColor.GREEN + "Team Size: " + arena.getTeamSize());
-        inv.addItem(teamAmountItem);
+        inv.setItem(21, teamAmountItem);
 
         ItemStack playerLimit = ItemBuilder.createItem(Material.PLAYER_HEAD, ChatColor.GREEN + "Player Limit: " + arena.getPlayerLimit());
-        inv.addItem(playerLimit);
+        inv.setItem(22, playerLimit);
 
         boolean worldReloadEnabled = arena.worldReloadEnabled();
         ItemStack worldReloadItem = ItemBuilder.createItem(Material.END_PORTAL_FRAME, ChatColor.GREEN + "World Reload Enabled: " + (worldReloadEnabled ? ChatColor.GREEN : ChatColor.RED) + worldReloadEnabled);
-        inv.addItem(worldReloadItem);
+        inv.setItem(23, worldReloadItem);
 
         ItemStack deleteArenaItem = ItemBuilder.createItem(Material.LAVA_BUCKET, ChatColor.RED + "Delete Arena");
-        inv.addItem(deleteArenaItem);
+        inv.setItem(18, deleteArenaItem);
 
         ItemStack backButtonItem = ItemBuilder.createItem(Material.BARRIER, ChatColor.RED + "Exit");
-        inv.addItem(backButtonItem);
+        inv.setItem(26, backButtonItem);
+
+        fillEmptySlots(inv, Material.GRAY_STAINED_GLASS_PANE);
 
         player.openInventory(inv);
     }
@@ -167,13 +171,13 @@ public class ArenaManageGUI implements Listener {
 
                     Arena arena = selectedArena.get(player.getUniqueId());
                     switch (e.getRawSlot()) {
-                        case 1:
+                        case 12:
                             playersSettingSpawnpoints.put(player.getUniqueId(), "lobby");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Set spawnpoint by standing at a location and typing 'confirm'");
 
                             break;
-                        case 2:
+                        case 13:
                             Inventory inv = Bukkit.createInventory(null, 18, ChatColor.BOLD.toString() + ChatColor.GREEN + "Team Spawns");
 
                             ItemStack allTeamSpawn = ItemBuilder.createItem(Material.NETHER_STAR, ChatColor.DARK_PURPLE + "All Team Spawn");
@@ -198,36 +202,45 @@ public class ArenaManageGUI implements Listener {
                             closeInventory(player, false);
                             player.openInventory(inv);
                             break;
-                        case 3:
+                        case 14:
                             playersSettingSpawnpoints.put(player.getUniqueId(), "npc");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Set NPC spawnpoint by standing at a location and typing 'confirm'");
                             break;
-                        case 4:
+                        case 21:
                             playersChatInputting.put(player.getUniqueId(), "team_size");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Send a number in chat to set team size: ");
                             break;
-                        case 5:
+                        case 22:
                             playersChatInputting.put(player.getUniqueId(), "player_limit");
                             closeInventory(player, false);
                             player.sendMessage(ChatColor.GREEN + "Send a number in chat to set player limit: ");
                             break;
-                        case 6:
+                        case 23:
                             arena.setWorldReloadEnabled(!arena.worldReloadEnabled());
                             closeInventory(player, false);
                             openArenaGUI(arena, player);
                             break;
-                        case 7:
+                        case 18:
                             playersChatInputting.put(player.getUniqueId(), "delete_arena");
                             player.sendMessage(ChatColor.RED + "Type 'DELETE ARENA' to confirm arena deletion. Type anything else to cancel.");
                             closeInventory(player, false);
                             break;
-                        case 8:
+                        case 26:
                             closeInventory(player, true);
                     }
                     e.setCancelled(true);
                 }
+            }
+        }
+    }
+
+    private void fillEmptySlots(Inventory inv, Material material) {
+        ItemStack fillItem = ItemBuilder.createItem(material, " ");
+        for (int i = 0; i < inv.getSize(); i++) {
+            if (inv.getItem(i) == null) {
+                inv.setItem(i, fillItem);
             }
         }
     }
