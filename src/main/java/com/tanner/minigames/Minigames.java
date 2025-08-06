@@ -1,6 +1,7 @@
 package com.tanner.minigames;
 
 import com.tanner.minigames.command.ArenaCommand;
+import com.tanner.minigames.gui.ArenaManageGUI;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.dragonescape.SetDragonWaypointsCommand;
 import com.tanner.minigames.instance.game.scrapshuffle.SetCrateCommand;
