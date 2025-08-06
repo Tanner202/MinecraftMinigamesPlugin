@@ -1,7 +1,7 @@
 package com.tanner.minigames.listener;
 
-import com.tanner.minigames.Constants;
-import com.tanner.minigames.GameState;
+import com.tanner.minigames.util.Constants;
+import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.kit.KitType;

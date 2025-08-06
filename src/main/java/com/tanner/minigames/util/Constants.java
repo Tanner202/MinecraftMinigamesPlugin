@@ -1,5 +1,6 @@
-package com.tanner.minigames;
+package com.tanner.minigames.util;
 
+import com.tanner.minigames.Minigames;
 import org.bukkit.NamespacedKey;
 
 public class Constants {

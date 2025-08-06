@@ -1,4 +1,4 @@
-package com.tanner.minigames;
+package com.tanner.minigames.instance;
 
 public enum GameState {
     RECRUITING,

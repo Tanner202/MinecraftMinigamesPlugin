@@ -1,4 +1,4 @@
-package com.tanner.minigames.Utils;
+package com.tanner.minigames.util;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

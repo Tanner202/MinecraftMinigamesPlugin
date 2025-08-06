@@ -1,4 +1,4 @@
-package com.tanner.minigames;
+package com.tanner.minigames.util;
 
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;

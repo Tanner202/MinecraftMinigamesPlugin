@@ -1,6 +1,5 @@
 package com.tanner.minigames.instance;
 
-import com.tanner.minigames.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.manager.ConfigManager;
 import org.bukkit.ChatColor;

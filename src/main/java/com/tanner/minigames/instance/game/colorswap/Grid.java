@@ -1,6 +1,6 @@
 package com.tanner.minigames.instance.game.colorswap;
 
-import com.tanner.minigames.Constants;
+import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import org.bukkit.Bukkit;

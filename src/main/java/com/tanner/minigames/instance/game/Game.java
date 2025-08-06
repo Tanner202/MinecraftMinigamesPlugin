@@ -1,6 +1,6 @@
 package com.tanner.minigames.instance.game;
 
-import com.tanner.minigames.GameState;
+import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.kit.Kit;

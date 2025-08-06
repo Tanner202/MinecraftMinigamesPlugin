@@ -1,6 +1,6 @@
 package com.tanner.minigames.manager;
 
-import com.tanner.minigames.Constants;
+import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.Minigames;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

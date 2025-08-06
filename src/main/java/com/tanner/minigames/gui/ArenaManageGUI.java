@@ -1,9 +1,9 @@
 package com.tanner.minigames.gui;
 
-import com.tanner.minigames.Constants;
-import com.tanner.minigames.GameSettings;
+import com.tanner.minigames.util.Constants;
+import com.tanner.minigames.util.GameSettings;
 import com.tanner.minigames.Minigames;
-import com.tanner.minigames.Utils.ItemBuilder;
+import com.tanner.minigames.util.ItemBuilder;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.GameType;
 import com.tanner.minigames.team.Team;

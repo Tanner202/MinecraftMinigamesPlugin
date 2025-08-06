@@ -1,4 +1,4 @@
-package com.tanner.minigames.Utils;
+package com.tanner.minigames.util;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;

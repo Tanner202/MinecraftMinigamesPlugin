@@ -1,5 +1,6 @@
 package com.tanner.minigames;
 
+import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.command.ArenaCommand;
 import com.tanner.minigames.gui.ArenaManageGUI;
 import com.tanner.minigames.instance.Arena;
@@ -14,7 +15,6 @@ import com.tanner.minigames.manager.FileManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.UUID;
 
 public final class Minigames extends JavaPlugin {

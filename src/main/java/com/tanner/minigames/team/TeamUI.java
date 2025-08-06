@@ -1,6 +1,6 @@
 package com.tanner.minigames.team;
 
-import com.tanner.minigames.Constants;
+import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.instance.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

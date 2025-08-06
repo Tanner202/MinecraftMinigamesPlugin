@@ -1,6 +1,6 @@
 package com.tanner.minigames.manager;
 
-import com.tanner.minigames.GameSettings;
+import com.tanner.minigames.util.GameSettings;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.GameType;

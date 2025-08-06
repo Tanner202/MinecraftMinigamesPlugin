@@ -1,4 +1,4 @@
-package com.tanner.minigames;
+package com.tanner.minigames.util;
 
 import com.tanner.minigames.instance.GameType;
 import org.bukkit.Location;
