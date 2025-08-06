@@ -1,6 +1,7 @@
 package com.tanner.minigames.instance.game.dragonescape;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
@@ -14,6 +15,7 @@ public class CustomPhase extends AbstractDragonPhaseInstance {
     private Vec3 currentTarget;
     private int currentTargetIndex;
     private final float distanceThreshold = 3;
+    private final int yawMaxChange = 3;
 
     public CustomPhase(EnderDragon dragon, Vec3[] targets) {
         super(dragon);
@@ -53,7 +55,14 @@ public class CustomPhase extends AbstractDragonPhaseInstance {
         dragon.move(MoverType.SELF, dragon.getDeltaMovement());
 
         // Optional: adjust rotation to face direction
-        float yaw = (float) (Math.toDegrees(Math.atan2(-delta.x, delta.z))) + 180;
-        dragon.setYRot(yaw);
+        float targetYaw = (float) (Math.toDegrees(Math.atan2(-delta.x, delta.z))) + 180;
+        dragon.yBodyRot = interpolateRotation(dragon.yBodyRot, targetYaw, yawMaxChange);
+        dragon.setYRot(interpolateRotation(dragon.getYRot(), targetYaw, yawMaxChange));
+    }
+
+    private float interpolateRotation(float current, float target, float maxChange) {
+        float delta = Mth.wrapDegrees(target - current);
+        delta = Mth.clamp(delta, -maxChange, maxChange);
+        return current + delta;
     }
 }
