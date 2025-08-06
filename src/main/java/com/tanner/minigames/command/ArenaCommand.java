@@ -31,7 +31,7 @@ public class ArenaCommand implements CommandExecutor {
             if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
                 player.sendMessage(ChatColor.GREEN + "These are the available arenas:");
                 for (Arena arena : minigames.getArenaManager().getArenas()) {
-                    player.sendMessage(ChatColor.GREEN + "- " + arena.getId() + " (" + arena.getState().name() + ")");
+                    player.sendMessage(ChatColor.GREEN + "- " + arena.getGameType().getDisplayName() + ChatColor.GREEN + " (#" + arena.getId() + ") (" + arena.getState().name() + ")");
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("kit")) {
                 Arena arena = minigames.getArenaManager().getArena(player);
