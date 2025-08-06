@@ -28,10 +28,10 @@ public final class Minigames extends JavaPlugin {
         ConfigManager.setupConfig(this);
 
         fileManager = new FileManager(this);
-        fileManager.addFile(initiateFile("scrapyard_skirmish/crates.yml"));
-        fileManager.addFile(initiateFile("scrapyard_skirmish/walls.yml"));
-        fileManager.addFile(initiateFile("scrapyard_skirmish/crate_locations.yml"));
-        fileManager.addFile(initiateFile("dragon_escape/dragon_locations.yml"));
+        fileManager.addFile("scrapyard_skirmish/crates.yml");
+        fileManager.addFile("scrapyard_skirmish/walls.yml");
+        fileManager.addFile("scrapyard_skirmish/crate_locations.yml");
+        fileManager.addFile("dragon_escape/dragon_locations.yml");
 
         arenaManager = new ArenaManager(this);
         SetDragonWaypointsCommand setDragonWaypointsCommand = new SetDragonWaypointsCommand(this);
@@ -46,14 +46,6 @@ public final class Minigames extends JavaPlugin {
         getCommand("arena").setExecutor(new ArenaCommand(this, arenaManageGUI));
         getCommand("setcrate").setExecutor(new SetCrateCommand(this));
         getCommand("setdragonwaypoints").setExecutor(setDragonWaypointsCommand);
-    }
-
-    private File initiateFile(String path) {
-        File file = new File(getDataFolder(), path);
-        if (!file.exists()) {
-            saveResource(path, false);
-        }
-        return file;
     }
 
     @Override

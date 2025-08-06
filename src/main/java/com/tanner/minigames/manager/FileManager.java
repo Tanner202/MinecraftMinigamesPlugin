@@ -18,7 +18,11 @@ public class FileManager {
         files = new ArrayList<>();
     }
 
-    public void addFile(File file) {
+    public void addFile(String path) {
+        File file = new File(minigames.getDataFolder(), path);
+        if (!file.exists()) {
+            minigames.saveResource(path, false);
+        }
         files.add(file);
     }
 
