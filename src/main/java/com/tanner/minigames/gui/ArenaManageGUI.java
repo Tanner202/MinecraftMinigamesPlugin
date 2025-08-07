@@ -241,9 +241,8 @@ public class ArenaManageGUI implements Listener {
                         case BACK:
                             closeInventory(player, true);
                     }
-                    e.setCancelled(true);
-
             }
+            e.setCancelled(true);
         }
     }
 
