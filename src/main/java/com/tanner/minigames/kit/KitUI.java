@@ -1,6 +1,7 @@
 package com.tanner.minigames.kit;
 
 import com.tanner.minigames.util.Constants;
+import com.tanner.minigames.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,12 +18,8 @@ public class KitUI {
         Inventory gui = Bukkit.createInventory(null, 54, ChatColor.BLUE + "Kit Selection");
 
         for (KitType type : availableKitTypes) {
-            ItemStack itemStack = new ItemStack(type.getMaterial());
-            ItemMeta isMeta = itemStack.getItemMeta();
-            isMeta.setDisplayName(type.getDisplay());
-            isMeta.setLore(Arrays.asList(type.getDescription()));
-            isMeta.getPersistentDataContainer().set(Constants.KIT_NAME, PersistentDataType.STRING, type.getName());
-            itemStack.setItemMeta(isMeta);
+            ItemStack itemStack = ItemBuilder.createItem(type.getMaterial(), type.getDisplay(),
+                    Constants.KIT_NAME, PersistentDataType.STRING, type.getName(), type.getDescription());
 
             gui.addItem(itemStack);
         }

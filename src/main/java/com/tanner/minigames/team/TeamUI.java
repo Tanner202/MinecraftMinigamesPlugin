@@ -2,6 +2,7 @@ package com.tanner.minigames.team;
 
 import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,11 +16,8 @@ public class TeamUI {
         Inventory gui = Bukkit.createInventory(null, 9, ChatColor.BLUE + "Team Selection");
 
         for (Team team : arena.getAvailableTeams()) {
-            ItemStack itemStack = new ItemStack(team.getMaterial());
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(team.getDisplay() + " " + ChatColor.GRAY + "(" + arena.getTeamCount(team) + " players)");
-            itemMeta.getPersistentDataContainer().set(Constants.TEAM_NAME, PersistentDataType.STRING, team.name());
-            itemStack.setItemMeta(itemMeta);
+            ItemStack itemStack = ItemBuilder.createItem(team.getMaterial(), team.getDisplay() + " " + ChatColor.GRAY + "(" + arena.getTeamCount(team) + " players)",
+                    Constants.TEAM_NAME, PersistentDataType.STRING, team.name());
 
             gui.addItem(itemStack);
         }

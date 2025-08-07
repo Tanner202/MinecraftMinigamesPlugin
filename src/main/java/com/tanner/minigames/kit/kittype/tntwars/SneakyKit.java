@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.kit.Kit;
 import com.tanner.minigames.kit.TNTWarsKitType;
+import com.tanner.minigames.util.ItemBuilder;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,13 +34,8 @@ public class SneakyKit extends Kit {
 
     @Override
     public void onStart(Player player) {
-        ItemStack sneakItem = new ItemStack(Material.INK_SAC, 1);
-        ItemMeta sneakItemMeta = sneakItem.getItemMeta();
-        sneakItemMeta.getPersistentDataContainer().set(sneakKey, PersistentDataType.BOOLEAN, true);
-        sneakItemMeta.setDisplayName(ChatColor.DARK_PURPLE + "Sneak");
-        String lore = ChatColor.GRAY + "Activate Sneak Ability";
-        sneakItemMeta.setLore(Arrays.asList(lore));
-        sneakItem.setItemMeta(sneakItemMeta);
+        ItemStack sneakItem = ItemBuilder.createItem(Material.INK_SAC, ChatColor.DARK_PURPLE + "Sneak",
+                sneakKey, PersistentDataType.BOOLEAN, true, ChatColor.GRAY + "Activate Sneak Ability");
 
         player.getInventory().addItem(sneakItem);
     }
