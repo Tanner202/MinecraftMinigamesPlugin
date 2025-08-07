@@ -14,6 +14,7 @@ import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
 import com.tanner.minigames.kit.*;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
+import com.tanner.minigames.util.ItemBuilder;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -51,9 +52,9 @@ public class Arena {
     private boolean canJoin;
 
     private GameState state;
-    private List<UUID> players;
-    private HashMap<UUID, Team> teams;
-    private HashMap<UUID, Kit> kits;
+    private List<UUID> players = new ArrayList<>();
+    private HashMap<UUID, Team> teams = new HashMap<>();
+    private HashMap<UUID, Kit> kits = new HashMap<>();
     private KitType[] availableKitTypes;
     private Team[] availableTeams;
     private Countdown countdown;
@@ -68,9 +69,6 @@ public class Arena {
         world = gameSettings.getLobbySpawn().getWorld();
 
         this.state = GameState.RECRUITING;
-        this.players = new ArrayList<>();
-        this.teams = new HashMap<>();
-        this.kits = new HashMap<>();
         this.availableKitTypes = new KitType[0];
         this.availableTeams = Arrays.copyOfRange(Team.values(), 1, (gameSettings.getPlayerLimit() / Math.max(1, gameSettings.getTeamSize())) + 1);
         this.countdown = new Countdown(minigames, this);
@@ -290,9 +288,7 @@ public class Arena {
         }
 
         bossBar.addPlayer(player);
-        if (npc != null) {
-            updateNPCHologramPlayerCount();
-        }
+        updateNPCHologramPlayerCount();
     }
 
     public void removePlayer(Player player) {
@@ -333,7 +329,6 @@ public class Arena {
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "There are not enough players. Countdown stopped.");
             reset(false);
-            return;
         }
 
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
@@ -342,9 +337,7 @@ public class Arena {
         }
 
         bossBar.removePlayer(player);
-        if (npc != null) {
-            updateNPCHologramPlayerCount();
-        }
+        updateNPCHologramPlayerCount();
     }
 
     private void updateScoreboard() {
@@ -399,23 +392,14 @@ public class Arena {
     }
 
     private void giveLobbyItems(Player player) {
-        ItemStack teamSelection = new ItemStack(Material.LEATHER_CHESTPLATE);
-        ItemMeta teamSelectionMeta = teamSelection.getItemMeta();
-        teamSelectionMeta.setDisplayName(ChatColor.GOLD + "Team Selection");
-        teamSelectionMeta.getPersistentDataContainer().set(Constants.TEAM_SELECTION, PersistentDataType.STRING, "TeamSelection");
-        teamSelection.setItemMeta(teamSelectionMeta);
+        ItemStack teamSelection = ItemBuilder.createItem(Material.LEATHER_CHESTPLATE, ChatColor.GOLD + "Team Selection",
+                Constants.TEAM_SELECTION, PersistentDataType.STRING, "TeamSelection");
 
-        ItemStack kitSelection = new ItemStack(Material.DIAMOND);
-        ItemMeta kitSelectionMeta = kitSelection.getItemMeta();
-        kitSelectionMeta.setDisplayName(ChatColor.BLUE + "Kit Selection");
-        kitSelectionMeta.getPersistentDataContainer().set(Constants.KIT_SELECTION, PersistentDataType.STRING, "KitSelection");
-        kitSelection.setItemMeta(kitSelectionMeta);
+        ItemStack kitSelection = ItemBuilder.createItem(Material.DIAMOND, ChatColor.BLUE + "Kit Selection",
+                Constants.KIT_SELECTION, PersistentDataType.STRING, "KitSelection");
 
-        ItemStack leaveItem = new ItemStack(Material.RED_BED);
-        ItemMeta leaveItemMeta = leaveItem.getItemMeta();
-        leaveItemMeta.setDisplayName(ChatColor.RED + "Leave");
-        leaveItemMeta.getPersistentDataContainer().set(Constants.LEAVE_ITEM, PersistentDataType.STRING, "LeaveItem");
-        leaveItem.setItemMeta(leaveItemMeta);
+        ItemStack leaveItem = ItemBuilder.createItem(Material.RED_BED, ChatColor.RED + "Leave",
+                Constants.LEAVE_ITEM, PersistentDataType.STRING, "LeaveItem");
 
         player.getInventory().setItem(0, teamSelection);
         player.getInventory().setItem(1, kitSelection);
@@ -427,7 +411,9 @@ public class Arena {
     }
 
     private void updateNPCHologramPlayerCount() {
-        npcHologram.update(2, ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getPlayerLimit());
+        if (npcHologram != null) {
+            npcHologram.update(2, ChatColor.YELLOW + ChatColor.BOLD.toString() + getPlayers().size() + "/" + getPlayerLimit());
+        }
     }
 
     public int getId() { return id; }
@@ -487,9 +473,7 @@ public class Arena {
     public int getPlayerLimit() { return gameSettings.getPlayerLimit(); }
     public void setPlayerLimit(int playerLimit) {
         gameSettings.setPlayerLimit(playerLimit);
-        if (npc != null) {
-            updateNPCHologramPlayerCount();
-        }
+        updateNPCHologramPlayerCount();
         config.set("arenas." + id + ".max-players", playerLimit);
         minigames.saveConfig();
     }

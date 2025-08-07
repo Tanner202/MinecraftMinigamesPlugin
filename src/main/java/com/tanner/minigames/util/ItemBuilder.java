@@ -1,8 +1,10 @@
 package com.tanner.minigames.util;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;ad
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,15 @@ public class ItemBuilder {
         itemMeta.setItemName(name);
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
+        return itemStack;
+    }
+
+    public static <T> ItemStack createItem(Material material, String name, NamespacedKey namespacedKey,
+                                       PersistentDataType persistentDataType, T t, String... lore) {
+        ItemStack itemStack = createItem(material, name, lore);
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.getPersistentDataContainer().set(namespacedKey, persistentDataType, t);
+        itemStack.setItemMeta(meta);
         return itemStack;
     }
 }

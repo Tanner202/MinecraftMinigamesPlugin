@@ -41,18 +41,14 @@ public class ArenaManageGUI implements Listener {
 
         for (Arena arena : minigames.getArenaManager().getArenas()) {
             GameType gameType = arena.getGameType();
-            ItemStack arenaItem = new ItemStack(gameType.getDisplayIcon());
-            ItemMeta arenaMeta = arenaItem.getItemMeta();
-            arenaMeta.getPersistentDataContainer().set(Constants.ARENA_ID, PersistentDataType.STRING,  String.valueOf(arena.getId()));
-            arenaMeta.setItemName(gameType.getDisplayName());
-            arenaItem.setItemMeta(arenaMeta);
+
+            ItemStack arenaItem = ItemBuilder.createItem(gameType.getDisplayIcon(), gameType.getDisplayName(),
+                    Constants.ARENA_ID, PersistentDataType.STRING, String.valueOf(arena.getId()));
             inv.addItem(arenaItem);
         }
 
-        ItemStack addArenaItem = ItemBuilder.createItem(Material.NETHER_STAR, ChatColor.GREEN + "Add Arena", "Click to add arena!");
-        ItemMeta addArenaMeta = addArenaItem.getItemMeta();
-        addArenaMeta.getPersistentDataContainer().set(Constants.ADD_ARENA_ITEM, PersistentDataType.BOOLEAN, true);
-        addArenaItem.setItemMeta(addArenaMeta);
+        ItemStack addArenaItem = ItemBuilder.createItem(Material.NETHER_STAR, ChatColor.GREEN + "Add Arena",
+                Constants.ADD_ARENA_ITEM, PersistentDataType.BOOLEAN, true, "Click to add arena!");;
         inv.addItem(addArenaItem);
 
         fillEmptySlots(inv, Material.GRAY_STAINED_GLASS_PANE);
