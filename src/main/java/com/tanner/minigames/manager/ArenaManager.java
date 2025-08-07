@@ -151,6 +151,10 @@ public class ArenaManager {
     }
 
     public void deleteArena(Arena arena) {
+        if (arena.getNPC() != null) {
+            arena.getNPC().remove();
+            arena.getNPCHologram().removeHologram();
+        }
         arenas.remove(arena);
         config.set("arenas." + arena.getId(), null);
         minigames.saveConfig();
