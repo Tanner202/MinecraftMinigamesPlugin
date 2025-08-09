@@ -8,6 +8,8 @@ import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.team.Team;
+import com.tanner.minigames.util.ScoreboardBuilder;
+import com.tanner.minigames.util.ScoreboardTeam;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -41,6 +43,7 @@ public class TNTWarsGame extends Game {
     private Minigames minigames;
 
     private Arena arena;
+    private ScoreboardBuilder scoreboardBuilder;
 
     private int tntInterval = 200;
     private int snowballInterval = 25;
@@ -109,35 +112,24 @@ public class TNTWarsGame extends Game {
     }
 
     private void setScoreboard(Player player) {
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("tntwars", "dummy");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        obj.setDisplayName(ChatColor.BOLD.toString() + ChatColor.RED + "TNT WARS");
+        HashMap<Integer, String> scoreboardLines = new HashMap<>();
+        HashMap<Integer, ScoreboardTeam> scoreboardTeams = new HashMap<>();
 
         String padding = ChatColor.RESET + "      ";
 
-        Score teamScore = obj.getScore(ChatColor.GRAY + "▶ Team: " + arena.getTeam(player).getDisplay() + padding);
-        teamScore.setScore(4);
+        scoreboardLines.put(4, ChatColor.GRAY + "▶ Team: " + arena.getTeam(player).getDisplay() + padding);
+        scoreboardLines.put(3, ChatColor.GRAY + "▶ Kit: " + arena.getKit(player).getDisplay() + padding);
 
-        Score kitScore = obj.getScore(ChatColor.GRAY + "▶ Kit: " + arena.getKit(player).getDisplay() + padding);
-        kitScore.setScore(3);
+        ScoreboardTeam blueTeam = new ScoreboardTeam("blue", ChatColor.BLUE + "▶ Blue: ", ChatColor.GRAY.toString() + arena.getTeamCount(Team.BLUE));
+        scoreboardTeams.put(1, blueTeam);
 
-        Score blank = obj.getScore(" ");
-        blank.setScore(2);
+        ScoreboardTeam redTeam = new ScoreboardTeam("red", ChatColor.RED + "▶ Red: ", ChatColor.GRAY.toString() + arena.getTeamCount(Team.RED));
+        scoreboardTeams.put(0, redTeam);
 
-        org.bukkit.scoreboard.Team blue = board.registerNewTeam("blue");
-        blue.addEntry(ChatColor.BLUE.toString());
-        blue.setPrefix(ChatColor.BLUE + "▶ Blue: ");
-        blue.setSuffix(ChatColor.GRAY.toString() + arena.getTeamCount(Team.BLUE));
-        obj.getScore(ChatColor.BLUE.toString()).setScore(1);
+        scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
+                arena.getGameType().getDisplayName(), scoreboardLines, scoreboardTeams);
 
-        org.bukkit.scoreboard.Team red = board.registerNewTeam("red");
-        red.addEntry(ChatColor.RED.toString());
-        red.setPrefix(ChatColor.RED + "▶ Red: ");
-        red.setSuffix(ChatColor.GRAY.toString() + arena.getTeamCount(Team.RED));
-        obj.getScore(ChatColor.RED.toString()).setScore(0);
-
-        player.setScoreboard(board);
+        player.setScoreboard(scoreboardBuilder.getBoard());
     }
 
     private void updateScoreboard() {
@@ -161,7 +153,7 @@ public class TNTWarsGame extends Game {
     public void onPlayerRemoved(Player player) {
 
         if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
-        player.getScoreboard().getObjective("tntwars").unregister();
+        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 

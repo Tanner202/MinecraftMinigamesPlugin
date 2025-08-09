@@ -3,6 +3,8 @@ package com.tanner.minigames.instance.game.spleef;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.util.ScoreboardBuilder;
+import com.tanner.minigames.util.ScoreboardTeam;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +26,7 @@ import java.util.UUID;
 
 public class SpleefGame extends Game {
 
+    private ScoreboardBuilder scoreboardBuilder;
     private List<UUID> remainingPlayers;
 
     public SpleefGame(Minigames minigames, Arena arena) {
@@ -41,6 +45,9 @@ public class SpleefGame extends Game {
             shovel.setItemMeta(shovelMeta);
             player.getInventory().addItem(shovel);
 
+            Scoreboard board = setScoreboard();
+            player.setScoreboard(board);
+
             remainingPlayers.add(uuid);
         }
     }
@@ -52,7 +59,26 @@ public class SpleefGame extends Game {
 
     @Override
     public void onPlayerRemoved(Player player) {
+        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+    }
 
+    private Scoreboard setScoreboard() {
+        HashMap<Integer, String> scoreboardLines = new HashMap<>();
+        HashMap<Integer, ScoreboardTeam> scoreboardTeams = new HashMap<>();
+
+        int count = 0;
+        for (UUID uuid : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(uuid);
+            ScoreboardTeam scoreboardTeam = new ScoreboardTeam(player.getName(), "", ChatColor.GREEN + player.getDisplayName());
+            scoreboardTeams.put(count, scoreboardTeam);
+            count++;
+        }
+
+        scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(), arena.getGameType().getDisplayName(),
+                scoreboardLines, scoreboardTeams);
+
+        return scoreboardBuilder.getBoard();
     }
 
     public List<UUID> getRemainingPlayers() {
@@ -63,6 +89,7 @@ public class SpleefGame extends Game {
         remainingPlayers.remove(uuid);
         Player player = Bukkit.getPlayer(uuid);
         arena.sendMessage(ChatColor.RED + player.getDisplayName() + " was eliminated! " + remainingPlayers.size() + " players remain.");
+        scoreboardBuilder.updateScoreboard(player.getName(), ChatColor.RED + player.getDisplayName());
         if (remainingPlayers.size() <= 1) {
             end(true);
         }
@@ -141,6 +168,7 @@ public class SpleefGame extends Game {
                     player.setGameMode(GameMode.SPECTATOR);
                 }
                 remainingPlayers.remove(player.getUniqueId());
+                scoreboardBuilder.updateScoreboard(player.getName(), ChatColor.RED + player.getDisplayName());
                 if (remainingPlayers.size() == 1) {
                     Player winningPlayer = Bukkit.getPlayer(remainingPlayers.get(0));
                     arena.sendMessage(ChatColor.GOLD + winningPlayer.getDisplayName() + " has Won! Thanks for Playing!");
