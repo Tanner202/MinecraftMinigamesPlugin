@@ -4,6 +4,8 @@ import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.util.ScoreboardBuilder;
+import com.tanner.minigames.util.ScoreboardTeam;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
@@ -22,10 +24,7 @@ import org.bukkit.scoreboard.*;
 import org.bukkit.util.Vector;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class DragonEscapeGame extends Game {
 
@@ -38,6 +37,7 @@ public class DragonEscapeGame extends Game {
     private float maxBlockThrowPower = 0.5f;
     private long timeMillisSinceLastThrownBlock;
     private long timeMillisBetweenBlockThrows = 250;
+    private ScoreboardBuilder scoreboardBuilder;
 
     public DragonEscapeGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
@@ -79,31 +79,26 @@ public class DragonEscapeGame extends Game {
     }
 
     private Scoreboard setScoreboard() {
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("dragon_escape", "dummy");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        Team noCollisionTeam = board.registerNewTeam("no_collision");
-        noCollisionTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-        obj.setDisplayName(ChatColor.GOLD + "DRAGON ESCAPE");
+
+        HashMap<Integer, String> scoreboardLines = new HashMap<>();
+        HashMap<Integer, ScoreboardTeam> scoreboardTeams = new HashMap<>();
 
         int count = 0;
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
-            noCollisionTeam.addEntry(player.getName());
-            Team team = board.registerNewTeam(player.getName());
-            team.setSuffix(ChatColor.GREEN + player.getDisplayName());
-            team.addEntry(String.valueOf(count));
-            obj.getScore(String.valueOf(count)).setScore(count);
+            ScoreboardTeam scoreboardTeam = new ScoreboardTeam(player.getName(), "", ChatColor.GREEN + player.getDisplayName());
+            scoreboardTeams.put(count, scoreboardTeam);
             count++;
         }
-        return board;
-    }
 
-    private void updateScoreboard(Player deadPlayer) {
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            player.getScoreboard().getTeam(deadPlayer.getName()).setSuffix(ChatColor.RED + deadPlayer.getDisplayName());
-        }
+        scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
+                ChatColor.BOLD + arena.getGameType().getDisplayName(),
+                scoreboardLines,
+                scoreboardTeams);
+
+        scoreboardBuilder.disablePlayerCollision();
+
+        return scoreboardBuilder.getBoard();
     }
 
     private Vec3[] getTargetLocations() {
@@ -132,10 +127,8 @@ public class DragonEscapeGame extends Game {
 
         if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
         player.setInvisible(false);
-        player.getScoreboard().getTeam(player.getName()).unregister();
-        player.getScoreboard().getTeam("no_collision").unregister();
 
-        player.getScoreboard().getObjective("dragon_escape").unregister();
+        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
@@ -168,7 +161,7 @@ public class DragonEscapeGame extends Game {
                     player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.setGameMode(GameMode.SPECTATOR);
                 }
-                updateScoreboard(player);
+                scoreboardBuilder.updateScoreboard(player.getName(), ChatColor.RED + player.getDisplayName());
                 alivePlayers.remove(player.getUniqueId());
                 if (alivePlayers.size() == 1) {
                     Player winningPlayer = Bukkit.getPlayer(alivePlayers.get(0));

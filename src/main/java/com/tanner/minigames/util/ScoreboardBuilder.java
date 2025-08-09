@@ -27,7 +27,7 @@ public class ScoreboardBuilder {
     private void buildScoreboard() {
         int highestLineNumber = getScoreboardLineAmount();
 
-        for (int i = 0; i < highestLineNumber; i++) {
+        for (int i = 0; i <= highestLineNumber; i++) {
             if (scoreboardLines.containsKey(i)) {
                 Score score = obj.getScore(scoreboardLines.get(i));
                 score.setScore(i);
@@ -45,6 +45,11 @@ public class ScoreboardBuilder {
                 score.setScore(i);
             }
         }
+    }
+
+    public void disablePlayerCollision() {
+        Team noCollisionTeam = board.registerNewTeam("no_collision");
+        noCollisionTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
     }
 
     private int getScoreboardLineAmount() {
