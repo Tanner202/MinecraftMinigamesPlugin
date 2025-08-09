@@ -3,8 +3,9 @@ package com.tanner.minigames.instance.game.colorswap;
 import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
-import com.tanner.minigames.instance.GameType;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.util.ScoreboardBuilder;
+import com.tanner.minigames.util.ScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -21,6 +22,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +33,8 @@ public class ColorSwapGame extends Game {
 
     private int gridSize = 25;
     private int cellSize = 5;
+
+    private ScoreboardBuilder scoreboardBuilder;
 
     BukkitTask gameTimeTask;
 
@@ -82,42 +86,27 @@ public class ColorSwapGame extends Game {
     }
 
     private void setScoreboard(Player player) {
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective obj = board.registerNewObjective("colorswap", "dummy");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        obj.setDisplayName(GameType.COLORSWAP.getDisplayName());
+        HashMap<Integer, String> scoreboardLines = new HashMap<>();
+        HashMap<Integer, ScoreboardTeam> scoreboardTeams = new HashMap<>();
 
         String padding = ChatColor.RESET + "      ";
 
-        Score teamScore = obj.getScore(ChatColor.GRAY + "▶ Team: " + arena.getTeam(player).getDisplay() + padding);
-        teamScore.setScore(3);
+        scoreboardLines.put(3, ChatColor.GRAY + "▶ Team: " + arena.getTeam(player).getDisplay() + padding);
+        scoreboardLines.put(2, ChatColor.GRAY + "▶ Kit: " + arena.getKit(player).getDisplay() + padding);
 
-        Score kitScore = obj.getScore(ChatColor.GRAY + "▶ Kit: " + arena.getKit(player).getDisplay() + padding);
-        kitScore.setScore(2);
+        ScoreboardTeam scoreboardTeam = new ScoreboardTeam("playersRemaining", ChatColor.GRAY + "▶ Players Left: ",
+                ChatColor.GREEN.toString() + remainingPlayers.size());
+        scoreboardTeams.put(0, scoreboardTeam);
 
-        Score empty = obj.getScore("");
-        empty.setScore(1);
-
-        Team playersRemaining = board.registerNewTeam("playersRemaining");
-        playersRemaining.addEntry(ChatColor.BLUE.toString());
-        playersRemaining.setPrefix(ChatColor.GRAY + "▶ Players Left: ");
-        playersRemaining.setSuffix(ChatColor.GREEN.toString() + remainingPlayers.size());
-        obj.getScore(ChatColor.BLUE.toString()).setScore(0);
-
-        player.setScoreboard(board);
-    }
-
-    private void updateScoreboard() {
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            player.getScoreboard().getTeam("playersRemaining").setSuffix(ChatColor.GREEN.toString() + remainingPlayers.size());
-        }
+        scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
+                ChatColor.BOLD + arena.getGameType().getDisplayName(), scoreboardLines, scoreboardTeams);
+        player.setScoreboard(scoreboardBuilder.getBoard());
     }
 
     private void resetScoreboard(Player player) {
         if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
 
-        player.getScoreboard().getObjective("colorswap").unregister();
+        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
@@ -140,8 +129,8 @@ public class ColorSwapGame extends Game {
                     winningPlayers.add(winningPlayer);
                     end(true);
                 }
+                scoreboardBuilder.updateScoreboard("playersRemaining", ChatColor.GREEN.toString() + remainingPlayers.size());
             });
-            updateScoreboard();
         }
     }
 

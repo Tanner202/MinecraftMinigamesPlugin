@@ -3,6 +3,7 @@ package com.tanner.minigames.instance.game.colorswap;
 import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -99,7 +100,7 @@ public class Grid {
 
         timeRemaining = (int) swapInterval;
         removeWoolCountdownTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
-            arena.setBossBar(gridColor.getColorCode() + repeat("⬛", timeRemaining) + gridColor.getDisplay() + gridColor.getColorCode() + repeat("⬛", timeRemaining));
+            arena.setBossBar(gridColor.getColorCode() + Util.repeat("⬛", timeRemaining) + gridColor.getDisplay() + gridColor.getColorCode() + Util.repeat("⬛", timeRemaining));
             timeRemaining--;
         }, 0, 20);
         for (UUID uuid : arena.getPlayers()) {
@@ -111,14 +112,6 @@ public class Grid {
                 }
             }
         }
-    }
-
-    private String repeat(String str, int times) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < times; i++) {
-            sb.append(str);
-        }
-        return sb.toString();
     }
 
     private GridColor chooseRandomWool() {
