@@ -140,6 +140,11 @@ public class ScrapyardSkirmish extends Game {
     }
 
     @Override
+    public void onPlayerLeave(Player player) {
+
+    }
+
+    @Override
     public void checkWinCondition() {
 
     }

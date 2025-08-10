@@ -58,6 +58,11 @@ public class SpleefGame extends Game {
     }
 
     @Override
+    public void onPlayerLeave(Player player) {
+
+    }
+
+    @Override
     public void checkWinCondition() {
         if (activePlayers.size() == 1) {
             Player winningPlayer = Bukkit.getPlayer(activePlayers.get(0));

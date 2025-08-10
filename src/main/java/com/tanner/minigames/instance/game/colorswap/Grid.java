@@ -1,54 +1,28 @@
 package com.tanner.minigames.instance.game.colorswap;
 
-import com.tanner.minigames.util.Constants;
-import com.tanner.minigames.Minigames;
-import com.tanner.minigames.instance.Arena;
-import com.tanner.minigames.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 public class Grid {
 
-    private Minigames minigames;
-
     private Location startingLocation;
-    private Arena arena;
     private int gridSize;
     private int cellSize;
 
-    private Material chosenMaterial;
-
     private List<Material> remainingColors = new ArrayList<>();
 
-    private long swapInterval = 5;
-    private int timeRemaining;
-
-    BukkitTask generateGridTask;
-    BukkitTask removeGridTask;
-    BukkitTask removeWoolCountdownTask;
-
-    public Grid(Minigames minigames, Arena arena, Location arenaSpawn, int gridSize, int cellSize) {
-        this.arena = arena;
+    public Grid(Location arenaSpawn, int gridSize, int cellSize) {
 
         // Setting starting location away from arena spawn so arena spawn is in center of grid
         startingLocation = new Location(arenaSpawn.getWorld(),
-                arenaSpawn.getX() - (double) gridSize /2,
+                arenaSpawn.getX() - (double) gridSize / 2,
                 arenaSpawn.getY() - 1,
-                arenaSpawn.getZ() - (double) gridSize/2,
+                arenaSpawn.getZ() - (double) gridSize / 2,
                 0, 0);
-        this.minigames = minigames;
         this.cellSize = cellSize;
         this.gridSize = gridSize;
 
@@ -56,28 +30,13 @@ public class Grid {
             matchGridSizeToCellSize();
         }
 
-        setGrid();
-    }
-
-    public void start() {
-        setGridTask();
-    }
-
-    public void Stop() {
-        if (generateGridTask != null) {
-            generateGridTask.cancel();
-        }
-
-        if (removeGridTask != null) {
-            removeGridTask.cancel();
-        }
     }
 
     private void matchGridSizeToCellSize() {
         gridSize = (int) Math.sqrt(getCellAmount()) * cellSize;
     }
 
-    private void setGrid() {
+    public void setGrid() {
         addRemainingColors();
 
         for (double x = startingLocation.getX(); x + cellSize <= startingLocation.getX() + gridSize; x += cellSize) {
@@ -87,44 +46,7 @@ public class Grid {
         }
     }
 
-    // This function generates a grid temporarily for the game
-    private void setGridTask() {
-        setGrid();
-        GridColor gridColor = chooseRandomWool();
-        removeGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::removeUnchosenWool, swapInterval * 20);
-        ItemStack wool = new ItemStack(gridColor.getMaterial(), 1);
-        ItemMeta woolMeta = wool.getItemMeta();
-        woolMeta.setEnchantmentGlintOverride(true);
-        woolMeta.getPersistentDataContainer().set(Constants.WOOL, PersistentDataType.STRING, "Wool");
-        wool.setItemMeta(woolMeta);
-
-        timeRemaining = (int) swapInterval;
-        removeWoolCountdownTask = Bukkit.getScheduler().runTaskTimer(minigames, () -> {
-            arena.setBossBar(gridColor.getColorCode() + Util.repeat("⬛", timeRemaining) + gridColor.getDisplay() + gridColor.getColorCode() + Util.repeat("⬛", timeRemaining));
-            timeRemaining--;
-        }, 0, 20);
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            for (int i = 0; i < 9; i++) {
-                ItemStack item = player.getInventory().getItem(i);
-                if (item == null || item.getItemMeta().getPersistentDataContainer().has(Constants.WOOL)) {
-                    player.getInventory().setItem(i, wool);
-                }
-            }
-        }
-    }
-
-    private GridColor chooseRandomWool() {
-        Random random = new Random();
-        int randomIndex = random.nextInt(0, GridColor.values().length);
-        GridColor gridColor = GridColor.values()[randomIndex];
-        chosenMaterial = gridColor.getMaterial();
-
-        arena.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "Go to " + gridColor.getDisplay());
-        return gridColor;
-    }
-
-    private void removeUnchosenWool() {
+    public void removeUnchosenWool(Material chosenMaterial) {
         for (double x = startingLocation.getX(); x <= startingLocation.getX() + gridSize; x++) {
             for (double z = startingLocation.getZ(); z <= startingLocation.getZ() + gridSize; z++) {
                 Location location = new Location(startingLocation.getWorld(), x, startingLocation.getY(), z);
@@ -133,9 +55,6 @@ public class Grid {
                 }
             }
         }
-
-        removeWoolCountdownTask.cancel();
-        generateGridTask = Bukkit.getScheduler().runTaskLater(minigames, this::setGridTask, swapInterval * 20);
     }
 
     private int getCellAmount() {
@@ -165,9 +84,5 @@ public class Grid {
                 location.getBlock().setType(randomWool);
             }
         }
-    }
-
-    public void setSwapInterval(long interval) {
-        swapInterval = interval;
     }
 }

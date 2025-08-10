@@ -136,6 +136,12 @@ public class TNTWarsGame extends Game {
     }
 
     @Override
+    public void onPlayerLeave(Player player) {
+        player.setAllowFlight(false);
+        player.setFlying(false);
+    }
+
+    @Override
     public void checkWinCondition() {
         Team team = getWinningTeam();
         if (team != null) {

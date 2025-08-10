@@ -121,7 +121,11 @@ public class DragonEscapeGame extends Game {
     @Override
     public void onPlayerEliminated(Player player) {
         player.setInvisible(false);
+    }
 
+    @Override
+    public void onPlayerLeave(Player player) {
+        player.setInvisible(false);
     }
 
     @Override

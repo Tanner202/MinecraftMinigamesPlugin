@@ -80,6 +80,7 @@ public abstract class Game implements Listener {
     public abstract void onStart();
     public abstract void onEnd();
     public abstract void onPlayerEliminated(Player player);
+    public abstract void onPlayerLeave(Player player);
     public void playerEliminated(UUID uuid) {
         activePlayers.remove(uuid);
         Player player = Bukkit.getPlayer(uuid);
