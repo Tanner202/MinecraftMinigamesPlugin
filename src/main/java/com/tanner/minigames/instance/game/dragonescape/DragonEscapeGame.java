@@ -65,11 +65,11 @@ public class DragonEscapeGame extends Game {
             throw new RuntimeException(e);
         }
 
+        Scoreboard board = setScoreboard();
+
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             player.setInvisible(true);
-
-            Scoreboard board = setScoreboard();
             player.setScoreboard(board);
         }
     }
