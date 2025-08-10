@@ -122,6 +122,7 @@ public class TNTWarsGame extends Game {
 
     @Override
     public void onEnd() {
+        scoreboardBuilder.unregister();
         giveTntTask.cancel();
         giveSnowballTask.cancel();
     }

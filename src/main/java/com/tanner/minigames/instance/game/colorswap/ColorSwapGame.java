@@ -66,6 +66,7 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onEnd() {
+        scoreboardBuilder.unregister();
         grid.Stop();
         gameTimeTask.cancel();
     }

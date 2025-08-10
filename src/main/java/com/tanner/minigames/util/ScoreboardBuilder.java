@@ -72,5 +72,13 @@ public class ScoreboardBuilder {
         board.getTeam(teamName).setSuffix(suffix);
     }
 
+    public void unregister() {
+        for (Team team : board.getTeams()) {
+            team.unregister();
+        }
+
+        obj.unregister();
+    }
+
     public Scoreboard getBoard() { return board; }
 }

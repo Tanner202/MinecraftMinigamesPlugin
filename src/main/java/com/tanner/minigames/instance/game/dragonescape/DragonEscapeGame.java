@@ -115,7 +115,7 @@ public class DragonEscapeGame extends Game {
 
     @Override
     public void onEnd() {
-
+        scoreboardBuilder.unregister();
     }
 
     @Override

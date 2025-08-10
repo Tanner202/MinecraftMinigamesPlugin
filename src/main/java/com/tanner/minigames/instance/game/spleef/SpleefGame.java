@@ -48,7 +48,7 @@ public class SpleefGame extends Game {
 
     @Override
     public void onEnd() {
-
+        scoreboardBuilder.unregister();
     }
 
     @Override
