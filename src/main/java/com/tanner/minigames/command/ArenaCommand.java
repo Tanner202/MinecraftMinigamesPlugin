@@ -37,7 +37,7 @@ public class ArenaCommand implements CommandExecutor {
                 Arena arena = minigames.getArenaManager().getArena(player);
                 if (arena != null) {
                     if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
-                        new KitUI(player, arena.getKitTypes());
+                        new KitUI(player, arena.getKitTypes(), arena.getKit(player));
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot use this right now.");
                     }

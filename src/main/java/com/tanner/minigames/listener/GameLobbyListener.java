@@ -111,7 +111,7 @@ public class GameLobbyListener implements Listener {
                 new TeamUI(arena, player);
             } else if (itemMeta.getPersistentDataContainer().has(Constants.KIT_SELECTION)) {
                 e.setCancelled(true);
-                new KitUI(player, arena.getKitTypes());
+                new KitUI(player, arena.getKitTypes(), arena.getKit(player));
             } else if (itemMeta.getPersistentDataContainer().has(Constants.LEAVE_ITEM)) {
                 e.setCancelled(true);
                 Bukkit.dispatchCommand(player, "arena leave");
