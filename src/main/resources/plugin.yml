@@ -12,3 +12,5 @@ commands:
     description: "This is the arena command"
   setcrate:
   setdragonwaypoints:
+  party:
+    description: "Create a group and play with friends!"

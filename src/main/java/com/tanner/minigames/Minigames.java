@@ -1,5 +1,7 @@
 package com.tanner.minigames;
 
+import com.tanner.minigames.party.PartyCommand;
+import com.tanner.minigames.party.PartyManager;
 import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.command.ArenaCommand;
 import com.tanner.minigames.gui.ArenaManageGUI;
@@ -20,6 +22,7 @@ import java.util.UUID;
 public final class Minigames extends JavaPlugin {
 
     private ArenaManager arenaManager;
+    private PartyManager partyManager;
     private FileManager fileManager;
 
     @Override
@@ -34,6 +37,7 @@ public final class Minigames extends JavaPlugin {
         fileManager.addFile("dragon_escape/dragon_locations.yml");
 
         arenaManager = new ArenaManager(this);
+        partyManager = new PartyManager(this);
         SetDragonWaypointsCommand setDragonWaypointsCommand = new SetDragonWaypointsCommand(this);
 
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
@@ -46,6 +50,7 @@ public final class Minigames extends JavaPlugin {
         getCommand("arena").setExecutor(new ArenaCommand(this, arenaManageGUI));
         getCommand("setcrate").setExecutor(new SetCrateCommand(this));
         getCommand("setdragonwaypoints").setExecutor(setDragonWaypointsCommand);
+        getCommand("party").setExecutor(new PartyCommand(this));
     }
 
     @Override
@@ -65,5 +70,6 @@ public final class Minigames extends JavaPlugin {
     }
 
     public ArenaManager getArenaManager() { return arenaManager; }
+    public PartyManager getPartyManager() { return partyManager; }
     public FileManager getFileManager() { return fileManager; }
 }

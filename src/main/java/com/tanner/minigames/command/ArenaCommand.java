@@ -5,6 +5,8 @@ import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.kit.KitUI;
+import com.tanner.minigames.party.Party;
+import com.tanner.minigames.party.PartyManager;
 import com.tanner.minigames.team.TeamUI;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -12,14 +14,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class ArenaCommand implements CommandExecutor {
 
     private Minigames minigames;
     private ArenaManageGUI arenaManageGUI;
+    private PartyManager partyManager;
 
     public ArenaCommand(Minigames minigames, ArenaManageGUI arenaManageGUI) {
         this.minigames = minigames;
         this.arenaManageGUI = arenaManageGUI;
+        this.partyManager = minigames.getPartyManager();
     }
 
     @Override
@@ -57,15 +63,33 @@ public class ArenaCommand implements CommandExecutor {
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("leave")) {
                 Arena arena = minigames.getArenaManager().getArena(player);
+
+                Party party = partyManager.getParty(player);
+                if (party != null && party.isPartyMember(player.getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "You cannot leave because you are in a party and aren't the party leader.");
+                    return false;
+                }
+
                 if (arena != null) {
                     player.sendMessage(ChatColor.RED + "You left the arena.");
                     arena.removePlayer(player);
+                    if (party != null && party.isPartyLeader(player)) {
+                        for (UUID uuid : party.getPartyMembers()) {
+                            arena.removePlayer(Bukkit.getPlayer(uuid));
+                        }
+                    }
                 } else {
                     player.sendMessage(ChatColor.RED + "You are not in an arena.");
                 }
             } else if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
                 if (minigames.getArenaManager().getArena(player) != null) {
                     player.sendMessage(ChatColor.RED + "You are already playing in an arena");
+                    return false;
+                }
+
+                Party party = partyManager.getParty(player);
+                if (party != null && party.isPartyMember(player.getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "You cannot join because you are in a party and aren't the leader!");
                     return false;
                 }
 
@@ -84,8 +108,12 @@ public class ArenaCommand implements CommandExecutor {
                     return false;
                 }
 
-                if (arena.getPlayers().size() >= arena.getPlayerLimit()) {
-                    player.sendMessage(ChatColor.RED + "This arena is currently full.");
+                int playersJoining = 1;
+                if (party != null && party.isPartyLeader(player)) {
+                    playersJoining = party.getPartyMembers().size();
+                }
+                if (arena.getPlayers().size() + playersJoining > arena.getPlayerLimit()) {
+                    player.sendMessage(ChatColor.RED + "This arena is too full to join.");
                     return false;
                 }
 
@@ -93,6 +121,11 @@ public class ArenaCommand implements CommandExecutor {
                     if (arena.canJoin()) {
                         player.sendMessage(ChatColor.GREEN + "You are now playing in arena " + id + ".");
                         arena.addPlayer(player);
+                        if (party != null && party.isPartyLeader(player)) {
+                            for (UUID uuid : party.getPartyMembers()) {
+                                arena.addPlayer(Bukkit.getPlayer(uuid));
+                            }
+                        }
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot join this arena right now. Map is still loading.");
                     }
