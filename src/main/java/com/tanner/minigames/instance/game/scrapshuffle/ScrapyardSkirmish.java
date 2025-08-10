@@ -17,7 +17,6 @@ import java.util.*;
 
 public class ScrapyardSkirmish extends Game {
 
-    private List<UUID> remainingPlayers;
     private List<Wall> walls;
     private List<Crate> crates;
     private YamlConfiguration wallsFile;
@@ -27,7 +26,6 @@ public class ScrapyardSkirmish extends Game {
 
     public ScrapyardSkirmish(Minigames minigames, Arena arena) {
         super(minigames, arena);
-        remainingPlayers = new ArrayList<>();
         teamSpawns = new HashMap<>();
         walls = new ArrayList<>();
         crates = new ArrayList<>();
@@ -64,7 +62,6 @@ public class ScrapyardSkirmish extends Game {
         arena.sendTitle(ChatColor.GREEN + "Game Has Started!", "Loot nearby crates for the first minute.");
 
         for (UUID uuid : arena.getPlayers()) {
-            remainingPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);
             player.closeInventory();
         }
@@ -138,7 +135,12 @@ public class ScrapyardSkirmish extends Game {
     }
 
     @Override
-    public void onPlayerRemoved(Player player) {
+    public void onPlayerEliminated(Player player) {
+
+    }
+
+    @Override
+    public void checkWinCondition() {
 
     }
 }

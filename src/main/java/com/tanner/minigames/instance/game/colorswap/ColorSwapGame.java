@@ -1,6 +1,5 @@
 package com.tanner.minigames.instance.game.colorswap;
 
-import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
@@ -19,17 +18,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.*;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class ColorSwapGame extends Game {
 
     private Grid grid;
-    private List<UUID> remainingPlayers;
 
     private int gridSize = 25;
     private int cellSize = 5;
@@ -51,13 +45,10 @@ public class ColorSwapGame extends Game {
     public ColorSwapGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
         grid = new Grid(minigames, arena, arena.getSpawn(), gridSize, cellSize);
-        remainingPlayers = new ArrayList<>();
     }
 
     @Override
     public void onStart() {
-        remainingPlayers.addAll(arena.getPlayers());
-
         for (UUID uuid : arena.getPlayers()) {
             setScoreboard(Bukkit.getPlayer(uuid));
         }
@@ -76,13 +67,22 @@ public class ColorSwapGame extends Game {
     @Override
     public void onEnd() {
         grid.Stop();
-        remainingPlayers.clear();
         gameTimeTask.cancel();
     }
 
     @Override
-    public void onPlayerRemoved(Player player) {
-        resetScoreboard(player);
+    public void onPlayerEliminated(Player player) {
+
+    }
+
+    @Override
+    public void checkWinCondition() {
+        if (activePlayers.size() == 1) {
+            Player winningPlayer = Bukkit.getPlayer(activePlayers.get(0));
+            arena.sendMessage(ChatColor.GOLD + winningPlayer.getDisplayName() + " has Won! Thanks for Playing!");
+            winningPlayers.add(winningPlayer);
+            end(true);
+        }
     }
 
     private void setScoreboard(Player player) {
@@ -95,19 +95,12 @@ public class ColorSwapGame extends Game {
         scoreboardLines.put(2, ChatColor.GRAY + "▶ Kit: " + arena.getKit(player).getDisplay() + padding);
 
         ScoreboardTeam scoreboardTeam = new ScoreboardTeam("playersRemaining", ChatColor.GRAY + "▶ Players Left: ",
-                ChatColor.GREEN.toString() + remainingPlayers.size());
+                ChatColor.GREEN.toString() + activePlayers.size());
         scoreboardTeams.put(0, scoreboardTeam);
 
         scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
                 ChatColor.BOLD + arena.getGameType().getDisplayName(), scoreboardLines, scoreboardTeams);
         player.setScoreboard(scoreboardBuilder.getBoard());
-    }
-
-    private void resetScoreboard(Player player) {
-        if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
-
-        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
     @EventHandler
@@ -122,14 +115,9 @@ public class ColorSwapGame extends Game {
                     player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.setGameMode(GameMode.SPECTATOR);
                 }
-                remainingPlayers.remove(player.getUniqueId());
-                if (remainingPlayers.size() == 1) {
-                    Player winningPlayer = Bukkit.getPlayer(remainingPlayers.get(0));
-                    arena.sendMessage(ChatColor.GOLD + winningPlayer.getDisplayName() + " has Won! Thanks for Playing!");
-                    winningPlayers.add(winningPlayer);
-                    end(true);
-                }
-                scoreboardBuilder.updateScoreboard("playersRemaining", ChatColor.GREEN.toString() + remainingPlayers.size());
+                playerEliminated(player.getUniqueId());
+                checkWinCondition();
+                scoreboardBuilder.updateScoreboard("playersRemaining", ChatColor.GREEN.toString() + activePlayers.size());
             });
         }
     }
@@ -138,8 +126,7 @@ public class ColorSwapGame extends Game {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
 
-        Arena arena = minigames.getArenaManager().getArena(player);
-        if (arena != null && remainingPlayers.contains(player.getUniqueId())) {
+        if (isPlayerActive(player)) {
             Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
             if (blockAtPlayerLocation == Material.WATER) {
                 player.setHealth(0);

@@ -2,7 +2,6 @@ package com.tanner.minigames.instance.game.tntwars;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
@@ -26,15 +25,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -51,14 +44,11 @@ public class TNTWarsGame extends Game {
     private BukkitTask giveTntTask;
     private BukkitTask giveSnowballTask;
 
-    private List<UUID> remainingPlayers;
-
     public TNTWarsGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
         this.arena = arena;
         this.minigames = minigames;
         this.teamSpawns = new HashMap<>();
-        this.remainingPlayers = new ArrayList<>();
     }
 
     @Override
@@ -66,9 +56,7 @@ public class TNTWarsGame extends Game {
         arena.sendMessage(ChatColor.GREEN + "Game Has Started! Knock the other player off by launching TNT. Last team standing wins!");
 
         for (UUID uuid : arena.getPlayers()) {
-            remainingPlayers.add(uuid);
             Player player = Bukkit.getPlayer(uuid);
-            player.closeInventory();
 
             setScoreboard(player);
 
@@ -95,14 +83,14 @@ public class TNTWarsGame extends Game {
     }
 
     private void givePlayersItem(ItemStack item) {
-        for (UUID uuid : remainingPlayers) {
+        for (UUID uuid : activePlayers) {
             Player player = Bukkit.getPlayer(uuid);
             player.getInventory().addItem(item);
         }
     }
 
     private void givePlayersItem(ItemStack item, String message, Sound sound) {
-        for (UUID uuid : remainingPlayers) {
+        for (UUID uuid : activePlayers) {
             Player player = Bukkit.getPlayer(uuid);
             player.getInventory().addItem(item);
 
@@ -132,17 +120,6 @@ public class TNTWarsGame extends Game {
         player.setScoreboard(scoreboardBuilder.getBoard());
     }
 
-    private void updateScoreboard() {
-        for (UUID uuid : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            Scoreboard board = player.getScoreboard();
-
-            HashMap<Team, Integer> remainingPlayersPerTeam = getRemainingPlayersPerTeam();
-            board.getTeam("blue").setSuffix(ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.BLUE));
-            board.getTeam("red").setSuffix(ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.RED));
-        }
-    }
-
     @Override
     public void onEnd() {
         giveTntTask.cancel();
@@ -150,28 +127,25 @@ public class TNTWarsGame extends Game {
     }
 
     @Override
-    public void onPlayerRemoved(Player player) {
-
-        if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
-        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+    public void onPlayerEliminated(Player player) {
+        checkWinCondition();
+        HashMap<Team, Integer> remainingPlayersPerTeam = getRemainingPlayersPerTeam();
+        scoreboardBuilder.updateScoreboard("blue", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.BLUE));
+        scoreboardBuilder.updateScoreboard("red", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.RED));
     }
 
-    public List<UUID> getRemainingPlayers() { return remainingPlayers; }
-
-    public void removeRemainingPlayer(UUID playerUUID) {
-        remainingPlayers.remove(playerUUID);
-        updateScoreboard();
-
+    @Override
+    public void checkWinCondition() {
         Team team = getWinningTeam();
         if (team != null) {
             arena.sendMessage(team.getDisplay() + ChatColor.GREEN + " Team has Won! Thanks for Playing!");
-            for (UUID uuid : remainingPlayers) {
+            for (UUID uuid : activePlayers) {
                 winningPlayers.add(Bukkit.getPlayer(uuid));
             }
             end(true);
         }
     }
+
     private Team getWinningTeam() {
         Team winningTeam = null;
         for (Team team : arena.getTeams()) {
@@ -194,7 +168,7 @@ public class TNTWarsGame extends Game {
         for (Team team : arena.getTeams()) {
             remainingPlayersPerTeam.put(team, 0);
         }
-        for (UUID uuid : remainingPlayers) {
+        for (UUID uuid : activePlayers) {
             Team playerTeam = arena.getTeam(Bukkit.getPlayer(uuid));
             int remainingTeamPlayers = remainingPlayersPerTeam.get(playerTeam);
             remainingPlayersPerTeam.replace(playerTeam, remainingTeamPlayers, remainingTeamPlayers + 1);
@@ -219,10 +193,9 @@ public class TNTWarsGame extends Game {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        Arena arena = minigames.getArenaManager().getArena(player);
 
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
-        if (arena != null && isPlayerPlaying(arena, player)) {
+        if (isPlayerActive(player)) {
             if ((e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_AIR)) && itemInMainHand.getType().equals(Material.TNT)) {
                 itemInMainHand.setAmount(itemInMainHand.getAmount() - 1);
 
@@ -237,17 +210,12 @@ public class TNTWarsGame extends Game {
         }
     }
 
-    private boolean isPlayerPlaying(Arena arena, Player player) {
-        return arena.getState() == GameState.LIVE && remainingPlayers.contains(player.getUniqueId());
-    }
-
     @EventHandler
     public void onProjectileHitEvent(ProjectileHitEvent e) {
         if (e.getEntity().getShooter() instanceof Player) {
             Player player = (Player) e.getEntity().getShooter();
-            Arena arena = minigames.getArenaManager().getArena(player);
 
-            if (arena != null && isPlayerPlaying(arena, player)) {
+            if (isPlayerActive(player)) {
                 World world = e.getEntity().getWorld();
                 if (e.getEntity().getType().equals(EntityType.SNOWBALL)) {
                     if (e.getHitBlock() != null) {
@@ -266,8 +234,8 @@ public class TNTWarsGame extends Game {
     public void onProjectileLaunchEvent(ProjectileLaunchEvent e) {
         if (e.getEntity().getShooter() instanceof Player) {
             Player player = (Player) e.getEntity().getShooter();
-            Arena arena = minigames.getArenaManager().getArena(player);
-            if (arena != null && isPlayerPlaying(arena, player)) {
+
+            if (isPlayerActive(player)) {
                 if (e.getEntity().getType().equals(EntityType.SNOWBALL)) {
                     Vector playerFacing = player.getEyeLocation().getDirection();
 
@@ -282,8 +250,7 @@ public class TNTWarsGame extends Game {
     public void onPlayerToggleFlight(PlayerToggleFlightEvent e) {
         Player player = e.getPlayer();
 
-        Arena arena = minigames.getArenaManager().getArena(player);
-        if (arena != null && isPlayerPlaying(arena, player)) {
+        if (isPlayerActive(player)) {
             Vector preEventVelocity = player.getVelocity();
             e.setCancelled(true);
 
@@ -315,8 +282,7 @@ public class TNTWarsGame extends Game {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
 
-        Arena arena = minigames.getArenaManager().getArena(player);
-        if (arena != null && isPlayerPlaying(arena, player)) {
+        if (isPlayerActive(player)) {
             Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
             if (blockAtPlayerLocation == Material.WATER) {
                 player.setHealth(0);
@@ -328,11 +294,10 @@ public class TNTWarsGame extends Game {
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
 
-        Arena arena = minigames.getArenaManager().getArena(player);
-        if (arena != null && isPlayerPlaying(arena, player)) {
+        if (isPlayerActive(player)) {
             minigames.getServer().getScheduler().scheduleSyncDelayedTask(minigames, () -> {
                 if (player.isDead()) {
-                    removeRemainingPlayer(player.getUniqueId());
+                    playerEliminated(player.getUniqueId());
                     player.spigot().respawn();
                     player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.teleport(arena.getSpawn());
@@ -346,8 +311,7 @@ public class TNTWarsGame extends Game {
     public void onBlockPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
 
-        Arena arena = minigames.getArenaManager().getArena(player);
-        if (arena != null && isPlayerPlaying(arena, player)) {
+        if (isPlayerActive(player)) {
             if (e.getBlock().getType().equals(Material.TNT)) {
                 player.sendMessage(ChatColor.RED + "You cannot place this block.");
                 e.setCancelled(true);
@@ -364,8 +328,7 @@ public class TNTWarsGame extends Game {
     public void onBlockBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
 
-        Arena arena = minigames.getArenaManager().getArena(player);
-        if (arena == null || !isPlayerPlaying(arena, player)) return;
+        if (!isPlayerActive(player)) return;
 
         if (!arena.getKit(player).equals(TNTWarsKitType.BUILDER)) {
             player.sendMessage(ChatColor.RED + "You cannot break blocks unless using the builder kit.");

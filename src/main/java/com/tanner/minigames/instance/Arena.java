@@ -24,7 +24,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -292,7 +291,6 @@ public class Arena {
     }
 
     public void removePlayer(Player player) {
-        game.onPlayerRemoved(player);
         players.remove(player.getUniqueId());
         player.getInventory().clear();
         player.setInvulnerable(false);
@@ -303,6 +301,7 @@ public class Arena {
         if (player.getScoreboard().getObjective("lobby") != null) {
             player.getScoreboard().getObjective("lobby").unregister();
         }
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 
         TreeMultimap<Integer, Team> teamCount = TreeMultimap.create();
         for (Team team : availableTeams) {

@@ -1,6 +1,5 @@
 package com.tanner.minigames.instance.game.dragonescape;
 
-import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
@@ -31,7 +30,6 @@ public class DragonEscapeGame extends Game {
     private YamlConfiguration file;
     private Location dragonSpawnLocation;
     private CustomEnderDragon customDragon;
-    private List<UUID> alivePlayers = new ArrayList<>();
     private Random random;
     private float minBlockThrowPower = 0.1f;
     private float maxBlockThrowPower = 0.5f;
@@ -74,8 +72,6 @@ public class DragonEscapeGame extends Game {
             Scoreboard board = setScoreboard();
             player.setScoreboard(board);
         }
-
-        alivePlayers.addAll(arena.getPlayers());
     }
 
     private Scoreboard setScoreboard() {
@@ -123,13 +119,17 @@ public class DragonEscapeGame extends Game {
     }
 
     @Override
-    public void onPlayerRemoved(Player player) {
-
-        if (arena.getState() != GameState.LIVE && arena.getState() != GameState.ENDING) return;
+    public void onPlayerEliminated(Player player) {
         player.setInvisible(false);
 
-        player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+    }
+
+    @Override
+    public void checkWinCondition() {
+        if (activePlayers.size() == 1) {
+            Player winningPlayer = Bukkit.getPlayer(activePlayers.get(0));
+            victory(winningPlayer);
+        }
     }
 
     @EventHandler
@@ -137,11 +137,11 @@ public class DragonEscapeGame extends Game {
         Player player = e.getPlayer();
         Location belowPlayer = player.getLocation().subtract(0, 1, 0);
         Block blockBelowPlayer = belowPlayer.getBlock();
-        if (blockBelowPlayer.getType().equals(Material.BEACON) && alivePlayers.contains(player.getUniqueId())) {
+        if (blockBelowPlayer.getType().equals(Material.BEACON) && activePlayers.contains(player.getUniqueId())) {
             victory(player);
         }
 
-        if (arena != null && alivePlayers.contains(player.getUniqueId())) {
+        if (isPlayerActive(player)) {
             Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
             if (blockAtPlayerLocation == Material.WATER) {
                 player.setHealth(0);
@@ -162,11 +162,8 @@ public class DragonEscapeGame extends Game {
                     player.setGameMode(GameMode.SPECTATOR);
                 }
                 scoreboardBuilder.updateScoreboard(player.getName(), ChatColor.RED + player.getDisplayName());
-                alivePlayers.remove(player.getUniqueId());
-                if (alivePlayers.size() == 1) {
-                    Player winningPlayer = Bukkit.getPlayer(alivePlayers.get(0));
-                    victory(winningPlayer);
-                }
+                playerEliminated(player.getUniqueId());
+                checkWinCondition();
 
                 player.setInvisible(false);
             });
