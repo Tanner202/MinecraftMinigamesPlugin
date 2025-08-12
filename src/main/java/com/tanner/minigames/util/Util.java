@@ -4,6 +4,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -27,4 +28,15 @@ public class Util {
         return sb.toString();
     }
 
+    public static Location getSnappedLocation(Location loc) {
+        Location snappedLoc = new Location(
+                loc.getWorld(),
+                loc.getBlockX() + 0.5f,
+                loc.getBlockY(),
+                loc.getBlockZ() + 0.5f,
+                Math.round(loc.getYaw() / 45) * 45,
+                Math.round(loc.getPitch() / 45) * 45
+        );
+        return snappedLoc;
+    }
 }

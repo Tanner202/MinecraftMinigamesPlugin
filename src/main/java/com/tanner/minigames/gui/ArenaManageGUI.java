@@ -7,6 +7,7 @@ import com.tanner.minigames.util.ItemBuilder;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.GameType;
 import com.tanner.minigames.team.Team;
+import com.tanner.minigames.util.Util;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -280,7 +281,7 @@ public class ArenaManageGUI implements Listener {
             Arena arena = selectedArena.get(uuid);
             if (e.getMessage().equalsIgnoreCase("confirm")) {
                 String spawnType = playersSettingSpawnpoints.get(uuid);
-                Location spawn = player.getLocation();
+                Location spawn = Util.getSnappedLocation(player.getLocation());
                 switch (spawnType) {
                     case "lobby":
                         arena.setLobbySpawn(spawn);
