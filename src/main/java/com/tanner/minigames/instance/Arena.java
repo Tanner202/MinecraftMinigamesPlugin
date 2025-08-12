@@ -3,8 +3,7 @@ package com.tanner.minigames.instance;
 import com.google.common.collect.TreeMultimap;
 import com.tanner.minigames.*;
 import com.tanner.minigames.util.Constants;
-import com.tanner.minigames.util.GameSettings;
-import com.tanner.minigames.util.Hologram;
+import com.tanner.minigames.util.*;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.instance.game.colorswap.ColorSwapGame;
 import com.tanner.minigames.instance.game.dragonescape.DragonEscapeGame;
@@ -14,7 +13,6 @@ import com.tanner.minigames.instance.game.tntwars.TNTWarsGame;
 import com.tanner.minigames.kit.*;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.team.Team;
-import com.tanner.minigames.util.ItemBuilder;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
@@ -22,10 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 
@@ -48,6 +42,7 @@ public class Arena {
 
     private GameState state;
     private List<UUID> players = new ArrayList<>();
+    private List<ScoreboardBuilder> scoreboardBuilders = new ArrayList<>();
     private HashMap<UUID, Team> teams = new HashMap<>();
     private HashMap<UUID, Kit> kits = new HashMap<>();
     private KitType[] availableKitTypes;
@@ -206,55 +201,31 @@ public class Arena {
     }
 
     private void setPlayerScoreboard(Player player) {
+        HashMap<Integer, String> scoreboardLines = new HashMap<>();
+        HashMap<Integer, ScoreboardTeam> scoreboardTeams = new HashMap<>();
 
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        scoreboardLines.put(6, ChatColor.GRAY + "▶ Name: " + ChatColor.GREEN + player.getDisplayName());
 
-        Objective obj = board.registerNewObjective("lobby", "dummy");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-        obj.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "LOBBY");
+        ScoreboardTeam team = new ScoreboardTeam("team", ChatColor.GRAY + "▶ Team: ",
+                getTeam(player) != null ? getTeam(player).getDisplay() : "");
+        scoreboardTeams.put(5, team);
 
-        Score name = obj.getScore(ChatColor.GRAY + "▶ Name: " + ChatColor.GREEN + player.getDisplayName());
-        name.setScore(6);
+        ScoreboardTeam kit = new ScoreboardTeam("kit", ChatColor.GRAY + "▶ Kit: ",
+                getKit(player).getDisplay() != null ? getKit(player).getDisplay() : "");
+        scoreboardTeams.put(4, kit);
 
-        Score space = obj.getScore(" ");
-        space.setScore(1);
+        ScoreboardTeam playerAmount = new ScoreboardTeam("playerAmount", ChatColor.GRAY + "▶ Players: ",
+                ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getPlayerLimit());
+        scoreboardTeams.put(2, playerAmount);
 
-        org.bukkit.scoreboard.Team playerAmount = board.registerNewTeam("player_amount");
-        playerAmount.addEntry(ChatColor.BOLD.toString());
-        playerAmount.setPrefix(ChatColor.GRAY + "▶ Players: ");
-        playerAmount.setSuffix(ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getPlayerLimit());
-        obj.getScore(ChatColor.BOLD.toString()).setScore(2);
+        ScoreboardTeam arenaState = new ScoreboardTeam("arenaState", ChatColor.GRAY + "▶ State: ",
+                ChatColor.GREEN + state.toString());
+        scoreboardTeams.put(0, arenaState);
 
-        Score space2 = obj.getScore("  ");
-        space2.setScore(3);
-
-        org.bukkit.scoreboard.Team arenaState = board.registerNewTeam("arena_state");
-        arenaState.addEntry(ChatColor.DARK_GRAY.toString());
-        arenaState.setPrefix(ChatColor.GRAY + "▶ State: ");
-        arenaState.setSuffix(ChatColor.GREEN + state.toString());
-        obj.getScore(ChatColor.DARK_GRAY.toString()).setScore(0);
-
-        org.bukkit.scoreboard.Team team = board.registerNewTeam("team");
-        team.addEntry(ChatColor.YELLOW.toString());
-        team.setPrefix(ChatColor.GRAY + "▶ Team: ");
-        if (getTeam(player) != null) {
-            team.setSuffix(getTeam(player).getDisplay());
-        } else {
-            team.setSuffix("");
-        }
-        obj.getScore(ChatColor.YELLOW.toString()).setScore(5);
-
-        org.bukkit.scoreboard.Team kit = board.registerNewTeam("kit");
-        kit.addEntry(ChatColor.GREEN.toString());
-        kit.setPrefix(ChatColor.GRAY + "▶ Kit: ");
-        if (getKit(player) != null) {
-            kit.setSuffix(getKit(player).getDisplay());
-        } else {
-            kit.setSuffix("");
-        }
-        obj.getScore(ChatColor.GREEN.toString()).setScore(4);
-
-        player.setScoreboard(board);
+        ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder("lobby", ChatColor.AQUA.toString() + ChatColor.BOLD + "LOBBY",
+                scoreboardLines, scoreboardTeams);
+        player.setScoreboard(scoreboardBuilder.getBoard());
+        scoreboardBuilders.add(scoreboardBuilder);
     }
 
     public void addPlayer(Player player) {
@@ -278,6 +249,13 @@ public class Arena {
 
         if (state.equals(GameState.RECRUITING) && players.size() >= ConfigManager.getRequiredPlayers()) {
             countdown.start();
+        }
+
+        if (state == GameState.RECRUITING || state == GameState.COUNTDOWN) {
+            for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+                scoreboardBuilder.updateScoreboard("playerAmount",
+                        ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getPlayerLimit());
+            }
         }
 
         updateNPCHologramPlayerCount();
@@ -316,7 +294,10 @@ public class Arena {
         }
 
         if (state == GameState.RECRUITING || state == GameState.COUNTDOWN) {
-            updateScoreboard();
+            for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+                scoreboardBuilder.updateScoreboard("playerAmount",
+                        ChatColor.GREEN.toString() + players.size() + "/" + gameSettings.getPlayerLimit());
+            }
         }
 
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
@@ -330,13 +311,6 @@ public class Arena {
         }
 
         updateNPCHologramPlayerCount();
-    }
-
-    private void updateScoreboard() {
-        for (UUID uuid : getPlayers()) {
-            Player player = Bukkit.getPlayer(uuid);
-            setPlayerScoreboard(player);
-        }
     }
 
     public void setTeam(Player player, Team team) {
@@ -411,7 +385,10 @@ public class Arena {
         this.state = state;
 
         if (state == GameState.RECRUITING || state == GameState.COUNTDOWN) {
-            updateScoreboard();
+            for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+                scoreboardBuilder.updateScoreboard("arenaState",
+                        ChatColor.GREEN + state.toString());
+            }
         }
     }
     public Location getSpawn() { return gameSettings.getLobbySpawn(); }
