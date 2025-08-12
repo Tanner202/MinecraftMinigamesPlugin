@@ -27,7 +27,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +38,7 @@ public class TNTWarsGame extends Game {
     private Minigames minigames;
 
     private Arena arena;
-    private ScoreboardBuilder scoreboardBuilder;
+    private List<ScoreboardBuilder> scoreboardBuilders = new ArrayList<>();
 
     private int tntInterval = 200;
     private int snowballInterval = 25;
@@ -114,25 +116,30 @@ public class TNTWarsGame extends Game {
         ScoreboardTeam redTeam = new ScoreboardTeam("red", ChatColor.RED + "▶ Red: ", ChatColor.GRAY.toString() + arena.getTeamCount(Team.RED));
         scoreboardTeams.put(0, redTeam);
 
-        scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
+        ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
                 arena.getGameType().getDisplayName(), scoreboardLines, scoreboardTeams);
 
         player.setScoreboard(scoreboardBuilder.getBoard());
+        scoreboardBuilders.add(scoreboardBuilder);
     }
 
     @Override
     public void onEnd() {
-        scoreboardBuilder.unregister();
+        for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+            scoreboardBuilder.unregister();
+        }
         giveTntTask.cancel();
         giveSnowballTask.cancel();
     }
 
     @Override
     public void onPlayerEliminated(Player player) {
-        checkWinCondition();
         HashMap<Team, Integer> remainingPlayersPerTeam = getRemainingPlayersPerTeam();
-        scoreboardBuilder.updateScoreboard("blue", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.BLUE));
-        scoreboardBuilder.updateScoreboard("red", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.RED));
+        for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+            scoreboardBuilder.updateScoreboard("blue", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.BLUE));
+            scoreboardBuilder.updateScoreboard("red", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.RED));
+        }
+        checkWinCondition();
     }
 
     @Override

@@ -47,7 +47,7 @@ public class ColorSwapGame extends Game {
     BukkitTask removeGridTask;
     BukkitTask removeWoolCountdownTask;
 
-    private ScoreboardBuilder scoreboardBuilder;
+    private List<ScoreboardBuilder> scoreboardBuilders = new ArrayList<>();
 
     BukkitTask gameTimeTask;
 
@@ -129,7 +129,9 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onEnd() {
-        scoreboardBuilder.unregister();
+        for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+            scoreboardBuilder.unregister();
+        }
         stop();
         gameTimeTask.cancel();
     }
@@ -147,7 +149,9 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onPlayerEliminated(Player player) {
-
+        for (ScoreboardBuilder scoreboardBuilder : scoreboardBuilders) {
+            scoreboardBuilder.updateScoreboard("playersRemaining", ChatColor.GREEN.toString() + activePlayers.size());
+        }
     }
 
     @Override
@@ -180,9 +184,10 @@ public class ColorSwapGame extends Game {
                 ChatColor.GREEN.toString() + activePlayers.size());
         scoreboardTeams.put(0, scoreboardTeam);
 
-        scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
+        ScoreboardBuilder scoreboardBuilder = new ScoreboardBuilder(arena.getGameType().toString(),
                 ChatColor.BOLD + arena.getGameType().getDisplayName(), scoreboardLines, scoreboardTeams);
         player.setScoreboard(scoreboardBuilder.getBoard());
+        scoreboardBuilders.add(scoreboardBuilder);
     }
 
     @EventHandler
@@ -199,7 +204,6 @@ public class ColorSwapGame extends Game {
                 }
                 playerEliminated(player.getUniqueId());
                 checkWinCondition();
-                scoreboardBuilder.updateScoreboard("playersRemaining", ChatColor.GREEN.toString() + activePlayers.size());
             });
         }
     }
