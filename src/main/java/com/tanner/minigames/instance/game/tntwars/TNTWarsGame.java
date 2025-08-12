@@ -139,7 +139,6 @@ public class TNTWarsGame extends Game {
             scoreboardBuilder.updateScoreboard("blue", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.BLUE));
             scoreboardBuilder.updateScoreboard("red", ChatColor.GRAY.toString() + remainingPlayersPerTeam.get(Team.RED));
         }
-        checkWinCondition();
     }
 
     @Override
@@ -311,11 +310,12 @@ public class TNTWarsGame extends Game {
         if (isPlayerActive(player)) {
             minigames.getServer().getScheduler().scheduleSyncDelayedTask(minigames, () -> {
                 if (player.isDead()) {
-                    playerEliminated(player.getUniqueId());
                     player.spigot().respawn();
                     player.sendTitle(ChatColor.RED + "You Died!", "");
                     player.teleport(arena.getSpawn());
                 }
+                playerEliminated(player.getUniqueId());
+                checkWinCondition();
             });
         }
     }
