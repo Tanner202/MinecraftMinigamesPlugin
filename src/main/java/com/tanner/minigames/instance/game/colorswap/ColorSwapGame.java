@@ -152,7 +152,7 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onPlayerLeave(Player player) {
-        if (arena.getState().equals(GameState.LIVE) || arena.getState().equals(GameState.ENDING)) {
+        if (bossBar != null) {
             bossBar.removePlayer(player);
         }
     }
