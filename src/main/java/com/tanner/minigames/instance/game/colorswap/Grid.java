@@ -30,6 +30,7 @@ public class Grid {
             matchGridSizeToCellSize();
         }
 
+        setGrid();
     }
 
     private void matchGridSizeToCellSize() {
