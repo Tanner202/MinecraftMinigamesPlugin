@@ -211,7 +211,7 @@ public class Arena {
         scoreboardTeams.put(5, team);
 
         ScoreboardTeam kit = new ScoreboardTeam("kit", ChatColor.GRAY + "▶ Kit: ",
-                getKit(player).getDisplay() != null ? getKit(player).getDisplay() : "");
+                getKit(player) != null ? getKit(player).getDisplay() : "");
         scoreboardTeams.put(4, kit);
 
         ScoreboardTeam playerAmount = new ScoreboardTeam("playerAmount", ChatColor.GRAY + "▶ Players: ",
