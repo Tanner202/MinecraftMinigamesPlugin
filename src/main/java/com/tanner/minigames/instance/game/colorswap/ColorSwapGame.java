@@ -2,6 +2,7 @@ package com.tanner.minigames.instance.game.colorswap;
 
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
+import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.instance.game.Game;
 import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.util.ScoreboardBuilder;
@@ -151,7 +152,9 @@ public class ColorSwapGame extends Game {
 
     @Override
     public void onPlayerLeave(Player player) {
-        bossBar.removePlayer(player);
+        if (arena.getState().equals(GameState.LIVE) || arena.getState().equals(GameState.ENDING)) {
+            bossBar.removePlayer(player);
+        }
     }
 
     @Override
