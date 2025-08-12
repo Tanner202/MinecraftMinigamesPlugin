@@ -22,6 +22,7 @@ public abstract class Game implements Listener {
 
     protected List<UUID> activePlayers = new ArrayList<>();
 
+    protected int victoryCelebrationDelay = 40;
     protected int arenaResetWaitTime = 200;
 
     public Game(Minigames minigames, Arena arena) {
@@ -67,11 +68,13 @@ public abstract class Game implements Listener {
         }
 
         if (gameComplete) {
-            VictoryCelebration celebration = new VictoryCelebration(minigames, this);
             Bukkit.getScheduler().runTaskLater(minigames, () -> {
-                celebration.end();
-                arena.reset(true);
-            }, arenaResetWaitTime);
+                VictoryCelebration celebration = new VictoryCelebration(minigames, this);
+                Bukkit.getScheduler().runTaskLater(minigames, () -> {
+                    celebration.end();
+                    arena.reset(true);
+                }, arenaResetWaitTime);
+            }, victoryCelebrationDelay);
         } else {
             arena.reset(true);
         }
