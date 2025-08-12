@@ -47,6 +47,7 @@ public class Party {
     }
 
     public void addPartyMember(UUID playerAdded) {
+        sendMessage(ChatColor.GREEN + Bukkit.getPlayer(playerAdded).getDisplayName() + " has joined the party!");
         partyMembers.add(playerAdded);
         invitedPlayers.get(playerAdded).cancel();
         invitedPlayers.remove(playerAdded);
@@ -64,6 +65,9 @@ public class Party {
         partyLeader = null;
         leaderUUID = null;
         partyMembers.clear();
+        for (UUID uuid : partyMembers) {
+            Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "The party you were in has been disbanded.");
+        }
     }
 
     public boolean isPartyMember(UUID potentialPartyMember) {
@@ -80,5 +84,12 @@ public class Party {
 
     public boolean isInParty(Player player) {
         return partyLeader == player || partyMembers.contains(player.getUniqueId());
+    }
+
+    public void sendMessage(String message) {
+        for (UUID uuid : getPartyMembers()) {
+            Bukkit.getPlayer(uuid).sendMessage(message);
+        }
+        partyLeader.sendMessage(message);
     }
 }

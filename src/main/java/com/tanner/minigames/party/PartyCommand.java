@@ -48,6 +48,7 @@ public class PartyCommand implements CommandExecutor {
                     }
                     player.sendMessage(ChatColor.RED + "You have left the party.");
                     party.removePartyMember(player.getUniqueId());
+                    party.sendMessage(ChatColor.RED + player.getDisplayName() + " has left the party.");
                     break;
                 case "disband":
                     party = partyManager.getParty(player);
@@ -105,6 +106,7 @@ public class PartyCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "You removed " + selectedPlayer.getDisplayName() + " from the party.");
                     selectedPlayer.sendMessage(ChatColor.RED + "You have been removed from the party.");
                     party.removePartyMember(selectedPlayerUUID);
+                    party.sendMessage(ChatColor.RED + selectedPlayer.getDisplayName() + " has been removed from the party.");
                     break;
                 case "join":
                     party = partyManager.getParty(selectedPlayer);
