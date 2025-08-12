@@ -125,7 +125,6 @@ public class SpleefGame extends Game {
                 activePlayers.remove(player.getUniqueId());
             }
             player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             arena.removePlayer(player);
         }
     }
