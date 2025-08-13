@@ -318,6 +318,7 @@ public class TNTWarsGame extends Game {
                 checkWinCondition();
             });
         }
+        e.setDeathMessage("");
     }
 
 

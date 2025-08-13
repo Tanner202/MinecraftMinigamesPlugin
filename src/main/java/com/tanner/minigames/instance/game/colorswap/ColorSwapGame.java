@@ -206,6 +206,7 @@ public class ColorSwapGame extends Game {
                 checkWinCondition();
             });
         }
+        e.setDeathMessage("");
     }
 
     @EventHandler

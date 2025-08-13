@@ -172,6 +172,7 @@ public class DragonEscapeGame extends Game {
                 player.setInvisible(false);
             });
         }
+        e.setDeathMessage("");
     }
 
     @EventHandler
