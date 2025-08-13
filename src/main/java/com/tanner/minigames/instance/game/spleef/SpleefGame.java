@@ -33,6 +33,7 @@ public class SpleefGame extends Game {
 
     @Override
     public void onStart() {
+        Scoreboard board = setScoreboard();
         for (UUID uuid : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);
             ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL);
