@@ -42,7 +42,6 @@ public class SpleefGame extends Game {
             shovel.setItemMeta(shovelMeta);
             player.getInventory().addItem(shovel);
 
-            Scoreboard board = setScoreboard();
             player.setScoreboard(board);
         }
     }
