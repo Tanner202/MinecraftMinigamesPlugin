@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class ScoreboardBuilder {
 
@@ -47,9 +49,12 @@ public class ScoreboardBuilder {
         }
     }
 
-    public void disablePlayerCollision() {
+    public void disablePlayerCollision(List<UUID> players) {
         Team noCollisionTeam = board.registerNewTeam("no_collision");
         noCollisionTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        for (UUID uuid : players) {
+            noCollisionTeam.addEntry(Bukkit.getPlayer(uuid).getName());
+        }
     }
 
     private int getScoreboardLineAmount() {

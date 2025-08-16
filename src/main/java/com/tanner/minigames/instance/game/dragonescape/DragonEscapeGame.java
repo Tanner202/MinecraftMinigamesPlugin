@@ -92,7 +92,7 @@ public class DragonEscapeGame extends Game {
                 scoreboardLines,
                 scoreboardTeams);
 
-        scoreboardBuilder.disablePlayerCollision();
+        scoreboardBuilder.disablePlayerCollision(arena.getPlayers());
 
         return scoreboardBuilder.getBoard();
     }
