@@ -2,8 +2,9 @@ package com.tanner.minigames.instance.game.colorswap;
 
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
-import com.tanner.minigames.instance.GameState;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.instance.game.GameEventControl;
+import com.tanner.minigames.instance.game.GameEventFlag;
 import com.tanner.minigames.util.Constants;
 import com.tanner.minigames.util.ScoreboardBuilder;
 import com.tanner.minigames.util.ScoreboardTeam;
@@ -11,18 +12,12 @@ import com.tanner.minigames.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -64,6 +59,11 @@ public class ColorSwapGame extends Game {
     public ColorSwapGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
         grid = new Grid(arena.getSpawn(), gridSize, cellSize);
+
+        GameEventControl gameEventControl = new GameEventControl(arena.getPlayers(), activePlayers, GameEventFlag.DISABLE_HUNGER, GameEventFlag.DISABLE_BLOCK_BREAK,
+                GameEventFlag.DISABLE_BLOCK_PLACE, GameEventFlag.DISABLE_PVP, GameEventFlag.DISABLE_INVENTORY_INTERACTION, GameEventFlag.WATER_DAMAGE,
+                GameEventFlag.DISABLE_ITEM_DROP, GameEventFlag.DISABLE_CRAFTING);
+        Bukkit.getPluginManager().registerEvents(gameEventControl, minigames);
     }
 
     @Override
@@ -207,46 +207,5 @@ public class ColorSwapGame extends Game {
             });
         }
         e.setDeathMessage("");
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
-        Player player = e.getPlayer();
-
-        if (isPlayerActive(player)) {
-            Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
-            if (blockAtPlayerLocation == Material.WATER) {
-                player.setHealth(0);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent e) {
-        if (arena.getPlayers().contains(e.getPlayer().getUniqueId())) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        if (arena.getPlayers().contains(e.getPlayer().getUniqueId())) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent e) {
-        if (arena.getPlayers().contains(e.getPlayer().getUniqueId())) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryInteract(InventoryClickEvent e) {
-        Player player = (Player) e.getWhoClicked();
-        if (arena.getPlayers().contains(player.getUniqueId())) {
-            e.setCancelled(true);
-        }
     }
 }

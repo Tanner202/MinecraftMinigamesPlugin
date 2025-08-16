@@ -3,14 +3,14 @@ package com.tanner.minigames.instance.game.spleef;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.instance.game.GameEventControl;
+import com.tanner.minigames.instance.game.GameEventFlag;
 import com.tanner.minigames.util.ScoreboardBuilder;
 import com.tanner.minigames.util.ScoreboardTeam;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -29,6 +29,11 @@ public class SpleefGame extends Game {
     public SpleefGame(Minigames minigames, Arena arena) {
         super(minigames, arena);
         this.teamSpawns = new HashMap<>();
+
+        GameEventControl gameEventControl = new GameEventControl(arena.getPlayers(), activePlayers, GameEventFlag.DISABLE_HUNGER, GameEventFlag.DISABLE_BLOCK_PLACE,
+                GameEventFlag.DISABLE_PVP, GameEventFlag.DISABLE_INVENTORY_INTERACTION, GameEventFlag.WATER_DAMAGE,
+                GameEventFlag.DISABLE_ITEM_DROP, GameEventFlag.DISABLE_CRAFTING);
+        Bukkit.getPluginManager().registerEvents(gameEventControl, minigames);
     }
 
     @Override
@@ -126,24 +131,6 @@ public class SpleefGame extends Game {
             }
             player.getScoreboard().getObjective(arena.getGameType().toString().toLowerCase()).unregister();
             arena.removePlayer(player);
-        }
-    }
-
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player && !isPlayerActive((Player) e.getEntity())) return;
-
-        if (e.getEntity() instanceof Player && e.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent e) {
-        if (e.getEntity() instanceof Player && !isInArena((Player) e.getEntity())) return;
-
-        if (e.getEntity() instanceof Player) {
-            e.setCancelled(true);
         }
     }
 

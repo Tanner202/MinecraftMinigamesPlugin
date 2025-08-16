@@ -3,6 +3,8 @@ package com.tanner.minigames.instance.game.dragonescape;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.instance.game.GameEventControl;
+import com.tanner.minigames.instance.game.GameEventFlag;
 import com.tanner.minigames.util.ScoreboardBuilder;
 import com.tanner.minigames.util.ScoreboardTeam;
 import net.minecraft.world.entity.Entity;
@@ -42,6 +44,11 @@ public class DragonEscapeGame extends Game {
         file = YamlConfiguration.loadConfiguration(minigames.getFileManager().getFile(Paths.get("dragon_escape/dragon_locations.yml")));
         dragonSpawnLocation = getDragonSpawn(file);
         random = new Random();
+
+        GameEventControl gameEventControl = new GameEventControl(arena.getPlayers(), activePlayers, GameEventFlag.DISABLE_HUNGER, GameEventFlag.DISABLE_BLOCK_BREAK,
+                GameEventFlag.DISABLE_BLOCK_PLACE, GameEventFlag.DISABLE_PVP, GameEventFlag.DISABLE_INVENTORY_INTERACTION, GameEventFlag.WATER_DAMAGE,
+                GameEventFlag.DISABLE_ITEM_DROP, GameEventFlag.DISABLE_CRAFTING);
+        Bukkit.getPluginManager().registerEvents(gameEventControl, minigames);
     }
 
     private Location getDragonSpawn(YamlConfiguration file) {
@@ -143,13 +150,6 @@ public class DragonEscapeGame extends Game {
         Block blockBelowPlayer = belowPlayer.getBlock();
         if (blockBelowPlayer.getType().equals(Material.BEACON) && activePlayers.contains(player.getUniqueId())) {
             victory(player);
-        }
-
-        if (isPlayerActive(player)) {
-            Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
-            if (blockAtPlayerLocation == Material.WATER) {
-                player.setHealth(0);
-            }
         }
     }
 

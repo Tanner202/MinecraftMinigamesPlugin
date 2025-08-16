@@ -5,6 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import com.tanner.minigames.Minigames;
 import com.tanner.minigames.instance.Arena;
 import com.tanner.minigames.instance.game.Game;
+import com.tanner.minigames.instance.game.GameEventControl;
+import com.tanner.minigames.instance.game.GameEventFlag;
 import com.tanner.minigames.kit.TNTWarsKitType;
 import com.tanner.minigames.team.Team;
 import com.tanner.minigames.util.ScoreboardBuilder;
@@ -21,7 +23,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -51,6 +52,10 @@ public class TNTWarsGame extends Game {
         this.arena = arena;
         this.minigames = minigames;
         this.teamSpawns = new HashMap<>();
+
+        GameEventControl gameEventControl =  new GameEventControl(arena.getPlayers(), activePlayers, GameEventFlag.DISABLE_HUNGER,
+                GameEventFlag.DISABLE_PVP, GameEventFlag.WATER_DAMAGE, GameEventFlag.DISABLE_ITEM_DROP, GameEventFlag.DISABLE_CRAFTING);
+        Bukkit.getPluginManager().registerEvents(gameEventControl, minigames);
     }
 
     @Override
@@ -289,18 +294,6 @@ public class TNTWarsGame extends Game {
         player.setVelocity(doubleJumpVector);
 
         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1f, 1f);
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
-        Player player = e.getPlayer();
-
-        if (isPlayerActive(player)) {
-            Material blockAtPlayerLocation = e.getPlayer().getLocation().getBlock().getType();
-            if (blockAtPlayerLocation == Material.WATER) {
-                player.setHealth(0);
-            }
-        }
     }
 
     @EventHandler
