@@ -173,7 +173,7 @@ public class ArenaManageGUI implements Listener {
                 case TEAM_SPAWNS:
                     arena = selectedArena.get(player.getUniqueId());
                     Team[] availableTeams = arena.getAvailableTeams();
-                    if (e.getRawSlot() < availableTeams.length) {
+                    if (e.getRawSlot() <= availableTeams.length) {
                         // Special slot with all team spawn
                         if (e.getRawSlot() == 0) {
                             playersSettingSpawnpoints.put(player.getUniqueId(), "all_team");
