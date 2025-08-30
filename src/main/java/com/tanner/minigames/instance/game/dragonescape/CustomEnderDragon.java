@@ -25,6 +25,6 @@ public class CustomEnderDragon extends EnderDragon {
         getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
 
         world.addFreshEntity(this);
-        moveTo(startingLoc.getX(), startingLoc.getY(), startingLoc.getZ());
+        setPosRaw(startingLoc.getX(), startingLoc.getY(), startingLoc.getZ());
     }
 }
