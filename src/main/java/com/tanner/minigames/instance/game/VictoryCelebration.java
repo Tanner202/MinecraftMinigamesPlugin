@@ -20,7 +20,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R5.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -90,13 +90,13 @@ public class VictoryCelebration {
 
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), winningPlayer.getDisplayName());
 
-        ServerPlayer playerNPC = new ServerPlayer(winningServerPlayer.getServer(), winningServerPlayer.serverLevel(), gameProfile, ClientInformation.createDefault());
+        ServerPlayer playerNPC = new ServerPlayer(winningServerPlayer.getServer(), winningServerPlayer.level(), gameProfile, ClientInformation.createDefault());
         Location npcPodiumSpawn = ConfigManager.getSpawn("victory-podium.npc-spawn");
         playerNPC.setPos(new Vec3(npcPodiumSpawn.getX(), npcPodiumSpawn.getY(), npcPodiumSpawn.getZ()));
 
-        Set<ServerPlayerConnection> set = new HashSet<>();
-        ServerEntity playerNPCServerEntity = new ServerEntity(playerNPC.serverLevel(), playerNPC, 0, false, packet -> {
-        }, set);
+        /*Set<ServerPlayerConnection> set = new HashSet<>();
+        ServerEntity playerNPCServerEntity = new ServerEntity(playerNPC.level(), playerNPC, 0, false, packet -> {
+        }, set);*/
 
         playerNPC.connection = new ServerGamePacketListenerImpl(playerNPC.getServer(), new Connection(PacketFlow.SERVERBOUND), playerNPC,
                 CommonListenerCookie.createInitial(gameProfile, false));
@@ -105,7 +105,7 @@ public class VictoryCelebration {
         float pitch = npcPodiumSpawn.getPitch();
 
         Util.sendPacket(new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, playerNPC));
-        Util.sendPacket(new ClientboundAddEntityPacket(playerNPC, playerNPCServerEntity));
+        //Util.sendPacket(new ClientboundAddEntityPacket(playerNPC, playerNPCServerEntity));
         Util.sendPacket(new ClientboundRotateHeadPacket(playerNPC, (byte) ((yaw % 360) * 256 / 360)));
         Util.sendPacket(new ClientboundMoveEntityPacket.Rot(playerNPC.getBukkitEntity().getEntityId(),
                 (byte) ((yaw % 360) * 256 / 360),
