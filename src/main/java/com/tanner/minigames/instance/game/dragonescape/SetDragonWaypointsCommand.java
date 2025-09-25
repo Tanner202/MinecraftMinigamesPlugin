@@ -47,8 +47,13 @@ public class SetDragonWaypointsCommand implements CommandExecutor, Listener {
         this.minigames = minigames;
         file = minigames.getFileManager().getFile(Paths.get("dragon_escape/dragon_locations.yml"));
         ymlFile = YamlConfiguration.loadConfiguration(file);
-        world = Bukkit.getWorld(ymlFile.getString("dragon-spawn.world"));
+        String worldName = ymlFile.getString("dragon-spawn.world");
+        world = Bukkit.getWorld(worldName);
 
+        if (world == null) {
+            Bukkit.getLogger().warning("World " + worldName + " not found, using fallback.");
+            world = Bukkit.getWorld("world");
+        }
         if (ymlFile.getConfigurationSection("target-locations") == null) return;
 
         for (String key : ymlFile.getConfigurationSection("target-locations").getKeys(false)) {
