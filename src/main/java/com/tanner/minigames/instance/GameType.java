@@ -6,7 +6,6 @@ import org.bukkit.Material;
 public enum GameType {
     COLORSWAP(ChatColor.BLUE + "Color Swap", Material.WHITE_WOOL),
     DRAGON_ESCAPE(ChatColor.DARK_PURPLE + "Dragon Escape", Material.ENDER_DRAGON_SPAWN_EGG),
-    SCRAPYARD_SKIRMISH(ChatColor.YELLOW + "Scrapyard Skirmish", Material.RED_SAND),
     SPLEEF(ChatColor.AQUA + "Spleef", Material.DIAMOND_SHOVEL),
     TNT_WARS(ChatColor.RED + "TNT Wars", Material.TNT);
 
