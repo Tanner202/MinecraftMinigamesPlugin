@@ -1,5 +1,6 @@
 package com.tanner.minigames;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.tanner.minigames.party.PartyCommand;
 import com.tanner.minigames.party.PartyManager;
 import com.tanner.minigames.util.Constants;
@@ -23,11 +24,13 @@ public final class Minigames extends JavaPlugin {
     private ArenaManager arenaManager;
     private PartyManager partyManager;
     private FileManager fileManager;
+    private WorldEdit worldEdit;
 
     @Override
     public void onEnable() {
         Constants.initializeConstants(this);
         ConfigManager.setupConfig(this);
+        worldEdit = WorldEdit.getInstance();
 
         fileManager = new FileManager(this);
         fileManager.addFile("dragon_escape/dragon_locations.yml");
