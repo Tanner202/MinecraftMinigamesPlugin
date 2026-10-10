@@ -19,10 +19,10 @@ Skip filler, long preambles, and restating my request. Don't leave out any chang
 ## Project Info
 
 - Spigot minigames plugin. Maven, Java 8 source level, Spigot API `1.21.8-R0.1-SNAPSHOT` (`remapped-mojang`). Package root: `com.tanner.minigames`.
-- Games are listed in the `GameType` enum (COLORSWAP, DRAGON_ESCAPE, SCRAPYARD_SKIRMISH, SPLEEF, TNT_WARS). Each game extends `Game`, and `Arena` creates it with a `switch` on the type.
+- Games are listed in the `GameType` enum (COLORSWAP, DRAGON_ESCAPE, SPLEEF, TNT_WARS). Each game extends `Game`, and `Arena` creates it with a `switch` on the type.
 - Kits live in `kit/` (`KitType` enums, implementations under `kit/kittype/<game>/`).
 - Arenas are defined in `config.yml` and loaded by `ArenaManager`; invalid entries are skipped with a warning.
-- Commands (`/arena`, `/party`, `/setcrate`, `/setdragonwaypoints`) are registered in `Minigames.onEnable` and declared in `plugin.yml`.
+- Commands (`/arena`, `/party`, `/setdragonwaypoints`) are registered in `Minigames.onEnable` and declared in `plugin.yml`.
 
 ## Build
 
