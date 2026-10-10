@@ -13,6 +13,7 @@ import com.tanner.minigames.listener.GameLobbyListener;
 import com.tanner.minigames.manager.ArenaManager;
 import com.tanner.minigames.manager.ConfigManager;
 import com.tanner.minigames.manager.FileManager;
+import com.tanner.minigames.manager.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +29,7 @@ public final class Minigames extends JavaPlugin {
     public void onEnable() {
         Constants.initializeConstants(this);
         ConfigManager.setupConfig(this);
+        WorldManager.loadDefaultWorlds(this);
 
         fileManager = new FileManager(this);
         fileManager.addFile("dragon_escape/dragon_locations.yml");

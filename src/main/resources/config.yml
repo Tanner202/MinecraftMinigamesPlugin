@@ -35,10 +35,10 @@ arenas:
       z: 100
       yaw: -180
       pitch: 0
-    world: 'world'
-    x: 100
+    world: 'minigames_colorswap'
+    x: 0.5
     y: 100
-    z: 100
+    z: 0.5
     yaw: -180
     pitch: 0
   1:
